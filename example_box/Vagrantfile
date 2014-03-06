@@ -1,0 +1,11 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.require_plugin "vagrant-azure"
+
+Vagrant.configure('2') do |config|
+  config.vm.provider :azure do |azure|
+    azure.vm_name = 'cloudinittest'
+    azure.cloud_service_name = 'cloudinittest'
+  end
+end

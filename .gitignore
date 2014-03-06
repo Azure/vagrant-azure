@@ -1,0 +1,6 @@
+id
+.DS_Store
+Gemfile.lock
+azure.box
+Vagrantfile
+!example_box/Vagrantfile

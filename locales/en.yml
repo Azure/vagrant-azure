@@ -1,0 +1,10 @@
+en:
+  vagrant_azure:
+    not_created: |-
+      The machine does not exist. Please run `vagrant up` first.
+    will_not_destroy: |-
+      The machine '%{name}' will not be destroyed as the user declined confirmation.
+    already_status: |-
+      The machine is already %{status}.
+    stopping: |-
+      Stopping %{vm_name} in %{cloud_service_name}
