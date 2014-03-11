@@ -20,7 +20,7 @@ module VagrantPlugins
         end
 
         def read_state(env)
-          return :NotCreated if env[:machine].id.nil?
+          env[:machine].id = "#{env[:machine].provider_config.vm_name}@#{env[:machine].provider_config.cloud_service_name}" unless env[:machine].id
 
           env[:machine].id =~ /@/
 
