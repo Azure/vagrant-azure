@@ -174,7 +174,7 @@ module VagrantPlugins
       autoload :MessageAlreadyCreated, action_root.join('message_already_created')
       autoload :MessageNotCreated, action_root.join('message_not_created')
       autoload :MessageWillNotDestroy, action_root.join('message_will_not_destroy')
-      # autoload :ReadSSHInfo, action_root.join('read_ssh_info')
+      autoload :ReadSSHInfo, action_root.join('read_ssh_info')
       autoload :ReadState, action_root.join('read_state')
       autoload :RunInstance, action_root.join('run_instance')
       autoload :StartInstance, action_root.join('start_instance')
