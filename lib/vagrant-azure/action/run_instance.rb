@@ -55,6 +55,12 @@ module VagrantPlugins
           )
 
           # TODO: Exception/Error Handling
+
+          if server.instance_of? String
+            env[:ui].info "Server not created. Error is: #{server}"
+            raise "#{server}"
+          end
+
           env[:machine].id = "#{server.vm_name}@#{server.cloud_service_name}"
 
           @app.call(env)

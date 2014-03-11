@@ -28,14 +28,13 @@ module VagrantPlugins
 
           vm = env[:azure_vm_service].get_virtual_machine($`, $')
 
-          env[:ui].info "VM Status: #{vm.status.to_sym}"
-
           if vm.nil?
             @logger.info 'Machine cannot be found'
             env[:machine].id = nil
             return :NotCreated
           end
 
+          env[:ui].info "VM Status: #{vm.status.to_sym}"
           return vm.status.to_sym
         end
       end
