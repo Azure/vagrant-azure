@@ -39,6 +39,8 @@ module VagrantPlugins
         end
 
         def generate_rdp_file(machine)
+          File.delete(@rdp_file) if File.exists?(@rdp_file)
+
           info = machine.provider.rdp_info
 
           rdp_options = {
