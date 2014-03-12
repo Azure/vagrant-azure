@@ -73,7 +73,15 @@ module VagrantPlugins
         Vagrant::Action::Builder.new.tap do |b|
           b.use ConfigValidate
           b.use ConnectAzure
-          b.use ReadSSHInfo
+          b.use ReadSSHInfo, 22
+        end
+      end
+
+      def self.action_read_rdp_info
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use ConfigValidate
+          b.use ConnectAzure
+          b.use ReadSSHInfo, 3389
         end
       end
 
@@ -96,6 +104,26 @@ module VagrantPlugins
             end
 
             b2.use SSHExec
+          end
+        end
+      end
+
+      def self.action_rdp
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use ConfigValidate
+          b.use Call, IsState, :NotCreated do |env1, b1|
+            if env1[:result]
+              b1.use MessageNotCreated
+            end
+
+            b1.use Call, IsState, :ReadyRole do |env2, b2|
+              if !env2[:result]
+                b2.use Message, 'RDP Not Ready'
+                next
+              end
+
+              b2.use Rdp
+            end
           end
         end
       end
@@ -184,6 +212,7 @@ module VagrantPlugins
       # autoload :TimedProvision, action_root.join('timed_provision')
       autoload :WaitForState, action_root.join('wait_for_state')
       # autoload :WarnNetworks, action_root.join('warn_networks')
+      autoload :Rdp, action_root.join('rdp')
     end
   end
 end

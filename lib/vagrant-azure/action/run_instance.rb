@@ -22,14 +22,17 @@ module VagrantPlugins
         def call(env)
           config = env[:machine].provider_config
 
+          # Add the mandatory parameters to the params hash
           params = {
             vm_name: config.vm_name,
             vm_user: config.vm_user,
-            password: config.vm_password,
-            image: config.vm_image,
-            location: config.vm_location,
-            affinity_group: config.vm_affinity_group
+            image: config.vm_image
           }
+
+          # Add the optional parameters if they not nil
+          params[:password] = config.vm_password unless config.vm_password.nil?
+          params[:location] = config.vm_location unless config.vm_location.nil?
+          params[:affinity_group] = config.vm_affinity_group unless config.vm_affinity_group.nil?
 
           options = {
             storage_account_name: config.storage_acct_name,

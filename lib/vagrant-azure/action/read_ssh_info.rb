@@ -8,12 +8,15 @@ module VagrantPlugins
   module WinAzure
     module Action
       class ReadSSHInfo
-        def initialize(app, env)
+        def initialize(app, env, port = 22)
           @app = app
+          @port = port
           @logger = Log4r::Logger.new('vagrant_azure::action::read_ssh_info')
         end
 
         def call(env)
+          env[:ui].info "Looking for #{@port}"
+
           env[:machine_ssh_info] = read_ssh_info(
             env[:azure_vm_service],
             env[:machine]
@@ -36,7 +39,7 @@ module VagrantPlugins
 
           vm.tcp_endpoints.each do |endpoint|
             l_port = endpoint['LocalPort']
-            if l_port == '22'
+            if l_port == "#{@port}"
               return { :host => endpoint['Vip'], :port => endpoint['PublicPort'] }
             end
           end

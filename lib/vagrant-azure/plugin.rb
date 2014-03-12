@@ -38,6 +38,11 @@ module VagrantPlugins
         Provider
       end
 
+      command 'rdp' do
+        require_relative 'command/rdp/command'
+        Command
+      end
+
       def self.setup_i18n
         I18n.load_path << File.expand_path(
           'locales/en.yml',
