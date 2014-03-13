@@ -111,14 +111,15 @@ module VagrantPlugins
       def self.action_rdp
         Vagrant::Action::Builder.new.tap do |b|
           b.use ConfigValidate
-          b.use Call, IsState, :NotCreated do |env1, b1|
-            if env1[:result]
+          b.use Call, IsCreated do |env1, b1|
+            if !env1[:result]
               b1.use MessageNotCreated
+              next
             end
 
-            b1.use Call, IsState, :ReadyRole do |env2, b2|
+            b1.use Call, IsReady do |env2, b2|
               if !env2[:result]
-                b2.use Message, 'RDP Not Ready'
+                b2.use MessageRDPNotReady
                 next
               end
 
@@ -198,10 +199,13 @@ module VagrantPlugins
       action_root = Pathname.new(File.expand_path('../action', __FILE__))
       autoload :ConnectAzure, action_root.join('connect_azure')
       autoload :IsCreated, action_root.join('is_created')
+      autoload :IsReady, action_root.join('is_ready')
       autoload :IsStopped, action_root.join('is_stopped')
       autoload :MessageAlreadyCreated, action_root.join('message_already_created')
       autoload :MessageNotCreated, action_root.join('message_not_created')
+      autoload :MessageRDPNotReady, action_root.join('message_rdp_not_ready')
       autoload :MessageWillNotDestroy, action_root.join('message_will_not_destroy')
+      autoload :Rdp, action_root.join('rdp')
       autoload :ReadSSHInfo, action_root.join('read_ssh_info')
       autoload :ReadState, action_root.join('read_state')
       autoload :RunInstance, action_root.join('run_instance')
@@ -212,7 +216,6 @@ module VagrantPlugins
       # autoload :TimedProvision, action_root.join('timed_provision')
       autoload :WaitForState, action_root.join('wait_for_state')
       # autoload :WarnNetworks, action_root.join('warn_networks')
-      autoload :Rdp, action_root.join('rdp')
     end
   end
 end
