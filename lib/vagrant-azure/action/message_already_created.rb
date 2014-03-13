@@ -14,6 +14,7 @@ module VagrantPlugins
           env[:ui].info(
             I18n.t('vagrant_azure.already_status', :status => 'created')
           )
+          @app.call(env)
         end
       end
     end
