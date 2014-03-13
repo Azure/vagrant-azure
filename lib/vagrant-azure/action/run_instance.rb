@@ -22,30 +22,42 @@ module VagrantPlugins
         def call(env)
           config = env[:machine].provider_config
 
-          # Add the mandatory parameters to the params hash
+          # Add the mandatory parameters and options
           params = {
             vm_name: config.vm_name,
             vm_user: config.vm_user,
             image: config.vm_image
           }
 
-          # Add the optional parameters if they not nil
+          options = {
+            cloud_service_name: config.cloud_service_name
+          }
+
+
+          # Add the optional parameters and options if not nil
           params[:password] = config.vm_password unless config.vm_password.nil?
           params[:location] = config.vm_location unless config.vm_location.nil?
-          params[:affinity_group] = config.vm_affinity_group unless config.vm_affinity_group.nil?
+          params[:affinity_group] = config.vm_affinity_group unless \
+            config.vm_affinity_group.nil?
 
-          options = {
-            storage_account_name: config.storage_acct_name,
-            cloud_service_name: config.cloud_service_name,
-            deployment_name: config.deployment_name,
-            tcp_endpoints: config.tcp_endpoints,
-            private_key_file: config.ssh_private_key_file,
-            certificate_file: config.ssh_certificate_file,
-            ssh_port: config.ssh_port,
-            vm_size: config.vm_size,
-            winrm_transport: config.winrm_transport,
-            availability_set_name: config.availability_set_name
-          }
+          options[:storage_account_name] = config.storage_acct_name unless \
+            config.storage_acct_name.nil?
+          options[:deployment_name] = config.deployment_name unless \
+            config.deployment_name.nil?
+          options[:tcp_endpoints] = config.tcp_endpoints unless \
+            config.tcp_endpoints.nil?
+          options[:private_key_file] = config.ssh_private_key_file unless \
+            config.ssh_private_key_file.nil?
+          options[:certificate_file] = config.ssh_certificate_file unless \
+            config.ssh_certificate_file.nil?
+          options[:ssh_port] = config.ssh_port unless \
+            config.ssh_port.nil?
+          options[:vm_size] = config.vm_size unless \
+            config.vm_size.nil?
+          options[:winrm_transport] = config.winrm_transport unless \
+            config.winrm_transport.nil?
+          options[:availability_set_name] = config.availability_set_name unless \
+            config.availability_set_name.nil?
 
           add_role = config.add_role
 
