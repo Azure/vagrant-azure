@@ -163,6 +163,11 @@ module VagrantPlugins
                 if env2[:result]
                   # b2.use action_prepare_boot
                   b2.use StartInstance # restart this instance
+                  b2.use Call, WaitForState, :ReadyRole, 300 do |env3, b3|
+                    if env3[:result]
+                      b3.use MessageVMStarted
+                    end
+                  end
                 else
                   b2.use MessageAlreadyCreated
                 end
@@ -170,6 +175,11 @@ module VagrantPlugins
             else
               # b1.use action_prepare_boot
               b1.use RunInstance # Launch a new instance
+              b1.use Call, WaitForState, :ReadyRole, 300 do |env2, b2|
+                if env2[:result]
+                  b2.use MessageVMStarted
+                end
+              end
             end
           end
         end
@@ -185,10 +195,10 @@ module VagrantPlugins
               next
             end
 
-            b2.use action_halt
-            b2.use Call, WaitForState, :StoppedDeallocated, 120 do |env2, b3|
+            b2.use RestartVM
+            b2.use Call, WaitForState, :ReadyRole, 300 do |env2, b3|
               if env2[:result]
-                b3.use action_up
+                b3.use MessageVMStarted
               end
             end
           end
@@ -204,18 +214,20 @@ module VagrantPlugins
       autoload :MessageAlreadyCreated, action_root.join('message_already_created')
       autoload :MessageNotCreated, action_root.join('message_not_created')
       autoload :MessageRDPNotReady, action_root.join('message_rdp_not_ready')
+      autoload :MessageVMStarted, action_root.join('message_vm_started')
       autoload :MessageWillNotDestroy, action_root.join('message_will_not_destroy')
       autoload :Rdp, action_root.join('rdp')
       autoload :ReadSSHInfo, action_root.join('read_ssh_info')
       autoload :ReadState, action_root.join('read_state')
+      autoload :RestartVM, action_root.join('restart_vm')
       autoload :RunInstance, action_root.join('run_instance')
       autoload :StartInstance, action_root.join('start_instance')
       autoload :StopInstance, action_root.join('stop_instance')
       # autoload :SyncFolders, action_root.join('sync_folders')
       autoload :TerminateInstance, action_root.join('terminate_instance')
       # autoload :TimedProvision, action_root.join('timed_provision')
-      autoload :WaitForState, action_root.join('wait_for_state')
       # autoload :WarnNetworks, action_root.join('warn_networks')
+      autoload :WaitForState, action_root.join('wait_for_state')
     end
   end
 end

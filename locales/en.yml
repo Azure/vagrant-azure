@@ -7,4 +7,8 @@ en:
     already_status: |-
       The machine is already %{status}.
     stopping: |-
-      Stopping %{vm_name} in %{cloud_service_name}
+      Stopping '%{vm_name}' in '%{cloud_service_name}'
+    rdp_not_ready: |-
+      RDP not ready
+    vm_started: |-
+      VM '%{name}' has been started
