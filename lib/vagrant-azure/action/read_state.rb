@@ -28,7 +28,10 @@ module VagrantPlugins
 
           vm = env[:azure_vm_service].get_virtual_machine($`, $')
 
-          if vm.nil?
+          if vm.nil? || \
+            !vm.instance_of?(Azure::VirtualMachineManagement::VirtualMachine) || \
+            [ :DeletingVM ].include?(vm.status.to_sym)
+            # Machine can't be found
             @logger.info 'Machine cannot be found'
             env[:machine].id = nil
             return :NotCreated
