@@ -10,7 +10,7 @@ module VagrantPlugins
           @app = app
         end
 
-        def env(env)
+        def call(env)
           env[:ui].info(I18n.t('vagrant_azure.not_created'))
           @app.call(env)
         end
