@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.description   = "Enable Vagrant to manage machines in Azure"
   s.summary       = "Enable Vagrant to manage machines in Azure"
   s.homepage      = ""
-  s.license       = "MIT"
+  s.license       = "Apache 2.0"
 
   s.require_paths = ["lib"]
 
