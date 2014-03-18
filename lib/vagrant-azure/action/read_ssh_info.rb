@@ -38,9 +38,9 @@ module VagrantPlugins
           end
 
           vm.tcp_endpoints.each do |endpoint|
-            l_port = endpoint['LocalPort']
+            l_port = endpoint[:local_port]
             if l_port == "#{@port}"
-              return { :host => endpoint['Vip'], :port => endpoint['PublicPort'] }
+              return { :host => endpoint[:vip], :port => endpoint[:public_port] }
             end
           end
 
