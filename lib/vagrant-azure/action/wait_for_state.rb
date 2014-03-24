@@ -9,10 +9,9 @@ module VagrantPlugins
   module WinAzure
     module Action
       class WaitForState
-        def initialize(app, env, state, timeout)
+        def initialize(app, env, state)
           @app = app
           @state = state
-          @timeout = timeout
           @logger = Log4r::Logger.new("vagrant_azure::action::wait_for_state")
         end
 
@@ -24,22 +23,24 @@ module VagrantPlugins
               I18n.t('vagrant_azure.already_status', :status => @state)
             )
           else
+            timeout = env[:machine].provider_config.state_read_timeout
+
             env[:ui].info "Waiting for machine to reach state #{@state}"
             @logger.info("Waiting for machine to reach state #{@state}")
 
             begin
-              Timeout.timeout(@timeout)  do
+              Timeout.timeout(timeout)  do
                 until env[:machine].state.id == @state
-                  sleep 10
+                  sleep 30
                 end
               end
+              env[:ui].success "Machine reached state #{@state}"
             rescue Timeout::Error
-              env[:ui].error "Machine failed to reached state '#{@state}' in '#{@timeout}' seconds."
+              env[:ui].error "Machine failed to reached state '#{@state}' in '#{timeout}' seconds."
               env[:result] = false # couldn't reach state in time
             end
           end
 
-          env[:ui].success "Machine reached state #{@state}"
           @app.call(env)
         end
       end

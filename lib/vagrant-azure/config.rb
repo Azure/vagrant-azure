@@ -7,11 +7,11 @@ require 'vagrant'
 module VagrantPlugins
   module WinAzure
     class Config < Vagrant.plugin('2', :config)
-      attr_accessor :storage_acct_name
-      attr_accessor :storage_access_key
       attr_accessor :mgmt_certificate
       attr_accessor :mgmt_endpoint
       attr_accessor :subscription_id
+      attr_accessor :storage_acct_name
+      attr_accessor :storage_access_key
 
       attr_accessor :vm_name
       attr_accessor :vm_user
@@ -30,6 +30,8 @@ module VagrantPlugins
       attr_accessor :winrm_transport
       attr_accessor :availability_set_name
       attr_accessor :add_role
+
+      attr_accessor :state_read_timeout
 
       def initialize
         @storage_acct_name = UNSET_VALUE
@@ -55,6 +57,7 @@ module VagrantPlugins
         @winrm_transport = UNSET_VALUE
         @availability_set_name = UNSET_VALUE
         @add_role = UNSET_VALUE
+        @state_read_timeout = UNSET_VALUE
       end
 
       def finalize!
@@ -70,7 +73,7 @@ module VagrantPlugins
           @subscription_id == UNSET_VALUE
 
         @vm_name = nil if @vm_name == UNSET_VALUE
-        @vm_user = 'vagrantone' if @vm_user == UNSET_VALUE
+        @vm_user = 'vagrant' if @vm_user == UNSET_VALUE
         @vm_password = nil if @vm_password == UNSET_VALUE
         @vm_image = nil if @vm_image == UNSET_VALUE
         @vm_location = nil if @vm_location == UNSET_VALUE
@@ -87,20 +90,22 @@ module VagrantPlugins
         @availability_set_name = nil if @availability_set_name == UNSET_VALUE
 
         @add_role = false if @add_role == UNSET_VALUE
+
+        @state_read_timeout = 360 if @state_read_timeout == UNSET_VALUE
       end
 
       def merge(other)
         super.tap do |result|
-          result.storage_account_name = other.storage_acct_name || \
-            self.storage_acct_name
-          result.storage_access_key = other.storage_access_key || \
-            self.storage_access_key
           result.mgmt_certificate = other.mgmt_certificate || \
             self.mgmt_certificate
           result.mgmt_endpoint = other.mgmt_endpoint || \
             self.mgmt_endpoint
           result.subscription_id = other.subscription_id || \
             self.subscription_id
+          result.storage_account_name = other.storage_acct_name || \
+            self.storage_acct_name
+          result.storage_access_key = other.storage_access_key || \
+            self.storage_access_key
         end
       end
 
@@ -108,16 +113,12 @@ module VagrantPlugins
         errors = _detected_errors
 
         # Azure connection properties related validation.
-        errors << "vagrant_azure.subscription_id.requried" if \
+        errors << "vagrant_azure.subscription_id.required" if \
           @subscription_id.nil?
-        errors << "vagrant_azure.mgmt_certificate.requried" if \
+        errors << "vagrant_azure.mgmt_certificate.required" if \
           @mgmt_certificate.nil?
-        errors << "vagrant_azaure.mgmt_endpoint.requried" if \
+        errors << "vagrant_azure.mgmt_endpoint.required" if \
           @mgmt_endpoint.nil?
-        errors << "vagrant_azure.storage_acct_name.requried" if\
-          @storage_acct_name.nil?
-        errors << "vagrant_azure.storage_access_key.requried" if\
-          @storage_access_key.nil?
 
         # Azure Virtual Machine related validation
         errors << "vagrant_azure.vm_name.required" if @vm_name.nil?

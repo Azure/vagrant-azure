@@ -54,6 +54,7 @@ module VagrantPlugins
       # This action is called when `vagrant provision` is called.
       def self.action_provision
         Vagrant::Action::Builder.new.tap do |b|
+          b.use ConnectAzure
           b.use ConfigValidate
           b.use Call, IsCreated do |env, b2|
             if !env[:result]
@@ -62,7 +63,7 @@ module VagrantPlugins
             end
 
             b2.use Provision
-            b2.use SyncFolders
+            # b2.use SyncFolders
           end
         end
       end
@@ -146,8 +147,8 @@ module VagrantPlugins
       def self.action_prepare_boot
         Vagrant::Action::Builder.new.tap do |b|
           b.use Provision
-          b.use SyncFolders
-          b.use WarnNetworks
+          # b.use SyncFolders
+          # b.use WarnNetworks
         end
       end
 
@@ -161,8 +162,8 @@ module VagrantPlugins
             if env1[:result]
               b1.use Call, IsStopped do |env2, b2|
                 if env2[:result]
-                  # b2.use action_prepare_boot
-                  b2.use StartInstance # restart this instance
+                  b2.use action_prepare_boot
+                  b2.use StartInstance # start this instance again
                   b2.use Call, WaitForState, :ReadyRole, 300 do |env3, b3|
                     if env3[:result]
                       b3.use MessageVMStarted
@@ -216,6 +217,7 @@ module VagrantPlugins
       autoload :MessageRDPNotReady, action_root.join('message_rdp_not_ready')
       autoload :MessageVMStarted, action_root.join('message_vm_started')
       autoload :MessageWillNotDestroy, action_root.join('message_will_not_destroy')
+      autoload :Provision, action_root.join('provision')
       autoload :Rdp, action_root.join('rdp')
       autoload :ReadSSHInfo, action_root.join('read_ssh_info')
       autoload :ReadState, action_root.join('read_state')
