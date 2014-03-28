@@ -3,6 +3,7 @@
 # All Rights Reserved. Licensed under the Apache 2.0 License.
 #--------------------------------------------------------------------------
 require 'vagrant'
+require 'azure'
 
 module VagrantPlugins
   module WinAzure
@@ -29,7 +30,6 @@ module VagrantPlugins
       attr_accessor :vm_size
       attr_accessor :winrm_transport
       attr_accessor :availability_set_name
-      attr_accessor :add_role
 
       attr_accessor :state_read_timeout
 
@@ -56,7 +56,6 @@ module VagrantPlugins
         @vm_size = UNSET_VALUE
         @winrm_transport = UNSET_VALUE
         @availability_set_name = UNSET_VALUE
-        @add_role = UNSET_VALUE
         @state_read_timeout = UNSET_VALUE
       end
 
@@ -89,9 +88,21 @@ module VagrantPlugins
         @winrm_transport = nil if @winrm_transport == UNSET_VALUE
         @availability_set_name = nil if @availability_set_name == UNSET_VALUE
 
-        @add_role = false if @add_role == UNSET_VALUE
-
         @state_read_timeout = 360 if @state_read_timeout == UNSET_VALUE
+
+        # This done due to a bug in Ruby SDK - it doesn't generate a storage 
+        # account name if add_role = true
+        if @storage_acct_name.nil? || @storage_acct_name.empty?
+          @storage_acct_name = Azure::Core::Utility.random_string(
+            "#{@vm_name}storage"
+          ).gsub(/[^0-9a-z ]/i, '').downcase[0..23]
+        end
+
+        if @cloud_service_name.nil? || @cloud_service_name.empty?
+          @cloud_service_name = Azure::Core::Utility.random_string(
+            "#{@vm_name}-service-"
+          )
+        end
       end
 
       def merge(other)
@@ -122,8 +133,6 @@ module VagrantPlugins
 
         # Azure Virtual Machine related validation
         errors << "vagrant_azure.vm_name.required" if @vm_name.nil?
-        errors << "vagrant_azure.cloud_serivce_name.required" if \
-          @cloud_service_name.nil?
 
         { "Windows Azure Provider" => errors }
       end

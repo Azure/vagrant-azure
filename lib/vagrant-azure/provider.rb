@@ -4,12 +4,18 @@
 #--------------------------------------------------------------------------
 require 'log4r'
 require 'vagrant'
+require_relative 'driver'
 
 module VagrantPlugins
   module WinAzure
     class Provider < Vagrant.plugin('2', :provider)
+      attr_reader :driver
+
       def initialize(machine)
         @machine = machine
+
+        # Load the driver
+        machine_id_changed
       end
 
       def action(name)
@@ -19,6 +25,10 @@ module VagrantPlugins
         action_method = "action_#{name}"
         return Action.send(action_method) if Action.respond_to?(action_method)
         nil
+      end
+
+      def machine_id_changed
+        @driver = Driver.new(@machine)
       end
 
       def ssh_info
