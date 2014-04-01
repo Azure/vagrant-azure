@@ -3,20 +3,20 @@
 # All Rights Reserved. Licensed under the Apache 2.0 License.
 #--------------------------------------------------------------------------
 
-function Get-Remote-Session($guest_ip, $username, $password) {
+function Get-Remote-Session($guest_ip, $guest_port, $username, $password) {
     $secstr = convertto-securestring -AsPlainText -Force -String $password
     $cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $username, $secstr
-    New-PSSession -ComputerName $guest_ip -Credential $cred -ErrorAction "stop"
+    New-PSSession -ComputerName $guest_ip -Port $guest_port -Credential $cred -UseSSL -ErrorAction "stop"
 }
 
-function Create-Remote-Session($guest_ip, $username, $password) {
+function Create-Remote-Session($guest_ip, $guest_port, $username, $password) {
     $count = 0
     $session_error = ""
     $session = ""
     do {
         $count++
         try {
-            $session = Get-Remote-Session $guest_ip $username $password
+            $session = Get-Remote-Session $guest_ip $guest_port $username $password
             $session_error = ""
         }
         catch {

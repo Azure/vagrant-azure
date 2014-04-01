@@ -4,10 +4,10 @@
 #--------------------------------------------------------------------------
 
 param (
-    [string]$vm_id = $(throw "-vm_id is required."),
     [string]$host_path = $(throw "-host_path is required."),
     [string]$guest_path = $(throw "-guest_path is required."),
     [string]$guest_ip = $(throw "-guest_ip is required."),
+    [string]$guest_port = $(throw "-guest_port is required."),
     [string]$username = $(throw "-guest_username is required."),
     [string]$password = $(throw "-guest_password is required.")
  )
@@ -18,29 +18,21 @@ $presentDir = Split-Path -parent $PSCommandPath
 . ([System.IO.Path]::Combine($presentDir, "utils\create_session.ps1"))
 
 try {
-  # Enable Guest Service Interface if they are disabled
-  try {
-    Get-VM -Id $vm_id | Get-VMIntegrationService -Name "Guest Service Interface" | Enable-VMIntegrationService -Passthru
+  function Copy-File-To-VM($path, $content) {
+    if (!(Test-Path $path)) {
+      $folder = Split-Path $path
+      New-Item $folder -type directory -Force
     }
-    catch { }
 
-  function Upload-FIle-To-VM($host_path, $guest_path, $machine) {
-    Write-Host $host_path
-    Write-Host $guest_path
-    Copy-VMFile  -VM $machine -SourcePath $host_path -DestinationPath $guest_path -CreateFullPath -FileSource Host -Force -ErrorAction stop
+    [IO.File]::WriteAllBytes($path, $content)
   }
 
-  function Prepare-Guest-Folder($guest_ip, $username, $password) {
-    $response = Create-Remote-Session $guest_ip $username $password
-    if (!$response["session"] -and $response["error"]) {
-      $errortHash = @{
-        type = "PowerShellError"
-        message = $response["error"]
-      }
-      Write-Error-Message $errorResult
-      return
-    }
-    $session = $response["session"]
+  function Upload-FIle-To-VM($host_path, $guest_path, $session) {
+    $contents = [IO.File]::ReadAllBytes($host_path)
+    Invoke-Command -Session $session -ScriptBlock ${function:Copy-File-To-VM} -ArgumentList $guest_path,$contents
+  }
+
+  function Prepare-Guest-Folder($session) {
     # Create the guest folder if not exist
     $result = Invoke-Command -Session $session -ScriptBlock ${function:Create-Guest-Folder} -ArgumentList $guest_path
   }
@@ -61,25 +53,34 @@ try {
      New-Item "$guest_path" -type directory -Force
   }
 
-  $machine = Get-VM -Id $vm_id
+  $response = Create-Remote-Session $guest_ip $guest_port $username $password
+  if (!$response["session"] -and $response["error"]) {
+    $errortHash = @{
+      type = "PowerShellError"
+      message = $response["error"]
+    }
+    Write-Error-Message $errorResult
+    return
+  }
+  $session = $response["session"]
+
   # When Host path is a folder.
   # Find all files within it and copy to the Guest
   if (Test-Path $host_path -pathtype container) {
     # Open a remote PS Session with the guest
-    Prepare-Guest-Folder $guest_ip $username $password
+    Prepare-Guest-Folder $session
     # Copy all files from Host path to Guest Path
     Get-ChildItem $host_path -rec |
       Where-Object {$_.PSIsContainer -eq $false} |
         ForEach-Object -Process {
-          $file_name = $_.Fullname.Replace($host_path, "")
+          $folder = Split-Path $_.Fullname
+          $file_name = $_.Fullname.Replace($folder, "")
           $from = $host_path + $file_name
           $to = $guest_path + $file_name
-          # Write-Host $from
-          # Write-Host $to
-          Upload-FIle-To-VM $from $to $machine
+          Upload-FIle-To-VM $from $to $session
         }
   } elseif (Test-Path $host_path) {
-    Upload-FIle-To-VM $host_path $guest_path $machine
+    Upload-FIle-To-VM $host_path $guest_path $session
   }
   $resultHash = @{
     message = "OK"

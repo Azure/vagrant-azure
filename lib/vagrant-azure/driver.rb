@@ -15,12 +15,16 @@ module VagrantPlugins
       end
 
       def ssh_info
-        @ssh_info ||= machine.ssh_info
+        @ssh_info ||= @machine.provider.winrm_info
+        @ssh_info[:username] ||= @machine.config.ssh.username
+        @ssh_info[:password] ||= @machine.config.ssh.password
+        @ssh_info
       end
 
       def remote_credentials
         @remote_credentials ||= {
           guest_ip: ssh_info[:host],
+          guest_port: ssh_info[:port],
           username: ssh_info[:username],
           password: ssh_info[:password]
         }
@@ -49,25 +53,24 @@ module VagrantPlugins
 
       def upload(from, to)
         options = {
-          vm_id: vm_id,
           host_path: windows_path(from),
           guest_path: windows_path(to)
         }.merge(remote_credentials)
 
         script_path = local_script_path('upload_file.ps1')
-        execute(script_path, remote_credentials)
+        execute(script_path, options)
       end
 
       protected
 
       def local_script_path(path)
         lib_path = Pathname.new(File.expand_path('../scripts', __FILE__))
-        lib_path.join(path).to_s
+        windows_path(lib_path.join(path).to_s)
       end
 
       def windows_path(path)
         if path
-          path = path.gsub('/', '\\')
+          path = path.gsub('/', "\\")
           path = "c:#{path}" if path =~ /^\\/
         end
         path

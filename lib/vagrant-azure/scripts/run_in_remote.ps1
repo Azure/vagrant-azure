@@ -5,6 +5,7 @@
 
 param (
     [string]$guest_ip = $(throw "-guest_ip is required."),
+    [string]$guest_port = $(throw "-guest_port is required."),
     [string]$username = $(throw "-guest_username is required."),
     [string]$password = $(throw "-guest_password is required."),
     [string]$command = ""
@@ -16,7 +17,7 @@ $presentDir = Split-Path -parent $PSCommandPath
 . ([System.IO.Path]::Combine($presentDir, "utils\create_session.ps1"))
 
 try {
-  $response = Create-Remote-Session $guest_ip $username $password
+  $response = Create-Remote-Session $guest_ip $guest_port $username $password
   if (!$response["session"] -and $response["error"]) {
       Write-Host $response["error"]
       return

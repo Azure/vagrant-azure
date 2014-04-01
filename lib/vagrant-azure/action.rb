@@ -90,6 +90,14 @@ module VagrantPlugins
         end
       end
 
+      def self.action_read_winrm_info
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use ConfigValidate
+          b.use ConnectAzure
+          b.use ReadSSHInfo, 5986
+        end
+      end
+
       def self.action_read_state
         Vagrant::Action::Builder.new.tap do |b|
           b.use ConfigValidate

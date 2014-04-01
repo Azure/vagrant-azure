@@ -90,7 +90,7 @@ module VagrantPlugins
             manifest: config.manifest_file
           )
           @env[:ui].info 'Executing puppet script in Windows Azure VM'
-          @env[:machine].provdier.driver.run_remote_ps(command) do |type, data|
+          @env[:machine].provider.driver.run_remote_ps(command) do |type, data|
             # Output the data with the proper color based on the stream.
             if (type == :stdout || type == :stderr)
               @env[:ui].detail data

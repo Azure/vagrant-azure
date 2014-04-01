@@ -39,7 +39,7 @@ module VagrantPlugins
 
           vm.tcp_endpoints.each do |endpoint|
             if endpoint[:local_port] == "#{@port}"
-              return { :host => endpoint[:vip], :port => endpoint[:public_port] }
+              return { :host => "#{vm.cloud_service_name}.cloudapp.net", :port => endpoint[:public_port] }
             end
           end
 
