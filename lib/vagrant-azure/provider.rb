@@ -4,7 +4,6 @@
 #--------------------------------------------------------------------------
 require 'log4r'
 require 'vagrant'
-require_relative 'driver'
 
 module VagrantPlugins
   module WinAzure

@@ -2,8 +2,6 @@
 # Copyright (c) Microsoft Open Technologies, Inc.
 # All Rights Reserved. Licensed under the Apache 2.0 License.
 #---------------------------------------------------------------------------
-require_relative '../provisioner/puppet'
-
 module VagrantPlugins
   module WinAzure
     module Action
