@@ -21,7 +21,6 @@ module VagrantPlugins
           env[:ui].warn "Mangement Certificate: [#{config.mgmt_certificate}]"
           env[:ui].warn "Mangement Endpoint: [#{config.mgmt_endpoint}]"
           env[:ui].warn "Storage Account Name: [#{config.storage_acct_name}]"
-          env[:ui].warn "Storage Access Key: [#{config.storage_access_key}]"
 
           Azure.configure do |c|
             c.subscription_id                       = config.subscription_id

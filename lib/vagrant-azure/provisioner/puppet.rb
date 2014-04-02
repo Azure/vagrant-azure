@@ -41,11 +41,17 @@ module VagrantPlugins
 
           module_paths = @module_paths.map { |_, to| to }
           unless module_paths.empty?
+            win_paths = []
             # Prepend the default module path
             module_paths.unshift('/ProgramData/PuppetLabs/puppet/etc/modules')
+            module_paths.each do |path|
+              path = path.gsub('/', '\\')
+              path = "C:#{path}" if path =~/^\\/
+              win_paths << path
+            end
 
             # Add the command  line switch to add the module path
-            options << "--modulepath \"#{module_paths.join(':')}\""
+            options << "--modulepath \"#{win_paths.join(';')}\""
           end
 
           if @hiera_config_path
