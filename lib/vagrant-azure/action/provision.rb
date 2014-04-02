@@ -2,6 +2,7 @@
 # Copyright (c) Microsoft Open Technologies, Inc.
 # All Rights Reserved. Licensed under the Apache 2.0 License.
 #---------------------------------------------------------------------------
+
 module VagrantPlugins
   module WinAzure
     module Action
@@ -26,6 +27,10 @@ module VagrantPlugins
             case env[:provisioner].class.to_s
             when "VagrantPlugins::Puppet::Provisioner::Puppet"
               VagrantPlugins::WinAzure::Provisioner::Puppet.new(
+                env
+              ).provision_for_windows
+            when "VagrantPlugins::Chef::Provisioner::ChefSolo"
+              VagrantPlugins::WinAzure::Provisioner::ChefSolo.new(
                 env
               ).provision_for_windows
             end
