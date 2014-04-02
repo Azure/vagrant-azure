@@ -7,7 +7,6 @@ Gem::Specification.new do |s|
   s.name          = "vagrant-azure"
   s.version       = VagrantPlugins::WinAzure::VERSION
   s.authors       = ["MSOpenTech"]
-  s.email         = ["dheeraj@nagwani.in"]
   s.description   = "Enable Vagrant to manage machines in Azure"
   s.summary       = "Enable Vagrant to manage machines in Azure"
   s.homepage      = "https://github.com/MSOpenTech/vagrant-azure"

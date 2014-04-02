@@ -9,3 +9,4 @@ example_box/
 *.rdp
 pkg/
 gem/
+manifests/
