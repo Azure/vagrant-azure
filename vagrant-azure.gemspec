@@ -6,11 +6,11 @@ require 'vagrant-azure/version'
 Gem::Specification.new do |s|
   s.name          = "vagrant-azure"
   s.version       = VagrantPlugins::WinAzure::VERSION
-  s.authors       = ["DeeJay"]
+  s.authors       = ["MSOpenTech"]
   s.email         = ["dheeraj@nagwani.in"]
   s.description   = "Enable Vagrant to manage machines in Azure"
   s.summary       = "Enable Vagrant to manage machines in Azure"
-  s.homepage      = ""
+  s.homepage      = "https://github.com/MSOpenTech/vagrant-azure"
   s.license       = "Apache 2.0"
 
   s.require_paths = ["lib"]
