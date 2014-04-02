@@ -4,3 +4,8 @@ Gemfile.lock
 azure.box
 Vagrantfile
 !example_box/Vagrantfile
+babu
+example_box/
+*.rdp
+pkg/
+gem/

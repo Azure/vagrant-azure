@@ -191,7 +191,6 @@ module VagrantPlugins
                 end
               end
             else
-              # b1.use action_prepare_boot
               b1.use RunInstance # Launch a new instance
               b1.use Call, WaitForState, :ReadyRole do |env2, b2|
                 if env2[:result]

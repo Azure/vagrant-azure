@@ -73,8 +73,7 @@ try {
     Get-ChildItem $host_path -rec |
       Where-Object {$_.PSIsContainer -eq $false} |
         ForEach-Object -Process {
-          $folder = Split-Path $_.Fullname
-          $file_name = $_.Fullname.Replace($folder, "")
+          $file_name = $_.Fullname.SubString($host_path.length)
           $from = $host_path + $file_name
           $to = $guest_path + $file_name
           Upload-FIle-To-VM $from $to $session

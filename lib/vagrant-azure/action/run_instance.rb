@@ -56,6 +56,10 @@ module VagrantPlugins
             config.vm_size.nil?
           options[:winrm_transport] = config.winrm_transport unless \
             config.winrm_transport.nil?
+          options[:winrm_http_port] = config.winrm_http_port unless \
+            config.winrm_http_port.nil?
+          options[:winrm_https_port] = config.winrm_https_port unless \
+            config.winrm_https_port.nil?
           options[:availability_set_name] = config.availability_set_name unless \
             config.availability_set_name.nil?
 

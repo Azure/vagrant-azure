@@ -29,6 +29,8 @@ module VagrantPlugins
       attr_accessor :ssh_port
       attr_accessor :vm_size
       attr_accessor :winrm_transport
+      attr_accessor :winrm_http_port
+      attr_accessor :winrm_https_port
       attr_accessor :availability_set_name
 
       attr_accessor :state_read_timeout
@@ -55,6 +57,8 @@ module VagrantPlugins
         @ssh_port = UNSET_VALUE
         @vm_size = UNSET_VALUE
         @winrm_transport = UNSET_VALUE
+        @winrm_http_port = UNSET_VALUE
+        @winrm_https_port = UNSET_VALUE
         @availability_set_name = UNSET_VALUE
         @state_read_timeout = UNSET_VALUE
       end
@@ -86,6 +90,8 @@ module VagrantPlugins
         @ssh_port = nil if @ssh_port == UNSET_VALUE
         @vm_size = nil if @vm_size == UNSET_VALUE
         @winrm_transport = nil if @winrm_transport == UNSET_VALUE
+        @winrm_http_port = nil if @winrm_http_port == UNSET_VALUE
+        @winrm_https_port = nil if @winrm_https_port == UNSET_VALUE
         @availability_set_name = nil if @availability_set_name == UNSET_VALUE
 
         @state_read_timeout = 360 if @state_read_timeout == UNSET_VALUE
