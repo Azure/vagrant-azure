@@ -92,7 +92,7 @@ module VagrantPlugins
           end
 
           @env[:ui].info I18n.t(
-            'vagrant_azure.provisioners.puppet.running_puppet',
+            'vagrant.provisioners.puppet.running_puppet',
             manifest: config.manifest_file
           )
           @env[:ui].info 'Executing puppet script in Windows Azure VM'

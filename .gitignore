@@ -10,3 +10,4 @@ example_box/
 pkg/
 gem/
 manifests/
+modules/

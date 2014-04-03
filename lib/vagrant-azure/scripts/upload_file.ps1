@@ -57,9 +57,9 @@ try {
   if (!$response["session"] -and $response["error"]) {
     $errortHash = @{
       type = "PowerShellError"
-      message = $response["error"]
+      error = $response["error"]
     }
-    Write-Error-Message $errorResult
+    Write-Error-Message $errortHash
     return
   }
   $session = $response["session"]

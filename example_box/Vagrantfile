@@ -10,7 +10,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # please see the online documentation at vagrantup.com.
 
   config.vm.provider :azure do |azure|
-    azure.vm_image = '0b11de9248dd4d87b18621318e037d37__RightImage-Ubuntu-12.04-x64-v5.8.8.8'
     azure.vm_size = 'Small'
   end
 end

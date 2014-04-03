@@ -49,6 +49,10 @@ module VagrantPlugins
           WinAzure.source_root
         )
         I18n.load_path << File.expand_path(
+          'templates/locales/en.yml',
+          Vagrant.source_root
+        )
+        I18n.load_path << File.expand_path(
           'templates/locales/providers_hyperv.yml',
           Vagrant.source_root
         )
