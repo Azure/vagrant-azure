@@ -99,6 +99,7 @@ The vagrant-azure provide exposes a few Azure specific configration options:
 * `vm_user` - The username to create the VM with. Defaults to `vagrant`.
 * `vm_password`- The password to set for the user created with the VM.
 * `vm_name` - The name of the created VM.
+* `vm_size` - The size of the created VM.
 * `cloud_service_name` - The name of the cloud service under which to create the VM.
 * `deployment_name` - The name to give the deployment in the cloud service and add the VM to.
 * `vm_location` - The location to create the cloud service, storage account.
