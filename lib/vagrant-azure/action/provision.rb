@@ -24,6 +24,10 @@ module VagrantPlugins
 
             # TODO: Add Shell, Chef-solo and other provisioners
             case env[:provisioner].class.to_s
+            when "VagrantPlugins::Shell::Provisioner"
+              VagrantPlugins::WinAzure::Provisioner::Shell.new(
+                env
+              ).provision_for_windows
             when "VagrantPlugins::Puppet::Provisioner::Puppet"
               VagrantPlugins::WinAzure::Provisioner::Puppet.new(
                 env

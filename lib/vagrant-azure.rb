@@ -13,6 +13,7 @@ module VagrantPlugins
     autoload :Driver, lib_path.join('driver')
 
     require lib_path.join('provisioner/puppet')
+    require lib_path.join('provisioner/shell')
 
     # This returns the path to the source of this plugin.
     #
