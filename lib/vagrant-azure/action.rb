@@ -215,13 +215,14 @@ module VagrantPlugins
               next
             end
 
-            b2.use RestartVM
-            b2.use Call, WaitForState, :ReadyRole do |env2, b3|
+            b2.use action_halt
+            b2.use Call, WaitForState, :StoppedDeallocated do |env2, b3|
               if env2[:result]
                 env2[:machine].id =~ /@/
-                b3.use Message, I18n.t(
-                  'vagrant_azure.vm_started', :name => $`
-                )
+                b3.use Message, I18n.t('vagrant_azure.vm_stopped', name: $`)
+                b3.use action_up
+              else
+                b3.use Message, 'Not able to stop the machine. Please retry.'
               end
             end
           end
