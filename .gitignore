@@ -11,3 +11,4 @@ pkg/
 gem/
 manifests/
 modules/
+.vagrant/
