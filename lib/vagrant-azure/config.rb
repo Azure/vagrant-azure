@@ -109,6 +109,15 @@ module VagrantPlugins
             "#{@vm_name}-service-"
           )
         end
+
+        aliases = {
+          'A0' => 'ExtraSmall',
+          'A1' => 'Small',
+          'A2' => 'Medium',
+          'A3' => 'Large',
+          'A4' => 'ExtraLarge',
+        }
+        @vm_size = aliases[@vm_size] if aliases.include?(@vm_size)
       end
 
       def merge(other)
