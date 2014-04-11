@@ -67,7 +67,7 @@ module VagrantPlugins
             end
 
             b2.use Provision
-            # b2.use SyncFolders
+            b2.use SyncFolders
           end
         end
       end
@@ -159,8 +159,7 @@ module VagrantPlugins
       def self.action_prepare_boot
         Vagrant::Action::Builder.new.tap do |b|
           b.use Provision
-          # b.use SyncFolders
-          # b.use WarnNetworks
+          b.use SyncFolders
         end
       end
 
@@ -170,6 +169,7 @@ module VagrantPlugins
           b.use HandleBoxUrl
           b.use ConfigValidate
           b.use ConnectAzure
+
           b.use Call, IsState, :NotCreated do |env1, b1|
             if !env1[:result]
               b1.use Call, IsState, :StoppedDeallocated do |env2, b2|
@@ -182,6 +182,7 @@ module VagrantPlugins
                       b3.use Message, I18n.t(
                         'vagrant_azure.vm_started', :name => $`
                       )
+                      b3.use WaitForCommunicate
                     end
                   end
                 else
@@ -191,6 +192,7 @@ module VagrantPlugins
                 end
               end
             else
+              b1.use action_prepare_boot
               b1.use RunInstance # Launch a new instance
               b1.use Call, WaitForState, :ReadyRole do |env2, b2|
                 if env2[:result]
@@ -198,6 +200,7 @@ module VagrantPlugins
                   b2.use Message, I18n.t(
                     'vagrant_azure.vm_started', :name => $`
                   )
+                  b2.use WaitForCommunicate
                 end
               end
             end
@@ -240,11 +243,12 @@ module VagrantPlugins
       autoload :RunInstance, action_root.join('run_instance')
       autoload :StartInstance, action_root.join('start_instance')
       autoload :StopInstance, action_root.join('stop_instance')
-      # autoload :SyncFolders, action_root.join('sync_folders')
+      autoload :SyncFolders, action_root.join('sync_folders')
       autoload :TerminateInstance, action_root.join('terminate_instance')
       # autoload :TimedProvision, action_root.join('timed_provision')
       # autoload :WarnNetworks, action_root.join('warn_networks')
       autoload :WaitForState, action_root.join('wait_for_state')
+      autoload :WaitForCommunicate, action_root.join('wait_for_communicate')
     end
   end
 end
