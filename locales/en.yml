@@ -12,3 +12,5 @@ en:
       RDP not ready
     vm_started: |-
       VM '%{name}' has been started
+    vm_stopped: |-
+      VM '%{name}' has been stopped

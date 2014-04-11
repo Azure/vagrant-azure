@@ -110,3 +110,15 @@ The vagrant-azure provide exposes a few Azure specific configration options:
 * `winrm_https_port` To map the internal WinRM https port 5986 to a different public port.
 * `winrm_http_port` To map the internal WinRM http port 5985 to a different public port.
 * `tcp_endpoints` - To open any additional ports. E.g., `80` opens port `80` and `80,3389:53389` opens port `80` and `3389`. Also maps the interal port `3389` to public port `53389`
+* 
+
+## New Commands for `azure` provider
+
+The `azure` provider introduces the following new `vagrant` commands.
+
+* `rdp` - To connect to a Windows VM using RDP. E.g.,
+```
+C:\> vagrant up --provider=azure
+...
+C:\> vagrant rdp
+```
