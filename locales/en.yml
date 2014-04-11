@@ -14,3 +14,12 @@ en:
       VM '%{name}' has been started
     vm_stopped: |-
       VM '%{name}' has been stopped
+    rsync_folder: |-
+      Rsyncing folder: %{hostpath} => %{guestpath}
+    rsync_not_found_warning: |-
+      Warning! Folder sync disabled because the rsync binary is missing in the %{side}.
+      Make sure rsync is installed and the binary can be found in the PATH.
+    waiting_for_ssh: |-
+      Waiting for SSH
+    ssh_ready: |-
+      SSH Ready
