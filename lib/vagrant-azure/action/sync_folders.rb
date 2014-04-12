@@ -22,9 +22,7 @@ module VagrantPlugins
         end
 
         def call(env)
-          puts 'entered sync folders, call app'
           @app.call(env)
-          puts 'called app'
 
           ssh_info = env[:machine].ssh_info
 
@@ -33,12 +31,10 @@ module VagrantPlugins
             return
           end
 
-          puts 'running which on target'
           if env[:machine].communicate.execute('which rsync', :error_check => false) != 0
             env[:ui].warn(I18n.t('vagrant_azure.rsync_not_found_warning', :side => "guest"))
             return
           end
-          puts 'done running which on target'
 
           env[:machine].config.vm.synced_folders.each do |id, data|
             data = scoped_hash_override(data, :azure)
@@ -95,7 +91,6 @@ module VagrantPlugins
               command.insert(1, "--chmod", "ugo=rwX")
             end
 
-            puts 'executing rsync'
             r = Vagrant::Util::Subprocess.execute(*command)
             if r.exit_code != 0
               raise Errors::RsyncError,
