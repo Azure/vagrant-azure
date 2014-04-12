@@ -17,11 +17,6 @@ module VagrantPlugins
         def call (env)
           config = env[:machine].provider_config
 
-          env[:ui].info "Subscription ID: [#{config.subscription_id}]"
-          env[:ui].info "Mangement Certificate: [#{config.mgmt_certificate}]"
-          env[:ui].info "Mangement Endpoint: [#{config.mgmt_endpoint}]"
-          env[:ui].info "Storage Account Name: [#{config.storage_acct_name}]"
-
           Azure.configure do |c|
             c.subscription_id                       = config.subscription_id
             c.management_certificate                = config.mgmt_certificate
