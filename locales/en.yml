@@ -14,8 +14,9 @@ en:
       VM '%{name}' has been started
     vm_stopped: |-
       VM '%{name}' has been stopped
-    rsync_folder: |-
-      Rsyncing folder: %{hostpath} => %{guestpath}
+    copy_folder: |-
+      Copying folder: %{hostpath} ==>
+      %{guestpath}
     rsync_not_found_warning: |-
       Warning! Folder sync disabled because the rsync binary is missing in the %{side}.
       Make sure rsync is installed and the binary can be found in the PATH.
@@ -23,10 +24,14 @@ en:
       Waiting for SSH
     ssh_ready: |-
       SSH Ready
+    read_attempt: |-
+     Failed to connect to Virtual Machine. Re-Connecting %{attempt}
     errors:
-      create_vm_failure: |-
-        There was some error in creating the VM, this could be due to some network latency.
-        Generally the next vagrant up command should fix this error.
+      win_rm_not_ready: |-
+        WinRM is not enabled in the remot guest. Vagrant-Windows-HyperV uses remote PowerShell scripts
+        to communicate to the remote machine. Please check the same and try again.
+      server_not_created: |-
+        Server not created. Error is: %{message}
       create_vm_error: |-
         Failed to create a VM in azure cloud with the following message.
         %{message}

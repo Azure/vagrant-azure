@@ -28,7 +28,20 @@ module VagrantPlugins
         def read_ssh_info(azure, machine)
           return nil if machine.id.nil?
           machine.id =~ /@/
-          vm = azure.get_virtual_machine($`, $')
+          vm = nil
+          attempt = 0
+          while true
+            begin
+              vm = azure.get_virtual_machine($`, $')
+            rescue SocketError
+              attempt = attempt + 1
+              env[:ui].info(I18n.t("vagrant_azure.read_attempt",
+                                  :attempt => attempt))
+              sleep 5
+              next if attempt < 3
+            end
+            break
+          end
 
           if vm.nil? || !vm.instance_of?(Azure::VirtualMachineManagement::VirtualMachine)
             # Machine cannot be found

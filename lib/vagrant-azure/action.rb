@@ -67,12 +67,11 @@ module VagrantPlugins
             end
 
             b2.use Provision
-            b2.use SyncFolders
           end
         end
       end
 
-      # This action is called to read the SSH info of the machine. The 
+      # This action is called to read the SSH info of the machine. The
       # resulting state is expected to be put into the `:machine_ssh_info` key.
       def self.action_read_ssh_info
         Vagrant::Action::Builder.new.tap do |b|
