@@ -42,7 +42,7 @@ Vagrant.configure('2') do |config|
 		azure.mgmt_certificate = 'YOUR AZURE MANAGEMENT CERTIFICATE'
 		azure.mgmt_endpoint = 'https://management.core.windows.net'
 		azure.subscription_id = 'YOUR AZURE SUBSCRIPTION ID'
-		auzre.storage_acct_name = 'NAME OF YOUR STORAGE ACCOUNT' # optional. A new one will be generated if not provided.
+		azure.storage_acct_name = 'NAME OF YOUR STORAGE ACCOUNT' # optional. A new one will be generated if not provided.
 
 		azure.vm_user = 'PROVIDE A USERNAME' # defaults to 'vagrant' if not provided
 		azure.vm_password = 'PROVIDE A VALID PASSWORD' # min 8 characters. should contain a lower case letter, an uppercase letter, a number and a special character
