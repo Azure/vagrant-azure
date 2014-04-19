@@ -12,7 +12,7 @@ Windows Azure.
 
 Install Vagrant 1.5.2 or higher - [Download Vagrant](http://www.vagrantup.com/downloads.html)
 
-Install the vagrant-azure plugin using the standarn Vagrant 1.1+ installation methods. After installing the plugin, you can you can ```vagrant up``` and use ```azure``` provider. For example:
+Install the vagrant-azure plugin using the standard Vagrant 1.1+ installation methods. After installing the plugin, you can ```vagrant up``` and use ```azure``` provider. For example:
 
 ```
 C:\> vagrant plugin install vagrant-azure
@@ -25,7 +25,7 @@ You'll need an ```azure``` box before you can do ```vagrant up``` though.
 
 ## Quick Start
 
-You can use the dummy box and specify all the required details manually in the ```confiv.vm.provider``` block in your ```Vagrantfile```. Add the dummy box with the name you want:
+You can use the dummy box and specify all the required details manually in the ```config.vm.provider``` block in your ```Vagrantfile```. Add the dummy box with the name you want:
 
 ```
 C:\> vagrant box add azure https://github.com/msopentech/vagrant-azure/raw/master/dummy.box
@@ -66,7 +66,7 @@ Vagrant.configure('2') do |config|
 	end
 
 	config.ssh.username = 'YOUR USERNAME' # the one used to create the VM
-	config.ssh.password = 'YOUR PASSOWRD' # the one used to create the VM
+	config.ssh.password = 'YOUR PASSWORD' # the one used to create the VM
 end
 ```
 
