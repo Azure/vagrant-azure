@@ -4,7 +4,6 @@
 
 This is a [Vagrant](http://www.vagrantup.com) 1.5.2+ plugin that adds [Windows Azure](https://www.windowsazure.com)
 provider to Vagrant, allowing Vagrant to control and provision machines in
-Windows Azure.
 
 **NOTE:** This plugin requires Vagrant 1.5.2+,
 
@@ -12,7 +11,7 @@ Windows Azure.
 
 Install Vagrant 1.5.2 or higher - [Download Vagrant](http://www.vagrantup.com/downloads.html)
 
-Install the vagrant-azure plugin using the standarn Vagrant 1.1+ installation methods. After installing the plugin, you can you can ```vagrant up``` and use ```azure``` provider. For example:
+Install the vagrant-azure plugin using the standard Vagrant 1.1+ installation methods. After installing the plugin, you can you can ```vagrant up``` and use ```azure``` provider. For example:
 
 ```
 C:\> vagrant plugin install vagrant-azure
@@ -25,7 +24,7 @@ You'll need an ```azure``` box before you can do ```vagrant up``` though.
 
 ## Quick Start
 
-You can use the dummy box and specify all the required details manually in the ```confiv.vm.provider``` block in your ```Vagrantfile```. Add the dummy box with the name you want:
+You can use the dummy box and specify all the required details manually in the ```config.vm.provider``` block in your ```Vagrantfile```. Add the dummy box with the name you want:
 
 ```
 C:\> vagrant box add azure https://github.com/msopentech/vagrant-azure/raw/master/dummy.box
@@ -42,8 +41,9 @@ Vagrant.configure('2') do |config|
 		azure.mgmt_certificate = 'YOUR AZURE MANAGEMENT CERTIFICATE'
 		azure.mgmt_endpoint = 'https://management.core.windows.net'
 		azure.subscription_id = 'YOUR AZURE SUBSCRIPTION ID'
-		auzre.storage_acct_name = 'NAME OF YOUR STORAGE ACCOUNT' # optional. A new one will be generated if not provided.
+		azure.storage_acct_name = 'NAME OF YOUR STORAGE ACCOUNT' # optional. A new one will be generated if not provided.
 
+		azure.vm_image = 'NAME OF THE IMAGE TO USE'
 		azure.vm_user = 'PROVIDE A USERNAME' # defaults to 'vagrant' if not provided
 		azure.vm_password = 'PROVIDE A VALID PASSWORD' # min 8 characters. should contain a lower case letter, an uppercase letter, a number and a special character
 
@@ -66,7 +66,7 @@ Vagrant.configure('2') do |config|
 	end
 
 	config.ssh.username = 'YOUR USERNAME' # the one used to create the VM
-	config.ssh.password = 'YOUR PASSOWRD' # the one used to create the VM
+	config.ssh.password = 'YOUR PASSWORD' # the one used to create the VM
 end
 ```
 
@@ -97,7 +97,8 @@ The vagrant-azure provide exposes a few Azure specific configration options:
 * `subscription_id` - Your Azure Subscription ID.
 * `storage_acct_name` - The Storage account to use when creating VMs.
 * `vm_user` - The username to create the VM with. Defaults to `vagrant`.
-* `vm_password`- The password to set for the user created with the VM.
+* `vm_password` - The password to set for the user created with the VM.
+* `vm_image` - The name of the image to be used when creating the VM.
 * `vm_name` - The name of the created VM.
 * `vm_size` - The size of the created VM.
 * `cloud_service_name` - The name of the cloud service under which to create the VM.
