@@ -3,7 +3,7 @@
 ![Gem Version](https://badge.fury.io/rb/vagrant-azure.png)
 
 This is a [Vagrant](http://www.vagrantup.com) 1.5.2+ plugin that adds [Windows Azure](https://www.windowsazure.com)
-provider to Vagrant, allowing Vagrant to control and provision machines in
+provider to Vagrant, allowing Vagrant to control and provision machines in Windows Azure.
 
 **NOTE:** This plugin requires Vagrant 1.5.2+,
 
