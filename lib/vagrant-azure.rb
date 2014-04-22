@@ -9,7 +9,7 @@ module VagrantPlugins
   module WinAzure
     lib_path = Pathname.new(File.expand_path('../vagrant-azure', __FILE__))
     autoload :Action, lib_path.join('action')
-    autoload :Error, lib_path.join('errors')
+    autoload :Errors, lib_path.join('errors')
     autoload :Driver, lib_path.join('driver')
 
     require lib_path.join('provisioner/puppet')

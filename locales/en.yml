@@ -14,3 +14,10 @@ en:
       VM '%{name}' has been started
     vm_stopped: |-
       VM '%{name}' has been stopped
+    errors:
+      create_vm_failure: |-
+        There was some error in creating the VM, this could be due to some network latency.
+        Generally the next vagrant up command should fix this error.
+      create_vm_error: |-
+        Failed to create a VM in azure cloud with the following message.
+        %{message}

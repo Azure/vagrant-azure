@@ -94,11 +94,16 @@ module VagrantPlugins
             params, options, add_role
           )
 
-          # TODO: Exception/Error Handling
+          if server.nil?
+            raise Errors::CreateVMFailure
+          end
+
+          # The Ruby SDK returns any exception encountered on create virtual
+          # machine as a string.
 
           if server.instance_of? String
             env[:ui].info "Server not created. Error is: #{server}"
-            raise "#{server}"
+            raise Errors::CreateVMError, message: "#{server}"
           end
 
           env[:machine].id = "#{server.vm_name}@#{server.cloud_service_name}"
