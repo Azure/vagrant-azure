@@ -11,7 +11,7 @@ module Vagrant
     def communicate
       unless @communicator
         if @config.vm.guest == :windows
-          @communicator = VagrantPlugins::VagrantHyperV::Communicator::PowerShell.new(self)
+          @communicator = VagrantPlugins::WinAzure::Communicator::PowerShell.new(self)
         else
          @communicator = original_communicate
         end
