@@ -65,7 +65,6 @@ module VagrantPlugins
               b2.use Message, I18n.t('vagrant_azure.not_created')
               next
             end
-
             b2.use Provision
           end
         end
@@ -158,7 +157,16 @@ module VagrantPlugins
       def self.action_prepare_boot
         Vagrant::Action::Builder.new.tap do |b|
           b.use Provision
-          # b.use SyncFolders
+          b.use SyncFolders
+          b.use Call, WaitForState, :ReadyRole do |env, b1|
+            if env[:result]
+              env[:machine].id =~ /@/
+              b1.use Message, I18n.t(
+                'vagrant_azure.vm_started', :name => $`
+              )
+              b1.use WaitForCommunicate
+            end
+          end
         end
       end
 
@@ -173,19 +181,9 @@ module VagrantPlugins
             if !env1[:result]
               b1.use Call, IsState, :StoppedDeallocated do |env2, b2|
                 if env2[:result]
-                  # b2.use action_prepare_boot
-                  b2.use Provision
+                  b2.use action_prepare_boot
                   b2.use StartInstance # start this instance again
-                  b2.use Call, WaitForState, :ReadyRole do |env3, b3|
-                    if env3[:result]
-                      env3[:machine].id =~ /@/
-                      b3.use Message, I18n.t(
-                        'vagrant_azure.vm_started', :name => $`
-                      )
-                      b3.use WaitForCommunicate
-                      b3.use SyncFolders
-                    end
-                  end
+                  # b2.use action_boot_ready
                 else
                   b2.use Message, I18n.t(
                     'vagrant_azure.already_status', :status => 'created'
@@ -193,18 +191,9 @@ module VagrantPlugins
                 end
               end
             else
-              b1.use Provision
               b1.use RunInstance # Launch a new instance
-              b1.use SyncFolders
-              b1.use Call, WaitForState, :ReadyRole do |env2, b2|
-                if env2[:result]
-                  env2[:machine].id =~ /@/
-                  b2.use Message, I18n.t(
-                    'vagrant_azure.vm_started', :name => $`
-                  )
-                  b2.use WaitForCommunicate
-                end
-              end
+              b1.use action_prepare_boot
+              # b1.use action_boot_ready
             end
           end
         end

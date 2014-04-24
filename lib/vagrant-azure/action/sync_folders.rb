@@ -26,6 +26,7 @@ module VagrantPlugins
           if env[:machine].config.vm.guest != :windows
             super
           else
+            @app.call(env)
             env[:machine].config.vm.synced_folders.each do |id, data|
               data = scoped_hash_override(data, :azure)
 
@@ -53,7 +54,6 @@ module VagrantPlugins
               env[:machine].provider.driver.upload(hostpath, guestpath)
 
             end
-            @app.call(env)
           end
         end
 
