@@ -73,7 +73,7 @@ module VagrantPlugins
           remote_custom_config_path = nil
           if config.custom_config_path
             expanded = File.expand_path(
-              config.custom_config_path, @machine.env.root_path)
+              config.custom_config_path, @env[:machine].env.root_path)
             remote_custom_config_path = File.join(
               config.provisioning_path, "custom-config.rb")
 
