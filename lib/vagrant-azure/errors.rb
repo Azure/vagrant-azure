@@ -18,7 +18,7 @@ module VagrantPlugins
         error_key(:server_not_created)
       end
 
-      class CreateVMFailure < VagrantAzureError
+      class CreateVMFailure < WinAzureError
         error_key(:create_vm_failure)
       end
 

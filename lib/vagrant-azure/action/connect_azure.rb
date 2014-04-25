@@ -5,6 +5,11 @@
 require 'azure'
 require 'log4r'
 
+# FIXME:
+# This is a required to patch few exception handling which are not done in
+# Azure Ruby SDK
+require_relative "vagrant_azure_service"
+
 module VagrantPlugins
   module WinAzure
     module Action
@@ -25,7 +30,13 @@ module VagrantPlugins
             c.storage_access_key                    = config.storage_access_key
           end
 
-          env[:azure_vm_service] = Azure::VirtualMachineManagementService.new
+          # FIXME:
+          # Defining a new class VagrantAzureService
+          # Here we call the native azure virtual machine management service method
+          # and add some exception handling.
+          # Remove this once the Azure SDK adds the exception handling for the
+          # methods defined in VagrantAzureService
+          env[:azure_vm_service] = VagrantAzureService.new(Azure::VirtualMachineManagementService.new, env)
 
           @app.call(env)
         end
