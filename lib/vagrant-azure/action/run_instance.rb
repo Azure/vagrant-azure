@@ -37,9 +37,9 @@ module VagrantPlugins
           # Add the optional parameters and options if not nil
           params[:password] = config.vm_password unless config.vm_password.nil?
           params[:location] = config.vm_location unless config.vm_location.nil?
-          params[:affinity_group] = config.vm_affinity_group unless \
-            config.vm_affinity_group.nil?
 
+          options[:affinity_group_name] = config.vm_affinity_group unless \
+            config.vm_affinity_group.nil?
           options[:storage_account_name] = config.storage_acct_name unless \
             config.storage_acct_name.nil?
           options[:deployment_name] = config.deployment_name unless \
