@@ -11,6 +11,7 @@ IMPROVEMENTS
 
   - Cleaned up few typo in README
   - Better exception handling when VM fails to get created in cloud.
+  - Better exception handling for WinRM session errors.
 
 # Previous
 See git commits
