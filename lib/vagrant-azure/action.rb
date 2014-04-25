@@ -156,8 +156,6 @@ module VagrantPlugins
 
       def self.action_prepare_boot
         Vagrant::Action::Builder.new.tap do |b|
-          b.use Provision
-          b.use SyncFolders
           b.use Call, WaitForState, :ReadyRole do |env, b1|
             if env[:result]
               env[:machine].id =~ /@/
@@ -165,6 +163,8 @@ module VagrantPlugins
                 'vagrant_azure.vm_started', :name => $`
               )
               b1.use WaitForCommunicate
+              b1.use Provision
+              b1.use SyncFolders
             end
           end
         end
@@ -181,9 +181,8 @@ module VagrantPlugins
             if !env1[:result]
               b1.use Call, IsState, :StoppedDeallocated do |env2, b2|
                 if env2[:result]
-                  b2.use action_prepare_boot
                   b2.use StartInstance # start this instance again
-                  # b2.use action_boot_ready
+                  b2.use action_prepare_boot
                 else
                   b2.use Message, I18n.t(
                     'vagrant_azure.already_status', :status => 'created'
@@ -193,7 +192,6 @@ module VagrantPlugins
             else
               b1.use RunInstance # Launch a new instance
               b1.use action_prepare_boot
-              # b1.use action_boot_ready
             end
           end
         end

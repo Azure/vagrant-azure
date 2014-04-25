@@ -2,6 +2,7 @@
 # Copyright (c) Microsoft Open Technologies, Inc.
 # All Rights Reserved. Licensed under the Apache 2.0 License.
 #--------------------------------------------------------------------------
+
 module VagrantPlugins
   module WinAzure
     module Communicator
@@ -21,8 +22,12 @@ module VagrantPlugins
           if !@winrm_status
             status = false
             response = @machine.provider.driver.check_winrm
-            @winrm_status = response && response["message"] == "Running"
-            raise Errors::WinRMNotReady if !@winrm_status
+            message = nil
+            if response && response["message"]
+              message = response["message"]
+              @winrm_status = message == "Running"
+            end
+            raise Errors::WinRMNotReady, message: message if !@winrm_status
           end
           @winrm_status
         end

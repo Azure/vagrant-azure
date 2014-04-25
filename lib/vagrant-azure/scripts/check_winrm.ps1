@@ -18,8 +18,12 @@ $presentDir = Split-Path -parent $PSCommandPath
 try {
   $response = Create-Remote-Session $guest_ip $guest_port $username $password
   if (!$response["session"] -and $response["error"]) {
-      Write-Host $response["error"]
-      return
+    $session_message = $response['error']
+    $resultHash = @{
+     message = "$session_message"
+    }
+    Write-Output-Message $resultHash
+    return
   }
     function Remote-Execute() {
       $winrm_state = ""

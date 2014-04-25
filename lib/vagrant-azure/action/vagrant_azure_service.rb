@@ -11,9 +11,8 @@ module VagrantPlugins
     module Action
       class VagrantAzureService
         attr_reader :azure
-        def initialize(azure, env)
+        def initialize(azure)
           @azure = azure
-          @env = env
         end
 
         # At times due to network latency the SDK raises SocketError, this can
@@ -26,8 +25,6 @@ module VagrantPlugins
               vm = azure.get_virtual_machine(*args)
             rescue SocketError
               attempt = attempt + 1
-              @env[:ui].info (I18n.t("vagrant_azure.read_attempt",
-                                  :attempt => attempt))
               sleep 5
               next if attempt < 3
             end

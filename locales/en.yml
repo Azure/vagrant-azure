@@ -28,8 +28,9 @@ en:
      Failed to connect to Virtual Machine. Re-Connecting %{attempt}
     errors:
       win_rm_not_ready: |-
-        WinRM is not enabled in the remot guest. Vagrant-Windows-HyperV uses remote PowerShell scripts
-        to communicate to the remote machine. Please check the same and try again.
+        Vagrant failed to communicate to the VM using powershell. The operation failed
+        with the following message.
+        %{message}
       server_not_created: |-
         Server not created. Error is: %{message}
       create_vm_failure: |-
