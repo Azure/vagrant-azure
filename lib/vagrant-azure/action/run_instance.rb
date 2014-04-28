@@ -38,6 +38,8 @@ module VagrantPlugins
           params[:password] = config.vm_password unless config.vm_password.nil?
           params[:location] = config.vm_location unless config.vm_location.nil?
 
+          options[:virtual_network_name] = config.virtual_network_name unless \
+            config.virtual_network_name.nil?
           options[:affinity_group_name] = config.vm_affinity_group unless \
             config.vm_affinity_group.nil?
           options[:storage_account_name] = config.storage_acct_name unless \
