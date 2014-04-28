@@ -2,16 +2,22 @@
 
 FEATURES
 
-  - Provision for windows VM. Windows VM has to be specifically mentioned in the
-    Vagrantfile with `config.vm.guest = :windows`
-  - SyncedFolders for VM, `rsync` for Linux VM and `powershelll` file copy from Windows.
-  - Chef, Puppet and Shell provision for Linux and Windows VM.
+- Provision for windows VM.
+- Windows VM has to be specifically mentioned in the  Vagrantfile with
+  `config.vm.guest = :windows`
+- Chef, Puppet and Shell provision for Linux and Windows VM.
+- **SyncedFolders**
+- Linux VM uses `rsync` and has be mentioned in the VagrantFile.
+- Windows VM will default to use PowerShell to copy files.
 
 IMPROVEMENTS
 
-  - Cleaned up few typo in README
   - Better exception handling when VM fails to get created in cloud.
   - Better exception handling for WinRM session errors.
 
-# Previous
+BUGFIXES
+
+  - Cleaned up few typo in README
+
+## Previous
 See git commits
