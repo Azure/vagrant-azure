@@ -6,9 +6,9 @@
 module Vagrant
   class Machine
 
-    alias_method :original_communicate, :communicate
+    ssh_communicate = instance_method(:communicate)
 
-    def communicate
+    define_method(:communicate) do
       unless @communicator
         if @config.vm.guest == :windows
           @communicator = VagrantPlugins::WinAzure::Communicator::PowerShell.new(self)
