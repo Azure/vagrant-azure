@@ -13,7 +13,7 @@ module Vagrant
         if @config.vm.guest == :windows
           @communicator = VagrantPlugins::WinAzure::Communicator::PowerShell.new(self)
         else
-         @communicator = original_communicate
+         @communicator = ssh_communicate.bind(self).()
         end
       end
       @communicator
