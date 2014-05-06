@@ -6,7 +6,6 @@
 function Get-Remote-Session($guest_ip, $guest_port, $username, $password) {
     $secstr = convertto-securestring -AsPlainText -Force -String $password
     $cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $username, $secstr
-    #New-PSSession -ComputerName $guest_ip -Port $guest_port -Credential $cred -UseSSL -ErrorAction "stop"
     New-PSSession -ComputerName $guest_ip -Port $guest_port -Credential $cred -UseSSL -ErrorAction "stop" -SessionOption (New-PSSessionOption -SkipCACheck)
 }
 
