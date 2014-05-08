@@ -96,7 +96,7 @@ module VagrantPlugins
 
         @state_read_timeout = 360 if @state_read_timeout == UNSET_VALUE
 
-        # This done due to a bug in Ruby SDK - it doesn't generate a storage 
+        # This done due to a bug in Ruby SDK - it doesn't generate a storage
         # account name if add_role = true
         if @storage_acct_name.nil? || @storage_acct_name.empty?
           @storage_acct_name = Azure::Core::Utility.random_string(
@@ -119,7 +119,7 @@ module VagrantPlugins
             self.mgmt_endpoint
           result.subscription_id = other.subscription_id || \
             self.subscription_id
-          result.storage_account_name = other.storage_acct_name || \
+          result.storage_acct_name = other.storage_acct_name || \
             self.storage_acct_name
           result.storage_access_key = other.storage_access_key || \
             self.storage_access_key
