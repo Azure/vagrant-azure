@@ -65,14 +65,12 @@ module VagrantPlugins
               b2.use Message, I18n.t('vagrant_azure.not_created')
               next
             end
-
             b2.use Provision
-            # b2.use SyncFolders
           end
         end
       end
 
-      # This action is called to read the SSH info of the machine. The 
+      # This action is called to read the SSH info of the machine. The
       # resulting state is expected to be put into the `:machine_ssh_info` key.
       def self.action_read_ssh_info
         Vagrant::Action::Builder.new.tap do |b|
@@ -158,32 +156,33 @@ module VagrantPlugins
 
       def self.action_prepare_boot
         Vagrant::Action::Builder.new.tap do |b|
-          b.use Provision
-          # b.use SyncFolders
-          # b.use WarnNetworks
+          b.use Call, WaitForState, :ReadyRole do |env, b1|
+            if env[:result]
+              env[:machine].id =~ /@/
+              b1.use Message, I18n.t(
+                'vagrant_azure.vm_started', :name => $`
+              )
+              b1.use WaitForCommunicate
+              b1.use Provision
+              b1.use SyncFolders
+            end
+          end
         end
       end
 
       # This action is called to bring the box up from nothing
       def self.action_up
         Vagrant::Action::Builder.new.tap do |b|
-          b.use HandleBoxUrl
+          b.use HandleBox
           b.use ConfigValidate
           b.use ConnectAzure
+
           b.use Call, IsState, :NotCreated do |env1, b1|
             if !env1[:result]
               b1.use Call, IsState, :StoppedDeallocated do |env2, b2|
                 if env2[:result]
-                  b2.use action_prepare_boot
                   b2.use StartInstance # start this instance again
-                  b2.use Call, WaitForState, :ReadyRole do |env3, b3|
-                    if env3[:result]
-                      env3[:machine].id =~ /@/
-                      b3.use Message, I18n.t(
-                        'vagrant_azure.vm_started', :name => $`
-                      )
-                    end
-                  end
+                  b2.use action_prepare_boot
                 else
                   b2.use Message, I18n.t(
                     'vagrant_azure.already_status', :status => 'created'
@@ -192,14 +191,7 @@ module VagrantPlugins
               end
             else
               b1.use RunInstance # Launch a new instance
-              b1.use Call, WaitForState, :ReadyRole do |env2, b2|
-                if env2[:result]
-                  env2[:machine].id =~ /@/
-                  b2.use Message, I18n.t(
-                    'vagrant_azure.vm_started', :name => $`
-                  )
-                end
-              end
+              b1.use action_prepare_boot
             end
           end
         end
@@ -240,11 +232,12 @@ module VagrantPlugins
       autoload :RunInstance, action_root.join('run_instance')
       autoload :StartInstance, action_root.join('start_instance')
       autoload :StopInstance, action_root.join('stop_instance')
-      # autoload :SyncFolders, action_root.join('sync_folders')
+      autoload :SyncFolders, action_root.join('sync_folders')
       autoload :TerminateInstance, action_root.join('terminate_instance')
       # autoload :TimedProvision, action_root.join('timed_provision')
       # autoload :WarnNetworks, action_root.join('warn_networks')
       autoload :WaitForState, action_root.join('wait_for_state')
+      autoload :WaitForCommunicate, action_root.join('wait_for_communicate')
     end
   end
 end

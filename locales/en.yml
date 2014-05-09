@@ -14,10 +14,24 @@ en:
       VM '%{name}' has been started
     vm_stopped: |-
       VM '%{name}' has been stopped
+    copy_folder: |-
+      Copying folder: %{hostpath} ==>
+      %{guestpath}
+    rsync_not_found_warning: |-
+      Warning! Folder sync disabled because the rsync binary is missing in the %{side}.
+      Make sure rsync is installed and the binary can be found in the PATH.
+    waiting_for_ssh: |-
+      Waiting for SSH
+    ssh_ready: |-
+      SSH Ready
+    read_attempt: |-
+     Failed to connect to Virtual Machine. Re-Connecting %{attempt}
     errors:
-      create_vm_failure: |-
-        There was some error in creating the VM, this could be due to some network latency.
-        Generally the next vagrant up command should fix this error.
-      create_vm_error: |-
-        Failed to create a VM in azure cloud with the following message.
+      win_rm_not_ready: |-
+        Vagrant failed to communicate to the VM using powershell. The operation failed
+        with the following message.
         %{message}
+      server_not_created: |-
+        Server not created. Error is: %{message}
+      create_vm_failure: |-
+        There was some error in creating the VM.
