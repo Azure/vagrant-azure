@@ -18,6 +18,7 @@ IMPROVEMENTS
 BUGFIXES
 
   - Cleaned up few typo in README
+  - Compatible with Vagrant 1.6 [GH-15]
 
 ## Previous
 See git commits
