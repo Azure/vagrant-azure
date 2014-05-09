@@ -60,6 +60,11 @@ module VagrantPlugins
         execute(script_path, options)
       end
 
+      def check_winrm
+        script_path = local_script_path('check_winrm.ps1')
+        execute(script_path, remote_credentials)
+      end
+
       protected
 
       def local_script_path(path)

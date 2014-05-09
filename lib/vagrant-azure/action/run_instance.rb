@@ -102,8 +102,7 @@ module VagrantPlugins
           # machine as a string.
 
           if server.instance_of? String
-            env[:ui].info "Server not created. Error is: #{server}"
-            raise Errors::CreateVMError, message: "#{server}"
+            raise Errors::ServerNotCreated, message: server
           end
 
           env[:machine].id = "#{server.vm_name}@#{server.cloud_service_name}"

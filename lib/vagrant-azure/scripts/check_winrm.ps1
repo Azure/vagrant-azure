@@ -2,10 +2,12 @@
 # Copyright (c) Microsoft Open Technologies, Inc.
 # All Rights Reserved. Licensed under the Apache 2.0 License.
 #--------------------------------------------------------------------------
+
 param (
     [string]$guest_ip = $(throw "-guest_ip is required."),
     [string]$username = $(throw "-guest_username is required."),
-    [string]$password = $(throw "-guest_password is required.")
+    [string]$password = $(throw "-guest_password is required."),
+    [string]$guest_port = $(throw "-guest_port is required")
 )
 
 # Include the following modules
@@ -14,10 +16,14 @@ $presentDir = Split-Path -parent $PSCommandPath
 . ([System.IO.Path]::Combine($presentDir, "utils\create_session.ps1"))
 
 try {
-  $response = Create-Remote-Session $guest_ip $username $password
+  $response = Create-Remote-Session $guest_ip $guest_port $username $password
   if (!$response["session"] -and $response["error"]) {
-      Write-Host $response["error"]
-      return
+    $session_message = $response['error']
+    $resultHash = @{
+     message = "$session_message"
+    }
+    Write-Output-Message $resultHash
+    return
   }
     function Remote-Execute() {
       $winrm_state = ""
@@ -34,7 +40,7 @@ try {
   } catch {
     $errortHash = @{
       type = "PowerShellError"
-      error ="Failed to copy file $_"
+      error ="$_"
     }
     Write-Error-Message $errortHash
     return
