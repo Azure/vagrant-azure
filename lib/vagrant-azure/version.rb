@@ -5,6 +5,6 @@
 
 module VagrantPlugins
   module WinAzure
-    VERSION = '1.0.5.pre'
+    VERSION = '1.0.5'
   end
 end
