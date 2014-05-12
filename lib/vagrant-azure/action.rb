@@ -65,7 +65,14 @@ module VagrantPlugins
               b2.use Message, I18n.t('vagrant_azure.not_created')
               next
             end
-            b2.use Provision
+
+            env[:machine].id =~ /@/
+            vm = env[:azure_vm_service].get_virtual_machine($`, $')
+            if vm.os_type.to_sym == :Windows
+              b2.use WinProvision
+            else
+              b2.use Provision
+            end
           end
         end
       end
