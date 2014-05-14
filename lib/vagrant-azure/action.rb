@@ -72,6 +72,7 @@ module VagrantPlugins
               b2.use WinProvision
             else
               b2.use Provision
+              b2.use SyncFolders
             end
           end
         end
