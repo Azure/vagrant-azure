@@ -171,8 +171,7 @@ module VagrantPlugins
                 'vagrant_azure.vm_started', :name => $`
               )
               b1.use WaitForCommunicate
-              b1.use Provision
-              b1.use SyncFolders
+              b1.use action_provision
             end
           end
         end
