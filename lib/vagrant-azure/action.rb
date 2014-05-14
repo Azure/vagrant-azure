@@ -231,7 +231,7 @@ module VagrantPlugins
       # The autoload farm
       action_root = Pathname.new(File.expand_path('../action', __FILE__))
       autoload :ConnectAzure, action_root.join('connect_azure')
-      autoload :Provision, action_root.join('provision')
+      autoload :WinProvision, action_root.join('provision')
       autoload :Rdp, action_root.join('rdp')
       autoload :ReadSSHInfo, action_root.join('read_ssh_info')
       autoload :ReadState, action_root.join('read_state')
