@@ -123,3 +123,8 @@ C:\> vagrant up --provider=azure
 ...
 C:\> vagrant rdp
 ```
+
+
+## Multi Machine
+The options for multi machines are similar to Vagrant, please refer to the vagrant doc at http://docs.vagrantup.com/v2/multi-machine/index.html
+
