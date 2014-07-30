@@ -5,7 +5,7 @@
 This is a [Vagrant](http://www.vagrantup.com) 1.5.2+ plugin that adds [Windows Azure](https://www.windowsazure.com)
 provider to Vagrant, allowing Vagrant to control and provision machines in Windows Azure.
 
-**NOTE:** This plugin requires Vagrant 1.5.2+,
+**NOTE:** This plugin requires Vagrant 1.5.2+, and a Windows based workstation if creating Windows instances in Azure. Linux instances are supported with Linux, Mac OS X, and Windows workstations.
 
 ## Usage
 
