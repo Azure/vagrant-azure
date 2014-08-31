@@ -22,6 +22,7 @@ module VagrantPlugins
       attr_accessor :vm_location
       attr_accessor :vm_affinity_group
 
+      attr_accessor :virtual_network_name
       attr_accessor :cloud_service_name
       attr_accessor :deployment_name
       attr_accessor :tcp_endpoints
@@ -51,6 +52,7 @@ module VagrantPlugins
         @vm_affinity_group = UNSET_VALUE
 
         @cloud_service_name = UNSET_VALUE
+        @virtual_network_name = UNSET_VALUE
         @deployment_name = UNSET_VALUE
         @tcp_endpoints = UNSET_VALUE
         @ssh_private_key_file = UNSET_VALUE
@@ -83,6 +85,7 @@ module VagrantPlugins
         @vm_location = nil if @vm_location == UNSET_VALUE
         @vm_affinity_group = nil if @vm_affinity_group == UNSET_VALUE
 
+        @virtual_network_name = nil if @virtual_network_name == UNSET_VALUE
         @cloud_service_name = nil if @cloud_service_name == UNSET_VALUE
         @deployment_name = nil if @deployment_name == UNSET_VALUE
         @tcp_endpoints = nil if @tcp_endpoints == UNSET_VALUE
