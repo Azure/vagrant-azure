@@ -92,8 +92,10 @@ module VagrantPlugins
           env[:ui].info("Add Role? - #{add_role}")
 
           server = env[:azure_vm_service].create_virtual_machine(
-            params, options, add_role
+            params, options
           )
+
+          env[:azure_vm_service].add_role(params, options) if add_role
 
           if server.nil?
             raise Errors::CreateVMFailure
