@@ -9,6 +9,8 @@ require 'azure'
 
 require 'vagrant/util/retryable'
 
+CLOUD_SERVICE_SEMAPHORE = Mutex.new
+
 module VagrantPlugins
   module WinAzure
     module Action
@@ -69,31 +71,31 @@ module VagrantPlugins
           env[:ui].info(params.inspect)
           env[:ui].info(options.inspect)
 
-          # Check if the cloud service exists and if yes, does it contain
-          # a deployment.
-          if config.cloud_service_name && !config.cloud_service_name.empty?
-            begin
-              cloud_service = ManagementHttpRequest.new(
-                :get,
-                "/services/hostedservices/#{config.cloud_service_name}?embed-detail=true"
-              ).call
+          server = CLOUD_SERVICE_SEMAPHORE.synchronize do
+            # Check if the cloud service exists and if yes, does it contain
+            # a deployment.
+            if config.cloud_service_name && !config.cloud_service_name.empty?
+              begin
+                cloud_service = ManagementHttpRequest.new(
+                    :get,
+                    "/services/hostedservices/#{config.cloud_service_name}?embed-detail=true"
+                ).call
 
-              deployments = cloud_service.css 'HostedService Deployments Deployment'
+                deployments = cloud_service.css 'HostedService Deployments Deployment'
 
-              # Lets see if any deployments exist. Set add_role = true if yes.
-              # We're not worried about deployment slots, because the SDK has
-              # hard coded 'Production' as deployment slot and you can have only
-              # one deployment per deployment slot.
-              add_role = deployments.length == 1
-            rescue Exception => e
-              add_role = false
+                # Lets see if any deployments exist. Set add_role = true if yes.
+                # We're not worried about deployment slots, because the SDK has
+                # hard coded 'Production' as deployment slot and you can have only
+                # one deployment per deployment slot.
+                add_role = deployments.length == 1
+              rescue Exception => e
+                add_role = false
+              end
             end
-          end
-          env[:ui].info("Add Role? - #{add_role}")
+            env[:ui].info("Add Role? - #{add_role}")
 
-          server = env[:azure_vm_service].create_virtual_machine(
-            params, options, add_role
-          )
+            env[:azure_vm_service].create_virtual_machine(params, options, add_role)
+          end
 
           if server.nil?
             raise Errors::CreateVMFailure
