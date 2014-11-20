@@ -52,7 +52,7 @@ module VagrantPlugins
                 end
               end
 
-              env[:machine].provider.driver.upload(hostpath, guestpath)
+              env[:machine].communicate.upload(hostpath, guestpath)
 
             end
           end

@@ -25,8 +25,8 @@ module VagrantPlugins
       attr_accessor :cloud_service_name
       attr_accessor :deployment_name
       attr_accessor :tcp_endpoints
-      attr_accessor :ssh_private_key_file
-      attr_accessor :ssh_certificate_file
+      attr_accessor :private_key_file
+      attr_accessor :certificate_file
       attr_accessor :ssh_port
       attr_accessor :vm_size
       attr_accessor :winrm_transport
@@ -53,8 +53,8 @@ module VagrantPlugins
         @cloud_service_name = UNSET_VALUE
         @deployment_name = UNSET_VALUE
         @tcp_endpoints = UNSET_VALUE
-        @ssh_private_key_file = UNSET_VALUE
-        @ssh_certificate_file = UNSET_VALUE
+        @private_key_file = UNSET_VALUE
+        @certificate_file = UNSET_VALUE
         @ssh_port = UNSET_VALUE
         @vm_size = UNSET_VALUE
         @winrm_transport = UNSET_VALUE
@@ -86,8 +86,8 @@ module VagrantPlugins
         @cloud_service_name = nil if @cloud_service_name == UNSET_VALUE
         @deployment_name = nil if @deployment_name == UNSET_VALUE
         @tcp_endpoints = nil if @tcp_endpoints == UNSET_VALUE
-        @ssh_private_key_file = nil if @ssh_private_key_file == UNSET_VALUE
-        @ssh_certificate_file = nil if @ssh_certificate_file == UNSET_VALUE
+        @private_key_file = nil if @private_key_file == UNSET_VALUE
+        @certificate_file = nil if @certificate_file == UNSET_VALUE
         @ssh_port = nil if @ssh_port == UNSET_VALUE
         @vm_size = nil if @vm_size == UNSET_VALUE
         @winrm_transport = nil if @winrm_transport == UNSET_VALUE
@@ -95,7 +95,7 @@ module VagrantPlugins
         @winrm_https_port = nil if @winrm_https_port == UNSET_VALUE
         @availability_set_name = nil if @availability_set_name == UNSET_VALUE
 
-        @state_read_timeout = 360 if @state_read_timeout == UNSET_VALUE
+        @state_read_timeout = nil if @state_read_timeout == UNSET_VALUE
 
         # This done due to a bug in Ruby SDK - it doesn't generate a storage
         # account name if add_role = true

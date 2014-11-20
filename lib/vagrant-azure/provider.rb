@@ -16,6 +16,10 @@ module VagrantPlugins
 
         # Load the driver
         machine_id_changed
+
+        @machine.config.winrm.timeout = 30
+        @machine.config.winrm.password = @machine.provider_config.vm_password || @machine.provider_config.vm_user
+        @machine.config.winrm.username = @machine.provider_config.vm_user
       end
 
       def action(name)
@@ -46,7 +50,7 @@ module VagrantPlugins
 
       def winrm_info
         env = @machine.action('read_winrm_info')
-        env[:machine_ssh_info]
+        env[:machine_winrm_info]
       end
 
       def state

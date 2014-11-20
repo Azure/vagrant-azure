@@ -16,3 +16,4 @@ modules/
 .idea/
 *.pem
 .ruby-version
+*.ps1

@@ -20,10 +20,10 @@ en:
     rsync_not_found_warning: |-
       Warning! Folder sync disabled because the rsync binary is missing in the %{side}.
       Make sure rsync is installed and the binary can be found in the PATH.
-    waiting_for_ssh: |-
-      Waiting for SSH
-    ssh_ready: |-
-      SSH Ready
+    waiting_for_comm: |-
+      Waiting for Communication
+    comm_ready: |-
+      Communication is Ready
     read_attempt: |-
      Failed to connect to Virtual Machine. Re-Connecting %{attempt}
     errors:

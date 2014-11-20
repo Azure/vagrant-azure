@@ -9,13 +9,13 @@ require 'azure'
 
 require 'vagrant/util/retryable'
 
-CLOUD_SERVICE_SEMAPHORE = Mutex.new
-
 module VagrantPlugins
   module WinAzure
     module Action
       class RunInstance
         include Vagrant::Util::Retryable
+
+        CLOUD_SERVICE_SEMAPHORE = Mutex.new
 
         def initialize(app, env)
           @app = app
@@ -48,11 +48,11 @@ module VagrantPlugins
           options[:deployment_name] = config.deployment_name unless \
           config.deployment_name.nil?
           options[:tcp_endpoints] = config.tcp_endpoints unless \
-          config.tcp_endpoints.nil?
-          options[:private_key_file] = config.ssh_private_key_file unless \
-          config.ssh_private_key_file.nil?
-          options[:certificate_file] = config.ssh_certificate_file unless \
-          config.ssh_certificate_file.nil?
+            config.tcp_endpoints.nil?
+          options[:private_key_file] = config.private_key_file unless \
+            config.private_key_file.nil?
+          options[:certificate_file] = config.certificate_file unless \
+            config.certificate_file.nil?
           options[:ssh_port] = config.ssh_port unless \
           config.ssh_port.nil?
           options[:vm_size] = config.vm_size unless \
@@ -94,30 +94,32 @@ module VagrantPlugins
                 add_role = false
               end
             end
-            env[:ui].info("Add Role? - #{add_role}")
-
-            if add_role
-              env[:azure_vm_service].add_role(params.clone.merge(cloud_service_name: config.cloud_service_name), options)
-            else
-              env[:azure_vm_service].create_virtual_machine(params, options)
-            end
-
-            if server.nil?
-              raise Errors::CreateVMFailure
-            end
-
-            # The Ruby SDK returns any exception encountered on create virtual
-            # machine as a string.
-
-            if server.instance_of? String
-              raise Errors::ServerNotCreated, message: server
-            end
-
-            env[:machine].id = "#{server.vm_name}@#{server.cloud_service_name}"
-
-            @app.call(env)
           end
+
+          env[:ui].info("Add Role? - #{add_role}")
+
+          if add_role
+            env[:azure_vm_service].add_role(params.clone.merge(cloud_service_name: config.cloud_service_name), options)
+          else
+            env[:azure_vm_service].create_virtual_machine(params, options)
+          end
+
+          if server.nil?
+            raise Errors::CreateVMFailure
+          end
+
+          # The Ruby SDK returns any exception encountered on create virtual
+          # machine as a string.
+
+          if server.instance_of? String
+            raise Errors::ServerNotCreated, message: server
+          end
+
+          env[:machine].id = "#{server.vm_name}@#{server.cloud_service_name}"
+
+          @app.call(env)
         end
       end
     end
   end
+end

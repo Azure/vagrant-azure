@@ -31,54 +31,17 @@ module VagrantPlugins
       end
 
       def run_remote_ps(command, &block)
-        options = remote_credentials.merge(command: command)
-        script_path = local_script_path('run_in_remote.ps1')
-
-        ps_options = []
-
-        options.each do |key, value|
-          ps_options << "-#{key}"
-          ps_options << "'#{value}'"
+        @machine.communicate.execute(command) do |*args|
+          block.call(args) unless block.nil?
         end
-
-        ps_options << '-ErrorAction' << 'Stop'
-        opts = { notify: [:stdout, :stderr, :stdin] }
-        Vagrant::Util::PowerShell.execute(
-          script_path,
-          *ps_options,
-          **opts,
-          &block
-        )
       end
 
       def upload(from, to)
-        options = {
-          host_path: windows_path(from),
-          guest_path: windows_path(to)
-        }.merge(remote_credentials)
-
-        script_path = local_script_path('upload_file.ps1')
-        execute(script_path, options)
+        @machine.communicate.upload(from, to)
       end
 
       def check_winrm
-        script_path = local_script_path('check_winrm.ps1')
-        execute(script_path, remote_credentials)
-      end
-
-      protected
-
-      def local_script_path(path)
-        lib_path = Pathname.new(File.expand_path('../scripts', __FILE__))
-        windows_path(lib_path.join(path).to_s)
-      end
-
-      def windows_path(path)
-        if path
-          path = path.gsub('/', "\\")
-          path = "c:#{path}" if path =~ /^\\/
-        end
-        path
+        @machine.communicate.ready?
       end
     end
   end

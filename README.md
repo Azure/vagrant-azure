@@ -51,8 +51,8 @@ Vagrant.configure('2') do |config|
 		azure.cloud_service_name = 'PROVIDE A NAME FOR YOUR CLOUD SERVICE' # same as vm_name. leave blank to auto-generate
 		azure.deployment_name = 'PROVIDE A NAME FOR YOUR DEPLOYMENT' # defaults to cloud_service_name
 		azure.vm_location = 'PROVIDE A LOCATION FOR VM' # e.g., West US
-	    azure.ssh_private_key_file = 'PATH TO YOUR KEY FILE'
-	    azure.ssh_certificate_file = 'PATH TO YOUR CERTIFICATE FILE'
+	    azure.private_key_file = 'PATH TO YOUR KEY FILE'
+	    azure.certificate_file = 'PATH TO YOUR CERTIFICATE FILE'
 
 	    # Provide the following values if creating a *Nix VM
 	    azure.ssh_port = 'A VALID PUBLIC PORT'
@@ -104,8 +104,8 @@ The vagrant-azure provide exposes a few Azure specific configration options:
 * `cloud_service_name` - The name of the cloud service under which to create the VM.
 * `deployment_name` - The name to give the deployment in the cloud service and add the VM to.
 * `vm_location` - The location to create the cloud service, storage account.
-* `ssh_private_key_file` - The private key file to use for SSH and if WinRM is enabled over HTTP/S.
-* `ssh_certificate_file` - The certificate file to use for SSH and if WinRM is enabled over HTTP/S.
+* `private_key_file` - The private key file to use for SSH and if WinRM is enabled over HTTP/S.
+* `certificate_file` - The certificate file to use for SSH and if WinRM is enabled over HTTP/S.
 * `ssh_port` - To map the internal SSH port 22 to a different public port.
 * `winrm_transport` - Enables or disables WinRm. Allowed values are `http` and `https`.
 * `winrm_https_port` To map the internal WinRM https port 5986 to a different public port.

@@ -1,6 +1,7 @@
 
 require 'azure'
 
+# Patch azure-ruby-sdk to enable vhds to be created every millisecond as opposed to every minute...
 Azure::VirtualMachineManagement::Serialization.module_eval do
   def self.role_to_xml(params, options)
     builder = Nokogiri::XML::Builder.new do |xml|

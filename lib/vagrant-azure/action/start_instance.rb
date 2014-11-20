@@ -14,6 +14,7 @@ module VagrantPlugins
       # This starts a stopped instance
       class StartInstance
         # include Vagrant:Util::Retryable
+        CLOUD_SERVICE_SEMAPHORE = Mutex.new
 
         def initialize(app, env)
           @app = app
@@ -24,10 +25,10 @@ module VagrantPlugins
           env[:machine].id = "#{env[:machine].provider_config.vm_name}@#{env[:machine].provider_config.cloud_service_name}" unless env[:machine].id
           env[:machine].id =~ /@/
 
-          env[:ui].info "Attempting to start '#{$`}' in '#{$'}'"
-
-          env[:azure_vm_service].start_virtual_machine($`, $')
-
+          CLOUD_SERVICE_SEMAPHORE.synchronize do
+            env[:ui].info "Attempting to start '#{$`}' in '#{$'}'"
+            env[:azure_vm_service].start_virtual_machine($`, $')
+          end
           @app.call(env)
         end
       end

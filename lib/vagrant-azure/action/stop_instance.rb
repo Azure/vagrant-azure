@@ -10,6 +10,8 @@ module VagrantPlugins
   module WinAzure
     module Action
       class StopInstance
+        CLOUD_SERVICE_SEMAPHORE = Mutex.new
+
         def initialize(app, env)
           @app = app
           @logger = Log4r::Logger.new('vagrant_azure::action::stop_instance')
@@ -22,14 +24,16 @@ module VagrantPlugins
             )
           else
             env[:machine].id =~ /@/
-            env[:ui].info(
-              I18n.t(
-                'vagrant_azure.stopping',
-                :vm_name => $`,
-                :cloud_service_name => $'
+            CLOUD_SERVICE_SEMAPHORE.synchronize do
+              env[:ui].info(
+                  I18n.t(
+                      'vagrant_azure.stopping',
+                      :vm_name => $`,
+                      :cloud_service_name => $'
+                  )
               )
-            )
-            env[:azure_vm_service].shutdown_virtual_machine($`, $')
+              env[:azure_vm_service].shutdown_virtual_machine($`, $')
+            end
           end
           @app.call(env)
         end
