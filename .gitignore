@@ -14,3 +14,5 @@ manifests/
 modules/
 .vagrant/
 .idea/
+*.pem
+.ruby-version
