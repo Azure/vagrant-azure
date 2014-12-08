@@ -66,7 +66,15 @@ module VagrantPlugins
               b2.use Message, I18n.t('vagrant_azure.not_created')
               next
             end
-            b2.use Provision
+
+            env[:machine].id =~ /@/
+            vm = env[:azure_vm_service].get_virtual_machine($`, $')
+            if vm.os_type.to_sym == :Windows
+              b2.use WinProvision
+            else
+              b2.use Provision
+              b2.use SyncFolders
+            end
           end
         end
       end
@@ -164,8 +172,7 @@ module VagrantPlugins
                 'vagrant_azure.vm_started', :name => $`
               )
               b1.use WaitForCommunicate
-              b1.use Provision
-              b1.use SyncFolders
+              b1.use action_provision
             end
           end
         end
@@ -225,7 +232,7 @@ module VagrantPlugins
       # The autoload farm
       action_root = Pathname.new(File.expand_path('../action', __FILE__))
       autoload :ConnectAzure, action_root.join('connect_azure')
-      autoload :Provision, action_root.join('provision')
+      autoload :WinProvision, action_root.join('provision')
       autoload :Rdp, action_root.join('rdp')
       autoload :ReadSSHInfo, action_root.join('read_ssh_info')
       autoload :ReadState, action_root.join('read_state')
