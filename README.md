@@ -11,7 +11,7 @@ provider to Vagrant, allowing Vagrant to control and provision machines in Micro
 
 Install Vagrant 1.5.2 or higher - [Download Vagrant](http://www.vagrantup.com/downloads.html)
 
-Install the vagrant-azure plugin using the standard Vagrant 1.1+ installation methods. After installing the plugin, you can you can ```vagrant up``` and use ```azure``` provider. For example:
+Install the vagrant-azure plugin using the standard Vagrant 1.1+ installation methods. After installing the plugin, you can ```vagrant up``` and use ```azure``` provider. For example:
 
 ```
 C:\> vagrant plugin install vagrant-azure
