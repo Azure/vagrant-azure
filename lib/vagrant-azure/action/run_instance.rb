@@ -15,8 +15,6 @@ module VagrantPlugins
       class RunInstance
         include Vagrant::Util::Retryable
 
-        CLOUD_SERVICE_SEMAPHORE = Mutex.new
-
         def initialize(app, env)
           @app = app
           @logger = Log4r::Logger.new('vagrant_azure::action::run_instance')
@@ -73,7 +71,7 @@ module VagrantPlugins
           env[:ui].info(params.inspect)
           env[:ui].info(options.inspect)
 
-          server = CLOUD_SERVICE_SEMAPHORE.synchronize do
+          server = VagrantPlugins::WinAzure::CLOUD_SERVICE_SEMAPHORE.synchronize do
             # Check if the cloud service exists and if yes, does it contain
             # a deployment.
             if config.cloud_service_name && !config.cloud_service_name.empty?
@@ -94,14 +92,14 @@ module VagrantPlugins
                 add_role = false
               end
             end
-          end
 
-          env[:ui].info("Add Role? - #{add_role}")
+            env[:ui].info("Add Role? - #{add_role}")
 
-          if add_role
-            env[:azure_vm_service].add_role(params.clone.merge(cloud_service_name: config.cloud_service_name), options)
-          else
-            env[:azure_vm_service].create_virtual_machine(params, options)
+            if add_role
+              env[:azure_vm_service].add_role(params.clone.merge(cloud_service_name: config.cloud_service_name), options)
+            else
+              env[:azure_vm_service].create_virtual_machine(params, options)
+            end
           end
 
           if server.nil?

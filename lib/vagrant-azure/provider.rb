@@ -17,7 +17,6 @@ module VagrantPlugins
         # Load the driver
         machine_id_changed
 
-        @machine.config.winrm.timeout = 30
         @machine.config.winrm.password = @machine.provider_config.vm_password || @machine.provider_config.vm_user
         @machine.config.winrm.username = @machine.provider_config.vm_user
       end

@@ -18,6 +18,8 @@ module VagrantPlugins
     require lib_path.join('monkey_patch/azure')
     require lib_path.join('monkey_patch/winrm')
 
+    CLOUD_SERVICE_SEMAPHORE = Mutex.new
+
 
     # This returns the path to the source of this plugin.
     #
