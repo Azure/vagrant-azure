@@ -22,6 +22,8 @@ module VagrantPlugins
               env[:azure_vm_service],
               env[:machine]
             )
+
+            env[:ui].info "Found public port #{env[:machine_winrm_info][:port]}"
           end
 
           @app.call(env)
