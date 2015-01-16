@@ -25,8 +25,18 @@ module VagrantPlugins
       attr_accessor :cloud_service_name
       attr_accessor :deployment_name
       attr_accessor :tcp_endpoints
+
+      # ssh_private_key and ssh_certificate_file is overly specific and probably should be deprecated in favor of
+      # private_key_file and certificate_file as they are in Azure ruby sdk.
+      # This is here to not break compatibility with previous versions.
       attr_accessor :private_key_file
+      alias :ssh_private_key_file :private_key_file
+      alias :ssh_private_key_file= :private_key_file=
+
       attr_accessor :certificate_file
+      alias :ssh_certificate_file :certificate_file
+      alias :ssh_certificate_file= :certificate_file=
+
       attr_accessor :ssh_port
       attr_accessor :vm_size
       attr_accessor :winrm_transport
