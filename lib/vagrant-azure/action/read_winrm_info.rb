@@ -8,27 +8,28 @@ require 'log4r'
 module VagrantPlugins
   module WinAzure
     module Action
-      class ReadSSHInfo
-        def initialize(app, env, port = 22)
+      class ReadWinrmInfo
+        def initialize(app, env)
           @app = app
-          @port = port
-          @logger = Log4r::Logger.new('vagrant_azure::action::read_ssh_info')
+          @logger = Log4r::Logger.new('vagrant_azure::action::read_winrm_info')
         end
 
         def call(env)
-          env[:ui].info "Looking for local port #{@port}"
+          if env[:machine].config.vm.guest == :windows
+            env[:ui].info 'Looking for WinRM'
 
-          env[:machine_ssh_info] = read_ssh_info(
-            env[:azure_vm_service],
-            env[:machine]
-          )
+            env[:machine_winrm_info] = read_winrm_info(
+              env[:azure_vm_service],
+              env[:machine]
+            )
 
-          env[:ui].info "Found port mapping #{env[:machine_ssh_info][:port]} --> #{@port}"
+            env[:ui].info "Found public port #{env[:machine_winrm_info][:port]}"
+          end
 
           @app.call(env)
         end
 
-        def read_ssh_info(azure, machine)
+        def read_winrm_info(azure, machine)
           return nil if machine.id.nil?
           machine.id =~ /@/
           vm = azure.get_virtual_machine($`, $')
@@ -41,12 +42,14 @@ module VagrantPlugins
           end
 
           vm.tcp_endpoints.each do |endpoint|
-            if endpoint[:local_port] == "#{@port}"
+            if endpoint[:name] == 'PowerShell'
+              machine.config.winrm.host = "#{vm.cloud_service_name}.cloudapp.net"
+              machine.config.winrm.port = endpoint[:public_port]
               return { :host => "#{vm.cloud_service_name}.cloudapp.net", :port => endpoint[:public_port] }
             end
           end
 
-          return nil
+          nil
         end
       end
     end

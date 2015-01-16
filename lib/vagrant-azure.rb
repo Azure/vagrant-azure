@@ -13,16 +13,13 @@ module VagrantPlugins
     autoload :Errors, lib_path.join('errors')
     autoload :Driver, lib_path.join('driver')
 
-    # Load a communicator for Windows guest
-    require lib_path.join("communication/powershell")
+    Vagrant.plugin('2').manager.communicators[:winrm]
+    require 'kconv'
+    require lib_path.join('monkey_patch/azure')
+    require lib_path.join('monkey_patch/winrm')
 
-    require lib_path.join('provisioner/puppet')
-    require lib_path.join('provisioner/chef-solo')
-    require lib_path.join('provisioner/shell')
+    CLOUD_SERVICE_SEMAPHORE = Mutex.new
 
-    monkey_patch = Pathname.new(File.expand_path("../vagrant-azure/monkey_patch", __FILE__))
-    # Monkey Patch the core Hyper-V vagrant with the following
-    require monkey_patch.join("machine")
 
     # This returns the path to the source of this plugin.
     #

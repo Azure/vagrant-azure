@@ -35,7 +35,7 @@ module VagrantPlugins
           b.use Call, DestroyConfirm do |env, b2|
             if env[:result]
               b2.use ConfigValidate
-              b.use Call, IsState, :NotCreated do |env2, b3|
+              b2.use Call, IsState, :NotCreated do |env2, b3|
                 if env2[:result]
                   b3.use Message, I18n.t('vagrant_azure.not_created')
                   next
@@ -48,8 +48,8 @@ module VagrantPlugins
             else
               env[:machine].id =~ /@/
               b2.use Message, I18n.t(
-                'vagrant_azure.will_not_destroy',
-                :name => $`
+                  'vagrant_azure.will_not_destroy',
+                  :name => $`
               )
             end
           end
@@ -61,20 +61,16 @@ module VagrantPlugins
         Vagrant::Action::Builder.new.tap do |b|
           b.use ConnectAzure
           b.use ConfigValidate
+          b.use OSType
+          b.use ReadWinrmInfo
           b.use Call, IsState, :NotCreated do |env, b2|
             if env[:result]
               b2.use Message, I18n.t('vagrant_azure.not_created')
               next
             end
 
-            env[:machine].id =~ /@/
-            vm = env[:azure_vm_service].get_virtual_machine($`, $')
-            if vm.os_type.to_sym == :Windows
-              b2.use WinProvision
-            else
-              b2.use Provision
-              b2.use SyncFolders
-            end
+            b2.use Provision
+            b2.use SyncFolders
           end
         end
       end
@@ -101,7 +97,8 @@ module VagrantPlugins
         Vagrant::Action::Builder.new.tap do |b|
           b.use ConfigValidate
           b.use ConnectAzure
-          b.use ReadSSHInfo, 5986
+          b.use OSType
+          b.use ReadWinrmInfo
         end
       end
 
@@ -116,6 +113,7 @@ module VagrantPlugins
       # This action is called to SSH into the machine
       def self.action_ssh
         Vagrant::Action::Builder.new.tap do |b|
+          b.use ConnectAzure
           b.use ConfigValidate
           b.use Call, IsState, :NotCreated do |env, b2|
             if env[:result]
@@ -128,8 +126,23 @@ module VagrantPlugins
         end
       end
 
+      def self.action_powershell_run
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use action_read_winrm_info
+          b.use Call, IsState, :NotCreated do |env, b2|
+            if env[:result]
+              b2.use Message, I18n.t('vagrant_azure.not_created')
+              next
+            end
+
+            b2.use PowerShellRun
+          end
+        end
+      end
+
       def self.action_rdp
         Vagrant::Action::Builder.new.tap do |b|
+          b.use ConnectAzure
           b.use ConfigValidate
           b.use Call, IsState, :NotCreated do |env1, b1|
             if env1[:result]
@@ -151,6 +164,7 @@ module VagrantPlugins
 
       def self.action_ssh_run
         Vagrant::Action::Builder.new.tap do |b|
+          b.use ConnectAzure
           b.use ConfigValidate
           b.use Call, IsState, :NotCreated do |env, b2|
             if env[:result]
@@ -169,8 +183,9 @@ module VagrantPlugins
             if env[:result]
               env[:machine].id =~ /@/
               b1.use Message, I18n.t(
-                'vagrant_azure.vm_started', :name => $`
+                  'vagrant_azure.vm_started', :name => $`
               )
+              b1.use action_read_winrm_info
               b1.use WaitForCommunicate
               b1.use action_provision
             end
@@ -184,7 +199,7 @@ module VagrantPlugins
           b.use HandleBox
           b.use ConfigValidate
           b.use ConnectAzure
-
+          b.use OSType
           b.use Call, IsState, :NotCreated do |env1, b1|
             if !env1[:result]
               b1.use Call, IsState, :StoppedDeallocated do |env2, b2|
@@ -193,7 +208,7 @@ module VagrantPlugins
                   b2.use action_prepare_boot
                 else
                   b2.use Message, I18n.t(
-                    'vagrant_azure.already_status', :status => 'created'
+                      'vagrant_azure.already_status', :status => 'created'
                   )
                 end
               end
@@ -232,9 +247,12 @@ module VagrantPlugins
       # The autoload farm
       action_root = Pathname.new(File.expand_path('../action', __FILE__))
       autoload :ConnectAzure, action_root.join('connect_azure')
-      autoload :WinProvision, action_root.join('provision')
       autoload :Rdp, action_root.join('rdp')
       autoload :ReadSSHInfo, action_root.join('read_ssh_info')
+      autoload :ReadWinrmInfo, action_root.join('read_winrm_info')
+      autoload :PowerShellRun, action_root.join('powershell_run')
+      autoload :Provision, action_root.join('provision')
+      autoload :OSType, action_root.join('os_type')
       autoload :ReadState, action_root.join('read_state')
       autoload :RestartVM, action_root.join('restart_vm')
       autoload :RunInstance, action_root.join('run_instance')
@@ -242,8 +260,6 @@ module VagrantPlugins
       autoload :StopInstance, action_root.join('stop_instance')
       autoload :SyncFolders, action_root.join('sync_folders')
       autoload :TerminateInstance, action_root.join('terminate_instance')
-      # autoload :TimedProvision, action_root.join('timed_provision')
-      # autoload :WarnNetworks, action_root.join('warn_networks')
       autoload :WaitForState, action_root.join('wait_for_state')
       autoload :WaitForCommunicate, action_root.join('wait_for_communicate')
     end

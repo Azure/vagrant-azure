@@ -11,8 +11,8 @@ end
 
 # This is a sanity check to make sure no one is attempting to install this into
 # an early Vagrant version.
-if Vagrant::VERSION < '1.2.0'
-  raise 'The Vagrant Azure plugin is only compatible with Vagrant 1.2+'
+if Vagrant::VERSION < '1.6.0'
+  raise 'The Vagrant Azure plugin is only compatible with Vagrant 1.6+'
 end
 
 module VagrantPlugins
@@ -39,9 +39,19 @@ module VagrantPlugins
         Provider
       end
 
+      provider_capability(:azure, :winrm_info) do
+        require_relative 'capabilities/winrm'
+        VagrantPlugins::WinAzure::Cap::WinRM
+      end
+
+      command 'powershell' do
+        require_relative 'command/powershell'
+        VagrantPlugins::WinAzure::Command::PowerShell
+      end
+
       command 'rdp' do
-        require_relative 'command/rdp/command'
-        Command
+        require_relative 'command/rdp'
+        VagrantPlugins::WinAzure::Command::RDP
       end
 
       def self.setup_i18n

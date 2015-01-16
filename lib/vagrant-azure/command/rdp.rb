@@ -5,17 +5,19 @@
 #--------------------------------------------------------------------------
 module VagrantPlugins
   module WinAzure
-    class Command < Vagrant.plugin('2', :command)
-      def self.synopsis
-        'Opens an RDP session for a vagrant machine'
-      end
-
-      def execute
-        with_target_vms do |vm|
-          vm.action(:rdp)
+    module Command
+      class RDP < Vagrant.plugin('2', :command)
+        def self.synopsis
+          'opens an RDP session for a vagrant machine'
         end
 
-        0
+        def execute
+          with_target_vms do |vm|
+            vm.action(:rdp)
+          end
+
+          0
+        end
       end
     end
   end

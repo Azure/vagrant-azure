@@ -24,7 +24,7 @@ module VagrantPlugins
               I18n.t('vagrant_azure.already_status', :status => @state)
             )
           else
-            timeout = env[:machine].provider_config.state_read_timeout
+            timeout = env[:machine].provider_config.state_read_timeout || env[:machine].config.vm.boot_timeout
 
             env[:ui].info "Waiting for machine to reach state #{@state}"
             @logger.info("Waiting for machine to reach state #{@state}")
