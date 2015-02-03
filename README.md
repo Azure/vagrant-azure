@@ -5,8 +5,6 @@
 This is a [Vagrant](http://www.vagrantup.com) 1.6.0+ plugin that adds [Microsoft Azure](https://azure.microsoft.com)
 provider to Vagrant, allowing Vagrant to control and provision machines in Microsoft Azure.
 
-**NOTE:** This plugin requires Vagrant 1.6.0+, and a Windows based workstation if creating Windows instances in Azure. Linux instances are supported with Linux, Mac OS X, and Windows workstations.
-
 ## Usage
 
 Install Vagrant 1.6.0 or higher - [Download Vagrant](http://www.vagrantup.com/downloads.html)
@@ -101,6 +99,7 @@ The vagrant-azure provide exposes a few Azure specific configration options:
 * `vm_image` - The name of the image to be used when creating the VM.
 * `vm_name` - The name of the created VM.
 * `vm_size` - The size of the created VM.
+* `vm_virtual_network_name` - The name of a virtual network to connect to
 * `cloud_service_name` - The name of the cloud service under which to create the VM.
 * `deployment_name` - The name to give the deployment in the cloud service and add the VM to.
 * `vm_location` - The location to create the cloud service, storage account.
