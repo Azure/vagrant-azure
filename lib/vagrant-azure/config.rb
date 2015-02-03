@@ -21,6 +21,7 @@ module VagrantPlugins
       attr_accessor :vm_image
       attr_accessor :vm_location
       attr_accessor :vm_affinity_group
+      attr_accessor :vm_virtual_network_name
 
       attr_accessor :cloud_service_name
       attr_accessor :deployment_name
@@ -59,6 +60,7 @@ module VagrantPlugins
         @vm_image = UNSET_VALUE
         @vm_location = UNSET_VALUE
         @vm_affinity_group = UNSET_VALUE
+        @vm_virtual_network_name = UNSET_VALUE
 
         @cloud_service_name = UNSET_VALUE
         @deployment_name = UNSET_VALUE
@@ -92,6 +94,7 @@ module VagrantPlugins
         @vm_image = nil if @vm_image == UNSET_VALUE
         @vm_location = nil if @vm_location == UNSET_VALUE
         @vm_affinity_group = nil if @vm_affinity_group == UNSET_VALUE
+        @vm_virtual_network_name = nil if @vm_virtual_network_name == UNSET_VALUE
 
         @cloud_service_name = nil if @cloud_service_name == UNSET_VALUE
         @deployment_name = nil if @deployment_name == UNSET_VALUE
