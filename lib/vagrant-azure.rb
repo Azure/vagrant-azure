@@ -13,13 +13,7 @@ module VagrantPlugins
     autoload :Errors, lib_path.join('errors')
     autoload :Driver, lib_path.join('driver')
 
-    Vagrant.plugin('2').manager.communicators[:winrm]
-    require 'kconv'
-    require lib_path.join('monkey_patch/azure')
-    require lib_path.join('monkey_patch/winrm')
-
     CLOUD_SERVICE_SEMAPHORE = Mutex.new
-
 
     # This returns the path to the source of this plugin.
     #

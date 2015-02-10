@@ -33,6 +33,7 @@ module VagrantPlugins
         # Setup logging and i18n
         setup_logging
         setup_i18n
+        apply_patches
 
         # Return the provider
         require_relative 'provider'
@@ -52,6 +53,14 @@ module VagrantPlugins
       command 'rdp' do
         require_relative 'command/rdp'
         VagrantPlugins::WinAzure::Command::RDP
+      end
+
+      def self.apply_patches
+        lib_path = Pathname.new(File.expand_path('../../vagrant-azure', __FILE__))
+        Vagrant.plugin('2').manager.communicators[:winrm]
+        require 'kconv'
+        require lib_path.join('monkey_patch/azure')
+        require lib_path.join('monkey_patch/winrm')
       end
 
       def self.setup_i18n
