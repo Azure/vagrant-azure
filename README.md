@@ -125,17 +125,34 @@ and AES Cryptographic Provider" -sy 24
 
 In order to have more details with images in Windows, access: http://blogs.msdn.com/b/cclayton/archive/2012/03/21/windows-azure-and-x509-certificates.aspx
 
-As Windows Azure is constantly being updated, the Windows Azure images used in this tutorial might be out-of-date.
+##PEM generation
+Vagrant-Azure expects you to use a .pem management certificate like so:
+
+```ruby
+Vagrant.configure('2') do |config|
+	config.vm.box = 'azure'
+
+	config.vm.provider :azure do |azure|
+		azure.mgmt_certificate = "#{file_location_of_your_dot_pem}"
+```
+
+If you have the .crt or .cer and .key you uploaded to the azure portal, then you should be able to do the following: 
+
+`cat private.key public.crt > pub_and_private.pem`
+
 
 ## New Commands for `azure` provider
 
 The `azure` provider introduces the following new `vagrant` commands.
 
 * `rdp` - To connect to a Windows VM using RDP. E.g.,
+* `powershell` - To execute remote powershell commands on a Windows VM using WinRM. 
 ```
-C:\> vagrant up --provider=azure
+> vagrant up --provider=azure
 ...
-C:\> vagrant rdp
+> vagrant rdp
+...
+> vagrant powershell
 ```
 
 
