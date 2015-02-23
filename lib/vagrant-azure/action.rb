@@ -251,7 +251,6 @@ module VagrantPlugins
       autoload :ReadSSHInfo, action_root.join('read_ssh_info')
       autoload :ReadWinrmInfo, action_root.join('read_winrm_info')
       autoload :PowerShellRun, action_root.join('powershell_run')
-      autoload :Provision, action_root.join('provision')
       autoload :OSType, action_root.join('os_type')
       autoload :ReadState, action_root.join('read_state')
       autoload :RestartVM, action_root.join('restart_vm')
