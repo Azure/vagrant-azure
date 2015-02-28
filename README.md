@@ -90,7 +90,7 @@ Please see [Vagrant Docs](http://docs.vagrantup.com/v2/) for more details.
 
 The vagrant-azure provide exposes a few Azure specific configration options:
 
-* `mgmt_certificate` - Your Azure Management certificate which has been uploaded to the Azure portal for your account.
+* `mgmt_certificate` - Your Azure Management certificate which has been uploaded to the Azure portal for your account. Provide [PEM file](#pem-generation).
 * `mgmt_endpoint` - Azure Management endpoint. `https://management.core.windows.net`
 * `subscription_id` - Your Azure Subscription ID.
 * `storage_acct_name` - The Storage account to use when creating VMs.
@@ -103,12 +103,12 @@ The vagrant-azure provide exposes a few Azure specific configration options:
 * `cloud_service_name` - The name of the cloud service under which to create the VM.
 * `deployment_name` - The name to give the deployment in the cloud service and add the VM to.
 * `vm_location` - The location to create the cloud service, storage account.
-* `private_key_file` - The private key file to use for SSH and if WinRM is enabled over HTTP/S.
-* `certificate_file` - The certificate file to use for SSH and if WinRM is enabled over HTTP/S.
+* `private_key_file` - The private key file to use for SSH and if WinRM is enabled over HTTP/S. Provide [PEM file](#pem-generation).
+* `certificate_file` - The certificate file to use for SSH and if WinRM is enabled over HTTP/S. Provide [PEM file](#pem-generation).
 * `ssh_port` - To map the internal SSH port 22 to a different public port.
 * `winrm_transport` - Enables or disables WinRm. Allowed values are `http` and `https`.
-* `winrm_https_port` To map the internal WinRM https port 5986 to a different public port.
-* `winrm_http_port` To map the internal WinRM http port 5985 to a different public port.
+* `winrm_https_port` To map the internal WinRM https port 5986 to a different public port. Must be non-empty.
+* `winrm_http_port` To map the internal WinRM http port 5985 to a different public port. Must be non-empty.
 * `tcp_endpoints` - To open any additional ports. E.g., `80` opens port `80` and `80,3389:53389` opens port `80` and `3389`. Also maps the interal port `3389` to public port `53389`
 * 
 
@@ -125,8 +125,22 @@ and AES Cryptographic Provider" -sy 24
 
 In order to have more details with images in Windows, access: http://blogs.msdn.com/b/cclayton/archive/2012/03/21/windows-azure-and-x509-certificates.aspx
 
+### Using openssl (Linux/Mac)
+We can use [openssl](https://github.com/openssl/openssl) to generate `.pem` files:
+```
+$ openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout mycert_key.pem -out mycert.pem
+```
+
+Use `mycert.pem` as `certificate_file` and `mycert_key.pem` as `private_key_file`.
+
+
+For `mgmt_certificate` configuration, create a `mycert_mgmt.pem` using above command. Use it in your VagrantFile. Then convert the `mycert_mgmt.pem` to `mycert_mgmt.cer` to upload to azure portal. It is recommended to create different certificates for azure management and winrm.
+```
+$ openssl x509 -inform pem -in mycert_mgmt.pem -outform der -out mycert_mgmt.cer
+```
+
 ##PEM generation
-Vagrant-Azure expects you to use a .pem management certificate like so:
+Vagrant-Azure expects you to use a .pem management certificate as shown below:
 
 ```ruby
 Vagrant.configure('2') do |config|
