@@ -125,21 +125,6 @@ module VagrantPlugins
         end
       end
 
-      def merge(other)
-        super.tap do |result|
-          result.mgmt_certificate = other.mgmt_certificate || \
-            self.mgmt_certificate
-          result.mgmt_endpoint = other.mgmt_endpoint || \
-            self.mgmt_endpoint
-          result.subscription_id = other.subscription_id || \
-            self.subscription_id
-          result.storage_acct_name = other.storage_acct_name || \
-            self.storage_acct_name
-          result.storage_access_key = other.storage_access_key || \
-            self.storage_access_key
-        end
-      end
-
       def validate(machine)
         errors = _detected_errors
 
