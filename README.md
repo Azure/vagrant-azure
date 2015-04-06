@@ -128,11 +128,14 @@ In order to have more details with images in Windows, access: http://blogs.msdn.
 ### Using openssl (Linux/Mac)
 We can use [openssl](https://github.com/openssl/openssl) to generate `.pem` files:
 ```
-$ openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout mycert_key.pem -out mycert.pem
+$ openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout mycert.key -out mycert.pem
 ```
 
-Use `mycert.pem` as `certificate_file` and `mycert_key.pem` as `private_key_file`.
+Use `mycert.pem` as `certificate_file` and `mycert.key` as `private_key_file`.
 
+```
+$ openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout mycert_mgmt.key -out mycert_mgmt.pem
+```
 
 For `mgmt_certificate` configuration, create a `mycert_mgmt.pem` using above command. Use it in your VagrantFile. Then convert the `mycert_mgmt.pem` to `mycert_mgmt.cer` to upload to azure portal. It is recommended to create different certificates for azure management and winrm.
 ```
@@ -152,7 +155,7 @@ Vagrant.configure('2') do |config|
 
 If you have the .crt or .cer and .key you uploaded to the azure portal, then you should be able to do the following: 
 
-`cat private.key public.crt > pub_and_private.pem`
+`cat mycert_mgmt.pem mycert_mgmt.key > mycert_mgmt.combined.pem`
 
 
 ## New Commands for `azure` provider
