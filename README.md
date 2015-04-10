@@ -181,10 +181,11 @@ Example Multi Machine Vagrantfile (for building out 3 Windows Virtual Machines)
 ```ruby
 
 Vagrant.configure('2') do |config|
-  config.vm.box = 'azure'
   config.vm.boot_timeout = 1000
 
-  do_common_azure_stuff = Proc.new do |azure|
+  do_common_azure_stuff = Proc.new do |azure, override|
+		override.config.vm.box = 'azure'
+
 		azure.mgmt_certificate = 'YOUR AZURE MANAGEMENT CERTIFICATE'
 		azure.mgmt_endpoint = 'https://management.core.windows.net'
 		azure.subscription_id = 'YOUR AZURE SUBSCRIPTION ID'
@@ -203,29 +204,29 @@ Vagrant.configure('2') do |config|
   end
 
   config.vm.define 'first' do |cfg|
-    config.vm.provider :azure do |azure|
+    config.vm.provider :azure do |azure, override|
+      do_common_azure_stuff.call azure, override
       azure.vm_name = 'PROVIDE A NAME FOR YOUR VIRTUAL MACHINE'
       azure.tcp_endpoints = '3389:53389' # opens the Remote Desktop internal port that listens on public port 53389. Without this, you cannot RDP to a Windows VM.
       azure.winrm_https_port = 5986
-      do_common_azure_stuff.call azure
     end
   end
 
   config.vm.define 'second' do |cfg|
-    cfg.vm.provider :azure do |azure|
+    cfg.vm.provider :azure do |azure, override|
+      do_common_azure_stuff.call azure, override
       azure.vm_name = 'PROVIDE A NAME FOR YOUR VIRTUAL MACHINE'
       azure.tcp_endpoints = '3389:53390'
       azure.winrm_https_port = 5987
-      do_common_azure_stuff.call azure
     end
   end
 
   config.vm.define 'third' do |cfg|
-    cfg.vm.provider :azure do |azure|
+    cfg.vm.provider :azure do |azure, override|
+      do_common_azure_stuff.call azure, override
       azure.vm_name = 'PROVIDE A NAME FOR YOUR VIRTUAL MACHINE'
       azure.tcp_endpoints = '3389:53391'
       azure.winrm_https_port = 5988
-      do_common_azure_stuff.call azure
     end
   end
 
