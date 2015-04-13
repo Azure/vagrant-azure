@@ -110,7 +110,6 @@ The vagrant-azure provide exposes a few Azure specific configration options:
 * `winrm_https_port` To map the internal WinRM https port 5986 to a different public port. Must be non-empty.
 * `winrm_http_port` To map the internal WinRM http port 5985 to a different public port. Must be non-empty.
 * `tcp_endpoints` - To open any additional ports. E.g., `80` opens port `80` and `80,3389:53389` opens port `80` and `3389`. Also maps the interal port `3389` to public port `53389`
-* 
 
 ##Certificate generation
 We will use `makecert.exe` distributed as part of the in the Windows 7 SDK.  The following commands will create the required certificates and insert them into the current user’s personal store.
@@ -156,6 +155,14 @@ Vagrant.configure('2') do |config|
 If you have the .crt or .cer and .key you uploaded to the azure portal, then you should be able to do the following: 
 
 `cat mycert_mgmt.pem mycert_mgmt.key > mycert_mgmt.combined.pem`
+
+## Create Virtual Network
+
+In order to use vagrant-azure's `vm_virtual_network_name` support, create virtual networks using
+[Azure's Command Line Interface](http://azure.microsoft.com/en-us/documentation/articles/virtual-machines-command-line-tools/):
+
+    azure account download
+    azure network vnet create --vnet "vnet-name" --location "West US" --create-new-affinity-group
 
 
 ## New Commands for `azure` provider
