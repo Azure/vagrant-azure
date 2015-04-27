@@ -211,7 +211,7 @@ Vagrant.configure('2') do |config|
   end
 
   config.vm.define 'first' do |cfg|
-    config.vm.provider :azure do |azure, override|
+    cfg.vm.provider :azure do |azure, override|
       do_common_azure_stuff.call azure, override
       azure.vm_name = 'PROVIDE A NAME FOR YOUR VIRTUAL MACHINE'
       azure.tcp_endpoints = '3389:53389' # opens the Remote Desktop internal port that listens on public port 53389. Without this, you cannot RDP to a Windows VM.
