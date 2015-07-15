@@ -6,7 +6,6 @@
 require 'log4r'
 require 'json'
 require 'azure'
-require 'sshkey'
 require 'openssl'
 
 require 'vagrant/util/retryable'
