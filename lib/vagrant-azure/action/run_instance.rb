@@ -49,7 +49,6 @@ module VagrantPlugins
             options[:private_key_file] = File.expand_path(config.private_key_file || env[:machine].config.ssh.private_key_path.first)
           end
 
-          options[:certificate_file] = File.expand_path(config.certificate_file) unless config.certificate_file.nil?
           options[:ssh_port] = config.ssh_port unless config.ssh_port.nil?
           options[:vm_size] = config.vm_size unless config.vm_size.nil?
           options[:winrm_transport] = config.winrm_transport unless config.winrm_transport.nil?
