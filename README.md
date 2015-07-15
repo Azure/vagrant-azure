@@ -34,37 +34,36 @@ Now edit your ```Vagrantfile``` as shown below and provide all the values as exp
 ```ruby
 Vagrant.configure('2') do |config|
 	config.vm.box = 'azure'
-
-	config.vm.provider :azure do |azure|
+	
+	config.vm.provider :azure do |azure, override|
+		# Mandatory Settings 
 		azure.mgmt_certificate = 'YOUR AZURE MANAGEMENT CERTIFICATE'
 		azure.mgmt_endpoint = 'https://management.core.windows.net'
 		azure.subscription_id = 'YOUR AZURE SUBSCRIPTION ID'
-		azure.storage_acct_name = 'NAME OF YOUR STORAGE ACCOUNT' # optional. A new one will be generated if not provided.
-
 		azure.vm_image = 'NAME OF THE IMAGE TO USE'
-		azure.vm_user = 'PROVIDE A USERNAME' # defaults to 'vagrant' if not provided
-		azure.vm_password = 'PROVIDE A VALID PASSWORD' # min 8 characters. should contain a lower case letter, an uppercase letter, a number and a special character
-
 		azure.vm_name = 'PROVIDE A NAME FOR YOUR VIRTUAL MACHINE' # max 15 characters. contains letters, number and hyphens. can start with letters and can end with letters and numbers
+		
+		# vm_password is optional when specifying the private_key_file with Linux VMs
+		# When building a Windows VM and using WinRM this setting is used to authenticate via WinRM (PowerShell Remoting)
+		azure.vm_password = 'PROVIDE A VALID PASSWORD' # min 8 characters. should contain a lower case letter, an uppercase letter, a number and a special character
+		
+		# Optional Settings
+		azure.storage_acct_name = 'NAME OF YOUR STORAGE ACCOUNT' # optional. A new one will be generated if not provided.
+		azure.vm_user = 'PROVIDE A USERNAME' # defaults to 'vagrant' if not provided
 		azure.cloud_service_name = 'PROVIDE A NAME FOR YOUR CLOUD SERVICE' # same as vm_name. leave blank to auto-generate
 		azure.deployment_name = 'PROVIDE A NAME FOR YOUR DEPLOYMENT' # defaults to cloud_service_name
-		azure.vm_location = 'PROVIDE A LOCATION FOR VM' # e.g., West US
-	  azure.private_key_file = 'PATH TO YOUR KEY FILE'
-	  azure.certificate_file = 'PATH TO YOUR CERTIFICATE FILE'
-
-	  # Provide the following values if creating a *Nix VM
-	  azure.ssh_port = 'A VALID PUBLIC PORT'
-
-	  # Provide the following values if creating a Windows VM
-	  azure.winrm_transport = [ 'http', 'https' ] # this will open up winrm ports on both http (5985) and http (5986) ports
-	  azure.winrm_https_port = 'A VALID PUBLIC PORT' # customize the winrm https port, instead of 5986
-	  azure.winrm_http_port = 'A VALID PUBLIC PORT' # customize the winrm http port, insted of 5985
-
-	  azure.tcp_endpoints = '3389:53389' # opens the Remote Desktop internal port that listens on public port 53389. Without this, you cannot RDP to a Windows VM.
+	    azure.vm_location = 'PROVIDE A LOCATION FOR VM' # e.g., West US
+		
+		# Optional *Nix Settings
+		azure.ssh_port = 'A VALID PUBLIC PORT' # defaults to 22
+		azure.private_key_file = 'Path to your ssh private key file (~/.ssh/id_rsa) to use for passwordless auth. If the id_rsa file is password protected, you will be prompted for the password.'
+	
+		# Optional Windows Settings
+		azure.winrm_transport = [ 'http', 'https' ] # this will open up winrm ports on both http (5985) and http (5986) ports
+		azure.winrm_https_port = 'A VALID PUBLIC PORT' # customize the winrm https port, instead of 5986
+		azure.winrm_http_port = 'A VALID PUBLIC PORT' # customize the winrm http port, insted of 5985
+		azure.tcp_endpoints = '3389:53389' # opens the Remote Desktop internal port that listens on public port 53389. Without this, you cannot RDP to a Windows VM.
 	end
-
-	config.ssh.username = 'YOUR USERNAME' # the one used to create the VM
-	config.ssh.password = 'YOUR PASSWORD' # the one used to create the VM
 end
 ```
 
@@ -82,36 +81,40 @@ Normally, a lot of this options, e.g., ```vm_image```, will be embedded in a box
 
 ## Azure Boxes
 
-The vagrant-azure plugin provides the ability to use ```azure``` boxes with Vagrant. Please see the example box provided in [example_box/ directory](https://github.com/msopentech/vagrant-azure/tree/master/example_box) and follow the instructions there to build an ```azure``` box.
+The vagrant-azure plugin provides the ability to use ```Azure``` boxes with Vagrant. Please see the example box provided in [example_box/ directory](https://github.com/msopentech/vagrant-azure/tree/master/example_box) and follow the instructions there to build an ```azure``` box.
 
 Please see [Vagrant Docs](http://docs.vagrantup.com/v2/) for more details.
 
 ## Configuration
 
-The vagrant-azure provide exposes a few Azure specific configration options:
+The vagrant-azure provide exposes a few Azure specific configuration options:
 
-* `mgmt_certificate` - Your Azure Management certificate which has been uploaded to the Azure portal for your account. Provide [PEM file](#pem-generation).
+### Mandatory
+
+* `mgmt_certificate` - Your Azure Management certificate which has been uploaded to the Azure portal for your account. Provide [PEM file path](#pem-generation), PFX file path or raw string.
 * `mgmt_endpoint` - Azure Management endpoint. `https://management.core.windows.net`
 * `subscription_id` - Your Azure Subscription ID.
 * `storage_acct_name` - The Storage account to use when creating VMs.
-* `vm_user` - The username to create the VM with. Defaults to `vagrant`.
-* `vm_password` - The password to set for the user created with the VM.
-* `vm_image` - The name of the image to be used when creating the VM.
 * `vm_name` - The name of the created VM.
-* `vm_size` - The size of the created VM.
+
+### Optional
+
+* `vm_user` - The username to create the VM with. Defaults to `vagrant`.
+* `vm_password` - The password to set for the user created with the VM. This will override the private_key_file setting.
+* `vm_image` - The name of the image to be used when creating the VM.
+* `vm_size` - The size of the created VM. Use an of the Azure VM Sizes.
 * `vm_virtual_network_name` - The name of a virtual network to connect to
 * `cloud_service_name` - The name of the cloud service under which to create the VM.
 * `deployment_name` - The name to give the deployment in the cloud service and add the VM to.
 * `vm_location` - The location to create the cloud service, storage account.
-* `private_key_file` - The private key file to use for SSH and if WinRM is enabled over HTTP/S. Provide [PEM file](#pem-generation).
-* `certificate_file` - The certificate file to use for SSH and if WinRM is enabled over HTTP/S. Provide [PEM file](#pem-generation).
+* `private_key_file` - The private key file to use for SSH (~/.ssh/id_rsa) or a [PEM file](#pem-generation).
 * `ssh_port` - To map the internal SSH port 22 to a different public port.
 * `winrm_transport` - Enables or disables WinRm. Allowed values are `http` and `https`.
 * `winrm_https_port` To map the internal WinRM https port 5986 to a different public port. Must be non-empty.
 * `winrm_http_port` To map the internal WinRM http port 5985 to a different public port. Must be non-empty.
 * `tcp_endpoints` - To open any additional ports. E.g., `80` opens port `80` and `80,3389:53389` opens port `80` and `3389`. Also maps the interal port `3389` to public port `53389`
 
-##Certificate generation
+### Certificate Generation on Windows
 We will use `makecert.exe` distributed as part of the in the Windows 7 SDK.  The following commands will create the required certificates and insert them into the current user’s personal store.
 
 * makecert.exe -r -pe -a sha1 -n "CN=My Azure Management Certificate"
@@ -122,26 +125,25 @@ and AES Cryptographic Provider" -sy 24
 
 * makecert.exe -r -pe -a sha1 -n "CN=My Azure SSL Certificate" -ss My -sr CurrentUser -len 2048 -sky exchange -sp "Microsoft Enhanced RSA and AES Cryptographic Provider" -sy 24
 
-In order to have more details with images in Windows, access: http://blogs.msdn.com/b/cclayton/archive/2012/03/21/windows-azure-and-x509-certificates.aspx
+(In order to have more details with images in Windows)[http://blogs.msdn.com/b/cclayton/archive/2012/03/21/windows-azure-and-x509-certificates.aspx]
 
-### Using openssl (Linux/Mac)
-We can use [openssl](https://github.com/openssl/openssl) to generate `.pem` files:
-```
-$ openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout mycert.key -out mycert.pem
-```
+### Get Started with Publish Settings
 
-Use `mycert.pem` as `certificate_file` and `mycert.key` as `private_key_file`.
+* To create a pfx from the publishsettings, simply download the publishsettings file for your subscription 
+[https://manage.windowsazure.com/publishsettings](https://manage.windowsazure.com/publishsettings/index?client=powershell). Make sure you have this gem installed and
+ run `pfxer --in [path to your .publishsettings file]`. This will create a .pfx from your publish settings file which can 
+ be supplied as a cert parameter for Service Management Commands.
 
-```
-$ openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout mycert_mgmt.key -out mycert_mgmt.pem
-```
+### Get Started with OpenSSL
 
-For `mgmt_certificate` configuration, create a `mycert_mgmt.pem` using above command. Use it in your VagrantFile. Then convert the `mycert_mgmt.pem` to `mycert_mgmt.cer` to upload to azure portal. It is recommended to create different certificates for azure management and winrm.
-```
-$ openssl x509 -inform pem -in mycert_mgmt.pem -outform der -out mycert_mgmt.cer
-```
+* Using the following openssl commands to create a cert and upload to Azure Management
+  * Generate public and private `openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout cert.pem -out cert.pem`
+  * Generate public .cer for Azure upload `openssl x509 -inform pem -in cert.pem -outform der -out mgmt.cer`
+  * Upload the `mgmt.cer` to Azure Management through [https://management.azure.com](https://management.azure.com)
+  * Use cert.pem as your cert parameter for Service Management Commands.
 
-##PEM generation
+### Using your .pem certificate
+
 Vagrant-Azure expects you to use a .pem management certificate as shown below:
 
 ```ruby
@@ -151,10 +153,6 @@ Vagrant.configure('2') do |config|
 	config.vm.provider :azure do |azure|
 		azure.mgmt_certificate = "#{file_location_of_your_dot_pem}"
 ```
-
-If you have the .crt or .cer and .key you uploaded to the azure portal, then you should be able to do the following: 
-
-`cat mycert_mgmt.pem mycert_mgmt.key > mycert_mgmt.combined.pem`
 
 ## Create Virtual Network
 
