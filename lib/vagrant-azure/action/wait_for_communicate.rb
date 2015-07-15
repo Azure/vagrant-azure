@@ -17,7 +17,7 @@ module VagrantPlugins
 
         def call(env)
 
-          if !env[:interrupted]
+          unless env[:interrupted]
               # Wait for SSH to be ready.
               env[:ui].info(I18n.t('vagrant_azure.waiting_for_comm'))
               while true
