@@ -17,12 +17,7 @@ module VagrantPlugins
         def call(env)
           if env[:machine].config.vm.guest == :windows
             env[:ui].info 'Looking for WinRM'
-
-            env[:machine_winrm_info] = read_winrm_info(
-              env[:azure_vm_service],
-              env[:machine]
-            )
-
+            env[:machine_winrm_info] = read_winrm_info(env[:azure_vm_service], env[:machine])
             env[:ui].info "Found public port #{env[:machine_winrm_info][:port]}"
           end
 
@@ -41,14 +36,19 @@ module VagrantPlugins
             return nil
           end
 
-          vm.tcp_endpoints.each do |endpoint|
-            if endpoint[:name] == 'PowerShell'
-              machine.config.winrm.host = "#{vm.cloud_service_name}.cloudapp.net"
-              machine.config.winrm.port = endpoint[:public_port]
-              return { :host => "#{vm.cloud_service_name}.cloudapp.net", :port => endpoint[:public_port] }
-            end
-          end
+          types = %w(PowerShell WinRm-Http)
 
+          endpoint = vm.tcp_endpoints.reject { |i| !types.include?(i[:name]) }.sort{ |i| i[:name] }.first
+          if endpoint
+            machine.config.winrm.host = "#{vm.cloud_service_name}.cloudapp.net"
+            machine.config.winrm.port = endpoint[:public_port]
+
+            if endpoint[:name] == types[0] # if it's PowerShell, then it's over https so use ssl (cert is self signed)
+                machine.config.winrm.ssl_peer_verification = false
+                machine.config.winrm.transport = :ssl
+            end
+            return {:host => "#{vm.cloud_service_name}.cloudapp.net", :port => endpoint[:public_port]}
+          end
           nil
         end
       end

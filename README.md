@@ -2,7 +2,7 @@
 
 ![Gem Version](https://badge.fury.io/rb/vagrant-azure.png)
 
-This is a [Vagrant](http://www.vagrantup.com) 1.6.0+ plugin that adds [Microsoft Azure](https://azure.microsoft.com)
+This is a [Vagrant](http://www.vagrantup.com) 1.7.3+ plugin that adds [Microsoft Azure](https://azure.microsoft.com)
 provider to Vagrant, allowing Vagrant to control and provision machines in Microsoft Azure.
 
 ## Usage

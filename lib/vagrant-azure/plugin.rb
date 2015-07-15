@@ -58,8 +58,6 @@ module VagrantPlugins
       def self.apply_patches
         lib_path = Pathname.new(File.expand_path('../../vagrant-azure', __FILE__))
         Vagrant.plugin('2').manager.communicators[:winrm]
-        require 'kconv'
-        require lib_path.join('monkey_patch/azure')
         require lib_path.join('monkey_patch/winrm')
       end
 
