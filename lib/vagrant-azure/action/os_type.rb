@@ -18,7 +18,7 @@ module VagrantPlugins
 
           unless env[:machine].config.vm.guest
             env[:ui].info 'Determining OS Type By Image'
-            guest_os_type = env[:azure_vm_service].send(:get_os_type, env[:machine].provider_config.vm_image)
+            guest_os_type = env[:azure_vm_service].send(:get_image, env[:machine].provider_config.vm_image).os_type
             env[:machine].config.vm.guest = guest_os_type && guest_os_type.downcase.to_sym
             if env[:machine].config.vm.guest == :windows && env[:machine].config.vm.communicator.nil?
               env[:machine].config.vm.communicator = :winrm
