@@ -38,7 +38,7 @@ module VagrantPlugins
 
           types = %w(PowerShell WinRm-Http)
 
-          endpoint = vm.tcp_endpoints.reject { |i| !types.include?(i[:name]) }.sort{ |i| i[:name] }.first
+          endpoint = vm.tcp_endpoints.reject { |i| !types.include?(i[:name]) }.sort_by{ |i| i[:name] }.first
           if endpoint
             machine.config.winrm.host = "#{vm.cloud_service_name}.cloudapp.net"
             machine.config.winrm.port = endpoint[:public_port]
