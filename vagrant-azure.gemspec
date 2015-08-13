@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.bindir        = 'bin'
   s.executables   = s.files.grep(%r{^bin/}) { |f| File.basename(f) }
 
-  s.add_runtime_dependency 'azure',       '0.7.0.pre2'
+  s.add_runtime_dependency 'azure',       '0.7.0.pre3'
   s.add_runtime_dependency 'httpclient',  '2.4.0'
 
   s.add_development_dependency 'bundler', '~> 1.3'
