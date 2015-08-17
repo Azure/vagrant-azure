@@ -6,6 +6,7 @@
 require 'pathname'
 
 require 'vagrant/action/builder'
+require 'vagrant/action/builtin/wait_for_communicator'
 
 module VagrantPlugins
   module WinAzure
@@ -186,7 +187,7 @@ module VagrantPlugins
                   'vagrant_azure.vm_started', :name => $`
               )
               b1.use action_read_winrm_info
-              b1.use WaitForCommunicate
+              b1.use WaitForCommunicator
               b1.use action_provision
             end
           end
@@ -260,7 +261,6 @@ module VagrantPlugins
       autoload :SyncFolders, action_root.join('sync_folders')
       autoload :TerminateInstance, action_root.join('terminate_instance')
       autoload :WaitForState, action_root.join('wait_for_state')
-      autoload :WaitForCommunicate, action_root.join('wait_for_communicate')
     end
   end
 end

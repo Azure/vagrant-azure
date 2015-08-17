@@ -57,6 +57,12 @@ module VagrantPlugins
           options[:availability_set_name] = config.availability_set_name unless config.availability_set_name.nil?
           options[:virtual_network_name] = config.vm_virtual_network_name unless config.vm_virtual_network_name.nil?
 
+
+          if params[:password] && options[:private_key_file]
+            env[:ui].warn('You specified both a password and a private key file. The password will be used rather than ' +
+                                'the private key. If you would like to use asymmetric key auth, do not specify a password.')
+          end
+
           add_role = false
 
           env[:ui].info(params.inspect)
