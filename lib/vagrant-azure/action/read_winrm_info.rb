@@ -16,9 +16,9 @@ module VagrantPlugins
 
         def call(env)
           if env[:machine].config.vm.guest == :windows
-            env[:ui].info 'Looking for WinRM'
+            env[:ui].detail 'Looking for WinRM'
             env[:machine_winrm_info] = read_winrm_info(env[:azure_vm_service], env[:machine])
-            env[:ui].info "Found public port #{env[:machine_winrm_info][:port]}"
+            env[:ui].detail "Found public port #{env[:machine_winrm_info][:port]}"
           end
 
           @app.call(env)

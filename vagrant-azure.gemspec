@@ -6,9 +6,9 @@ require 'vagrant-azure/version'
 Gem::Specification.new do |s|
   s.name          = 'vagrant-azure'
   s.version       = VagrantPlugins::WinAzure::VERSION
-  s.authors       = ['MSOpenTech']
-  s.description   = 'Enable Vagrant to manage machines in Azure'
-  s.summary       = 'Enable Vagrant to manage machines in Azure'
+  s.authors       = %w(MSOpenTech Azure)
+  s.description   = 'Enable Vagrant to manage machines in Azure.'
+  s.summary       = 'Enable Vagrant to manage Windows and Linux machines in Azure.'
   s.homepage      = 'https://github.com/MSOpenTech/vagrant-azure'
   s.license       = 'Apache 2.0'
   s.require_paths = ['lib']
@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.bindir        = 'bin'
   s.executables   = s.files.grep(%r{^bin/}) { |f| File.basename(f) }
 
-  s.add_runtime_dependency 'azure',       '0.7.0.pre3'
+  s.add_runtime_dependency 'azure',       '0.7.0'
   s.add_runtime_dependency 'httpclient',  '2.4.0'
 
   s.add_development_dependency 'bundler', '~> 1.3'

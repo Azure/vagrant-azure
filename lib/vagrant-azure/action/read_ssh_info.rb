@@ -16,14 +16,14 @@ module VagrantPlugins
         end
 
         def call(env)
-          env[:ui].info "Looking for local port #{@port}"
+          env[:ui].detail "Looking for local port #{@port}"
 
           env[:machine_ssh_info] = read_ssh_info(
             env[:azure_vm_service],
             env[:machine]
           )
 
-          env[:ui].info "Found port mapping #{env[:machine_ssh_info][:port]} --> #{@port}"
+          env[:ui].detail "Found port mapping #{env[:machine_ssh_info][:port]} --> #{@port}"
 
           @app.call(env)
         end

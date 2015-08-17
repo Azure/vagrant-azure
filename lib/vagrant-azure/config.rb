@@ -82,7 +82,7 @@ module VagrantPlugins
         @vm_user = 'vagrant' if @vm_user == UNSET_VALUE
         @vm_password = nil if @vm_password == UNSET_VALUE
         @vm_image = nil if @vm_image == UNSET_VALUE
-        @vm_location = nil if @vm_location == UNSET_VALUE
+        @vm_location = 'West US' if @vm_location == UNSET_VALUE
         @vm_affinity_group = nil if @vm_affinity_group == UNSET_VALUE
         @vm_virtual_network_name = nil if @vm_virtual_network_name == UNSET_VALUE
 
@@ -126,9 +126,26 @@ module VagrantPlugins
         # Azure Virtual Machine related validation
         errors << 'vagrant_azure.vm_name.required' if @vm_name.nil?
 
-        if @vm_password && (@private_key_file || machine.config.ssh.private_key_path)
-          machine.ui.warn('You specified both a password and a private key file. The password will be used rather than ' +
-                            'the private key. If you would like to use asymmetric key auth, do not specify a password.')
+        paths = machine.config.ssh.private_key_path
+        unless @vm_password || machine.config.ssh.password || @private_key_file || (paths && paths.count > 0)
+          errors << 'You must provide one of the following: ssh.private_key_path, azure.private_key_file, ssh.password or azure.vm_password.'
+        end
+
+        if (@private_key_file || (paths && paths.count > 0)) && (@vm_password || machine.config.ssh.password)
+          machine.config.ssh.password = @vm_password = nil
+          machine.ui.warn('You specified both private_key and password. Vagrant-Azure will only use the private_key in this case.')
+        end
+
+        if machine.config.ssh.password.nil? && @vm_password
+          machine.config.ssh.password = @vm_password
+        elsif machine.config.ssh.password && @vm_password.nil?
+          @vm_password = machine.config.ssh.password
+        end
+
+        if machine.config.ssh.private_key_path.nil? && @private_key_file
+          machine.config.ssh.private_key_path = [File.expand_path(@private_key_file)]
+        elsif machine.config.ssh.private_key_path && @private_key_file.nil?
+          @private_key_file = File.expand_path(paths.first)
         end
 
         { 'Microsoft Azure Provider' => errors }
