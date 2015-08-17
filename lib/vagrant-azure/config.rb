@@ -9,6 +9,7 @@ require 'azure'
 module VagrantPlugins
   module WinAzure
     class Config < Vagrant.plugin('2', :config)
+
       attr_accessor :mgmt_certificate
       attr_accessor :mgmt_endpoint
       attr_accessor :subscription_id
@@ -100,18 +101,16 @@ module VagrantPlugins
 
         @state_read_timeout = nil if @state_read_timeout == UNSET_VALUE
 
+        utils = Class.new.extend(Azure::Core::Utility)
+
         # This done due to a bug in Ruby SDK - it doesn't generate a storage
         # account name if add_role = true
         if @storage_acct_name.nil? || @storage_acct_name.empty?
-          @storage_acct_name = Azure::Core::Utility.random_string(
-            "#{@vm_name}storage"
-          ).gsub(/[^0-9a-z ]/i, '').downcase[0..23]
+          @storage_acct_name = utils.random_string("#{@vm_name}storage").gsub(/[^0-9a-z ]/i, '').downcase[0..23]
         end
 
         if @cloud_service_name.nil? || @cloud_service_name.empty?
-          @cloud_service_name = Azure::Core::Utility.random_string(
-            "#{@vm_name}-service-"
-          )
+          @cloud_service_name = utils.random_string("#{@vm_name}-service-")
         end
       end
 
