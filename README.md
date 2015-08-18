@@ -115,24 +115,18 @@ The vagrant-azure provide exposes a few Azure specific configuration options:
 * `tcp_endpoints` - To open any additional ports. E.g., `80` opens port `80` and `80,3389:53389` opens port `80` and `3389`. Also maps the interal port `3389` to public port `53389`
 
 ### Certificate Generation on Windows
-We will use `makecert.exe` distributed as part of the in the Windows 7 SDK.  The following commands will create the required certificates and insert them into the current user’s personal store.
+We will use `makecert.exe` distributed as part of the in the Windows 7 SDK.  The following commands will create the required certificate and insert it into the current user’s personal store.
 
-* `makecert.exe -r -pe -a sha1 -n "CN=My Azure Management Certificate"
--ss My -sr CurrentUser -len 2048 -sky exchange -sp "Microsoft Enhanced RSA
-and AES Cryptographic Provider" -sy 24`
-
-* `makecert.exe -r -pe -a sha1 -n "CN=My Azure RDP Certificate" -ss My -sr CurrentUser -len 2048 -sky exchange -sp "Microsoft Enhanced RSA and AES Cryptographic Provider" -sy 24`
-
-* `makecert.exe -r -pe -a sha1 -n "CN=My Azure SSL Certificate" -ss My -sr CurrentUser -len 2048 -sky exchange -sp "Microsoft Enhanced RSA and AES Cryptographic Provider" -sy 24`
+```
+makecert.exe -r -pe -a sha1 -n "CN=AzCert" -ss My -sr CurrentUser -len 2048 -sky exchange -sp "Microsoft Enhanced RSA and AES Cryptographic Provider" -sy 24
+```
 
 (In order to have more details with images in Windows)[http://blogs.msdn.com/b/cclayton/archive/2012/03/21/windows-azure-and-x509-certificates.aspx]
 
 ### Get Started with Publish Settings
 
-* To create a pfx from the publishsettings, simply download the publishsettings file for your subscription 
-[https://manage.windowsazure.com/publishsettings](https://manage.windowsazure.com/publishsettings/index?client=powershell). Make sure you have this gem installed and
- run `pfxer --in [path to your .publishsettings file]`. This will create a .pfx from your publish settings file which can 
- be supplied as a cert parameter for Service Management Commands.
+To create a pfx from the publishsettings, simply download the publishsettings file for your subscription 
+[https://manage.windowsazure.com/publishsettings](https://manage.windowsazure.com/publishsettings/index?client=powershell). Make sure you have the [Ruby Azure](https://rubygems.org/gems/azure/versions/0.7.0) gem installed and run `pfxer --in [path to your .publishsettings file]`. This will create a .pfx from your publish settings file which can be supplied as a cert parameter for Service Management Commands.
 
 ### Get Started with OpenSSL
 
