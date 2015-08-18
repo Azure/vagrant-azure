@@ -1,13 +1,13 @@
 # Vagrant Azure Provider
 
-![Gem Version](https://badge.fury.io/rb/vagrant-azure.png)
+[![Gem Version](https://badge.fury.io/rb/vagrant-azure.png)](https://rubygems.org/gems/vagrant-azure)
 
 This is a [Vagrant](http://www.vagrantup.com) 1.7.3+ plugin that adds [Microsoft Azure](https://azure.microsoft.com)
 provider to Vagrant, allowing Vagrant to control and provision machines in Microsoft Azure.
 
 ## Usage
 
-Install Vagrant 1.6.0 or higher - [Download Vagrant](http://www.vagrantup.com/downloads.html)
+Install Vagrant 1.7.3 or higher - [Download Vagrant](http://www.vagrantup.com/downloads.html)
 
 Install the vagrant-azure plugin using the standard Vagrant 1.1+ installation methods. After installing the plugin, you can ```vagrant up``` and use ```azure``` provider. For example:
 
@@ -117,13 +117,13 @@ The vagrant-azure provide exposes a few Azure specific configuration options:
 ### Certificate Generation on Windows
 We will use `makecert.exe` distributed as part of the in the Windows 7 SDK.  The following commands will create the required certificates and insert them into the current user’s personal store.
 
-* makecert.exe -r -pe -a sha1 -n "CN=My Azure Management Certificate"
+* `makecert.exe -r -pe -a sha1 -n "CN=My Azure Management Certificate"
 -ss My -sr CurrentUser -len 2048 -sky exchange -sp "Microsoft Enhanced RSA
-and AES Cryptographic Provider" -sy 24
+and AES Cryptographic Provider" -sy 24`
 
-* makecert.exe -r -pe -a sha1 -n "CN=My Azure RDP Certificate" -ss My -sr CurrentUser -len 2048 -sky exchange -sp "Microsoft Enhanced RSA and AES Cryptographic Provider" -sy 24
+* `makecert.exe -r -pe -a sha1 -n "CN=My Azure RDP Certificate" -ss My -sr CurrentUser -len 2048 -sky exchange -sp "Microsoft Enhanced RSA and AES Cryptographic Provider" -sy 24`
 
-* makecert.exe -r -pe -a sha1 -n "CN=My Azure SSL Certificate" -ss My -sr CurrentUser -len 2048 -sky exchange -sp "Microsoft Enhanced RSA and AES Cryptographic Provider" -sy 24
+* `makecert.exe -r -pe -a sha1 -n "CN=My Azure SSL Certificate" -ss My -sr CurrentUser -len 2048 -sky exchange -sp "Microsoft Enhanced RSA and AES Cryptographic Provider" -sy 24`
 
 (In order to have more details with images in Windows)[http://blogs.msdn.com/b/cclayton/archive/2012/03/21/windows-azure-and-x509-certificates.aspx]
 
