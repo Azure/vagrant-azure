@@ -73,7 +73,7 @@ module VagrantPlugins
             # a deployment.
             if config.cloud_service_name && !config.cloud_service_name.empty?
               begin
-                cloud_service = ManagementHttpRequest.new(
+                cloud_service = Azure::BaseManagement::ManagementHttpRequest.new(
                     :get,
                     "/services/hostedservices/#{config.cloud_service_name}?embed-detail=true"
                 ).call
