@@ -93,10 +93,16 @@ module VagrantPlugins
             env[:ui].info("Add Role? - #{add_role}")
 
             if add_role
-              env[:azure_vm_service].add_role(params.clone.merge(cloud_service_name: config.cloud_service_name), options)
+              s = env[:azure_vm_service].add_role(params.clone.merge(cloud_service_name: config.cloud_service_name), options)
             else
-              env[:azure_vm_service].create_virtual_machine(params, options)
+              s = env[:azure_vm_service].create_virtual_machine(params, options)
             end
+
+            (config.data_disks || []).each do |d|
+              env[:ui].info("attach #{d}")
+              env[:azure_vm_service].add_data_disk(params[:vm_name], params[:cloud_service_name], d)
+            end
+            s
           end
 
           if server.nil?

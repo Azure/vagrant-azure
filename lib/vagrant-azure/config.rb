@@ -9,6 +9,7 @@ require 'azure'
 module VagrantPlugins
   module WinAzure
     class Config < Vagrant.plugin('2', :config)
+      DATA_DISK_KEYS = [:disk_label, :disk_size, :import, :disk_name]
 
       attr_accessor :mgmt_certificate
       attr_accessor :mgmt_endpoint
@@ -23,6 +24,7 @@ module VagrantPlugins
       attr_accessor :vm_location
       attr_accessor :vm_affinity_group
       attr_accessor :vm_virtual_network_name
+      attr_accessor :data_disks
 
       attr_accessor :cloud_service_name
       attr_accessor :deployment_name
@@ -58,6 +60,7 @@ module VagrantPlugins
         @vm_location = UNSET_VALUE
         @vm_affinity_group = UNSET_VALUE
         @vm_virtual_network_name = UNSET_VALUE
+        @data_disks = UNSET_VALUE
 
         @cloud_service_name = UNSET_VALUE
         @deployment_name = UNSET_VALUE
@@ -86,6 +89,7 @@ module VagrantPlugins
         @vm_location = 'West US' if @vm_location == UNSET_VALUE
         @vm_affinity_group = nil if @vm_affinity_group == UNSET_VALUE
         @vm_virtual_network_name = nil if @vm_virtual_network_name == UNSET_VALUE
+        @data_disks = nil if @vm_virtual_network_name == UNSET_VALUE
 
         @cloud_service_name = nil if @cloud_service_name == UNSET_VALUE
         @deployment_name = nil if @deployment_name == UNSET_VALUE
@@ -147,6 +151,23 @@ module VagrantPlugins
           @private_key_file = File.expand_path(paths.first)
         end
 
+        if !@data_disks.nil? && @data_disks != UNSET_VALUE
+          data_disk_example = "{disk_label: 'disk1', disk_size: 40}"
+          unless @data_disks.is_a? Array
+            machine.ui.warn("data_disks is expected to be defined with an Array.\nFor instance [#{data_disk_example}, ...].")
+            @data_disks = nil
+          end
+          @data_disks.each do |dict|
+            unless dict.is_a? Hash
+              machine.ui.warn("each data_disk should be configured with a Hash.\nFor instance #{data_disk_example}.")
+            end
+            unexpected_key = dict.keys - DATA_DISK_KEYS
+            if unexpected_key.any?
+              machine.ui.warn("data_disks: unrecognized config key(s) #{unexpected_key}") 
+            end
+          end
+        end
+        
         { 'Microsoft Azure Provider' => errors }
       end
     end
