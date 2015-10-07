@@ -89,7 +89,7 @@ module VagrantPlugins
         @vm_location = 'West US' if @vm_location == UNSET_VALUE
         @vm_affinity_group = nil if @vm_affinity_group == UNSET_VALUE
         @vm_virtual_network_name = nil if @vm_virtual_network_name == UNSET_VALUE
-        @data_disks = nil if @vm_virtual_network_name == UNSET_VALUE
+        @data_disks = nil if @data_disks == UNSET_VALUE
 
         @cloud_service_name = nil if @cloud_service_name == UNSET_VALUE
         @deployment_name = nil if @deployment_name == UNSET_VALUE
