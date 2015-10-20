@@ -41,7 +41,7 @@ Vagrant.configure('2') do |config|
 		azure.mgmt_endpoint = 'https://management.core.windows.net'
 		azure.subscription_id = 'YOUR AZURE SUBSCRIPTION ID'
 		azure.vm_image = 'NAME OF THE IMAGE TO USE'
-		azure.vm_name = 'PROVIDE A NAME FOR YOUR VIRTUAL MACHINE' # max 15 characters. contains letters, number and hyphens. can start with letters and can end with letters and numbers
+		azure.vm_name = 'PROVIDE A NAME FOR YOUR VIRTUAL MACHINE' # max 15 characters. contains letters, number and hyphens. Can start with letters and can end with letters and numbers. May NOT contain underscores "_"
 		
 		# vm_password is optional when specifying the private_key_file with Linux VMs
 		# When building a Windows VM and using WinRM this setting is used to authenticate via WinRM (PowerShell Remoting)
@@ -126,7 +126,7 @@ makecert.exe -r -pe -a sha1 -n "CN=AzCert" -ss My -sr CurrentUser -len 2048 -sky
 ### Get Started with Publish Settings
 
 To create a pfx from the publishsettings, simply download the publishsettings file for your subscription 
-[https://manage.windowsazure.com/publishsettings](https://manage.windowsazure.com/publishsettings/index?client=powershell). Make sure you have the [Ruby Azure](https://rubygems.org/gems/azure/versions/0.7.0) gem installed and run `pfxer --in [path to your .publishsettings file]`. This will create a .pfx from your publish settings file which can be supplied as a cert parameter for Service Management Commands.
+[https://manage.windowsazure.com/publishsettings](https://manage.windowsazure.com/publishsettings/index?client=powershell). Make sure you have the [Ruby Azure](https://rubygems.org/gems/azure/versions/0.7.0) gem installed and run `pfxer transform --in [path to your .publishsettings file]`. This will create a .pfx from your publish settings file which can be supplied as a cert parameter for Service Management Commands.
 
 ### Get Started with OpenSSL
 
