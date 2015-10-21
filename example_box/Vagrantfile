@@ -1,15 +1,42 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
-VAGRANTFILE_API_VERSION = '2'
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
 
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  # All Vagrant configuration is done here. The most common configuration
-  # options are documented and commented below. For a complete reference,
-  # please see the online documentation at vagrantup.com.
+Vagrant.configure('2') do |config|
+  config.vm.box = 'azure'
 
-  config.vm.provider :azure do |azure|
+  config.vm.provider :azure do |azure, override|
+    # Mandatory Settings
+    azure.mgmt_certificate = '/Users/alexvinyar/Documents/Projects/Azure/managementCertificate.pem'
+    azure.mgmt_endpoint = 'https://management.core.windows.net'
+    azure.subscription_id = '12345678-abcd-1234-5678-abcdefghijk'
+    azure.vm_image = 'b39f27a8b8c64d52b05eac6a62ebad85__Ubuntu-14_04_1-LTS-amd64-server-20140927-en-us-30GB'
+    azure.vm_name = 'alexvinyart1' # max 15 characters. contains letters, number and hyphens. can start with letters and can end with letters and numbers
+
+    # vm_password is optional when specifying the private_key_file with Linux VMs
+    # When building a Windows VM and using WinRM this setting is used to authenticate via WinRM (PowerShell Remoting)
+    azure.vm_password = 'Not##RealPass' # min 8 characters. should contain a lower case letter, an uppercase letter, a number and a special character
     azure.vm_size = 'Small'
+
+    # # Optional Settings
+    azure.storage_acct_name = 'alexvinyar' # optional. A new one will be generated if not provided.
+    # azure.vm_user = 'PROVIDE A USERNAME' # defaults to 'vagrant' if not provided
+    # azure.cloud_service_name = 'PROVIDE A NAME FOR YOUR CLOUD SERVICE' # same as vm_name. leave blank to auto-generate
+    # azure.deployment_name = 'PROVIDE A NAME FOR YOUR DEPLOYMENT' # defaults to cloud_service_name
+    # azure.vm_location = 'PROVIDE A LOCATION FOR VM' # e.g., West US
+
+    # # Optional *Nix Settings
+    # azure.ssh_port = 'A VALID PUBLIC PORT' # defaults to 22
+    # azure.private_key_file = 'Path to your ssh private key file (~/.ssh/id_rsa) to use for passwordless auth. If the id_rsa file is password protected, you will be prompted for the password.'
+
+    # # Optional Windows Settings
+    azure.winrm_transport = ['http', 'https'] # this will open up winrm ports on both http (5985) and http (5986) ports
+    # azure.winrm_https_port = 'A VALID PUBLIC PORT' # customize the winrm https port, instead of 5986
+    # azure.winrm_http_port = 'A VALID PUBLIC PORT' # customize the winrm http port, insted of 5985
+    azure.tcp_endpoints = '3389:53389' # opens the Remote Desktop internal port that listens on public port 53389. Without this, you cannot RDP to a Windows VM.
   end
 end
