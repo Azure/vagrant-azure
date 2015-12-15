@@ -31,8 +31,15 @@ module VagrantPlugins
             if result.exit_code == 1
               raise result.stderr
             end
+          elsif Vagrant::Util::Platform.linux?
+            generate_rdp_file env[:machine]
+            command = ['xfreerdp', @rdp_file]
+            result = Vagrant::Util::Subprocess.execute(*command)
+
+            if result.exit_code == 1
+              raise result.stderr
+            end
           else
-            # TODO: Add support for RDP on *Nix systems
             raise 'Unsupported operating system for RDP operation.'
           end
 
