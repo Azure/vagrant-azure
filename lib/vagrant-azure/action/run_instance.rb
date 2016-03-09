@@ -56,7 +56,7 @@ module VagrantPlugins
           options[:winrm_https_port] = config.winrm_https_port unless config.winrm_https_port.nil?
           options[:availability_set_name] = config.availability_set_name unless config.availability_set_name.nil?
           options[:virtual_network_name] = config.vm_virtual_network_name unless config.vm_virtual_network_name.nil?
-
+          options[:subnet_name] = config.vm_subnet_name unless config.vm_subnet_name.nil?
 
           if params[:password] && options[:private_key_file]
             env[:ui].warn('You specified both a password and a private key file. The password will be used rather than ' +
