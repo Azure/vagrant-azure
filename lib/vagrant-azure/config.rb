@@ -23,6 +23,7 @@ module VagrantPlugins
       attr_accessor :vm_location
       attr_accessor :vm_affinity_group
       attr_accessor :vm_virtual_network_name
+      attr_accessor :vm_subnet_name
 
       attr_accessor :cloud_service_name
       attr_accessor :deployment_name
@@ -58,6 +59,7 @@ module VagrantPlugins
         @vm_location = UNSET_VALUE
         @vm_affinity_group = UNSET_VALUE
         @vm_virtual_network_name = UNSET_VALUE
+        @vm_subnet_name = UNSET_VALUE
 
         @cloud_service_name = UNSET_VALUE
         @deployment_name = UNSET_VALUE
@@ -86,6 +88,7 @@ module VagrantPlugins
         @vm_location = 'West US' if @vm_location == UNSET_VALUE
         @vm_affinity_group = nil if @vm_affinity_group == UNSET_VALUE
         @vm_virtual_network_name = nil if @vm_virtual_network_name == UNSET_VALUE
+        @vm_subnet_name = nil if @vm_subnet_name == UNSET_VALUE
 
         @cloud_service_name = nil if @cloud_service_name == UNSET_VALUE
         @deployment_name = nil if @deployment_name == UNSET_VALUE
@@ -145,6 +148,10 @@ module VagrantPlugins
           machine.config.ssh.private_key_path = [File.expand_path(@private_key_file)]
         elsif machine.config.ssh.private_key_path && @private_key_file.nil?
           @private_key_file = File.expand_path(paths.first)
+        end
+
+        if @vm_virtual_network_name.nil? && @vm_subnet_name
+          errors << 'You specified a vm_subnet_name without a vm_virtual_network_name'
         end
 
         { 'Microsoft Azure Provider' => errors }
