@@ -1,13 +1,11 @@
-#--------------------------------------------------------------------------
-# Copyright (c) Microsoft Open Technologies, Inc.
-# All Rights Reserved.  Licensed under the Apache License, Version 2.0.
-# See License.txt in the project root for license information.
-#--------------------------------------------------------------------------
+# encoding: utf-8
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License in the project root for license information.
 require 'log4r'
 
-# Barebones basic implemenation. This a work in progress in very early stages
+# Bare bones basic implementation. This a work in progress in very early stages
 module VagrantPlugins
-  module WinAzure
+  module Azure
     module Action
       class StopInstance
 
@@ -23,7 +21,7 @@ module VagrantPlugins
             )
           else
             env[:machine].id =~ /@/
-            VagrantPlugins::WinAzure::CLOUD_SERVICE_SEMAPHORE.synchronize do
+            VagrantPlugins::Azure::CLOUD_SERVICE_SEMAPHORE.synchronize do
               env[:ui].info(
                   I18n.t(
                       'vagrant_azure.stopping',

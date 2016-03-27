@@ -1,15 +1,13 @@
-#--------------------------------------------------------------------------
-# Copyright (c) Microsoft Open Technologies, Inc.
-# All Rights Reserved.  Licensed under the Apache License, Version 2.0.
-# See License.txt in the project root for license information.
-#--------------------------------------------------------------------------
+# encoding: utf-8
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License in the project root for license information.
 require 'pathname'
 
 require 'vagrant/action/builder'
 require 'vagrant/action/builtin/wait_for_communicator'
 
 module VagrantPlugins
-  module WinAzure
+  module Azure
     module Action
       # Include the built-in modules so we can use them as top-level things.
       include Vagrant::Action::Builtin
@@ -18,9 +16,9 @@ module VagrantPlugins
       def self.action_halt
         Vagrant::Action::Builder.new.tap do |b|
           b.use ConfigValidate
-          b.use Call, IsState, :NotCreated do |env, b2|
-            if env[:result]
-              b2.use Message, I18n.t('vagrant_azure.not_created')
+          b.use Call, IsCreated do |env, b2|
+            unless env[:result]
+              b2.use MessageNotCreated
               next
             end
 
@@ -36,22 +34,17 @@ module VagrantPlugins
           b.use Call, DestroyConfirm do |env, b2|
             if env[:result]
               b2.use ConfigValidate
-              b2.use Call, IsState, :NotCreated do |env2, b3|
-                if env2[:result]
-                  b3.use Message, I18n.t('vagrant_azure.not_created')
+              b2.use Call, IsCreated do |env2, b3|
+                unless env2[:result]
+                  b3.use MessageNotCreated
                   next
                 end
+                b3.use ConnectAzure
+                b3.use TerminateInstance
+                b3.use ProvisionerCleanup if defined?(ProvisionerCleanup)
               end
-
-              b2.use ConnectAzure
-              b2.use TerminateInstance
-              b2.use ProvisionerCleanup if defined?(ProvisionerCleanup)
             else
-              env[:machine].id =~ /@/
-              b2.use Message, I18n.t(
-                  'vagrant_azure.will_not_destroy',
-                  :name => $`
-              )
+              b2.use MessageWillNotDestroy
             end
           end
         end
@@ -60,18 +53,14 @@ module VagrantPlugins
       # This action is called when `vagrant provision` is called.
       def self.action_provision
         Vagrant::Action::Builder.new.tap do |b|
-          b.use ConnectAzure
           b.use ConfigValidate
-          b.use OSType
-          b.use ReadWinrmInfo
-          b.use Call, IsState, :NotCreated do |env, b2|
-            if env[:result]
-              b2.use Message, I18n.t('vagrant_azure.not_created')
+          b.use Call, IsCreated do |env, b2|
+            unless env[:result]
+              b2.use MessageNotCreated
               next
             end
 
             b2.use Provision
-            b2.use SyncFolders
           end
         end
       end
@@ -82,27 +71,13 @@ module VagrantPlugins
         Vagrant::Action::Builder.new.tap do |b|
           b.use ConfigValidate
           b.use ConnectAzure
-          b.use ReadSSHInfo, 22
+          b.use ReadSSHInfo
         end
       end
 
-      def self.action_read_rdp_info
-        Vagrant::Action::Builder.new.tap do |b|
-          b.use ConfigValidate
-          b.use ConnectAzure
-          b.use ReadSSHInfo, 3389
-        end
-      end
-
-      def self.action_read_winrm_info
-        Vagrant::Action::Builder.new.tap do |b|
-          b.use ConfigValidate
-          b.use ConnectAzure
-          b.use OSType
-          b.use ReadWinrmInfo
-        end
-      end
-
+      # This action is called to read the state of the machine. The
+      # resulting state is expected to be put into the `:machine_state_id`
+      # key.
       def self.action_read_state
         Vagrant::Action::Builder.new.tap do |b|
           b.use ConfigValidate
@@ -111,14 +86,13 @@ module VagrantPlugins
         end
       end
 
-      # This action is called to SSH into the machine
+      # This action is called to SSH into the machine.
       def self.action_ssh
         Vagrant::Action::Builder.new.tap do |b|
-          b.use ConnectAzure
           b.use ConfigValidate
-          b.use Call, IsState, :NotCreated do |env, b2|
-            if env[:result]
-              b2.use Message, I18n.t('vagrant_azure.not_created')
+          b.use Call, IsCreated do |env, b2|
+            unless env[:result]
+              b2.use MessageNotCreated
               next
             end
 
@@ -127,49 +101,12 @@ module VagrantPlugins
         end
       end
 
-      def self.action_powershell_run
-        Vagrant::Action::Builder.new.tap do |b|
-          b.use action_read_winrm_info
-          b.use Call, IsState, :NotCreated do |env, b2|
-            if env[:result]
-              b2.use Message, I18n.t('vagrant_azure.not_created')
-              next
-            end
-
-            b2.use PowerShellRun
-          end
-        end
-      end
-
-      def self.action_rdp
-        Vagrant::Action::Builder.new.tap do |b|
-          b.use ConnectAzure
-          b.use ConfigValidate
-          b.use Call, IsState, :NotCreated do |env1, b1|
-            if env1[:result]
-              b1.use Message, I18n.t('vagrant_azure.not_created')
-              next
-            end
-
-            b1.use Call, IsState, :ReadyRole do |env2, b2|
-              if !env2[:result]
-                b2.use Message, I18n.t('vagrant_azure.rdp_not_ready')
-                next
-              end
-
-              b2.use Rdp
-            end
-          end
-        end
-      end
-
       def self.action_ssh_run
         Vagrant::Action::Builder.new.tap do |b|
-          b.use ConnectAzure
           b.use ConfigValidate
-          b.use Call, IsState, :NotCreated do |env, b2|
-            if env[:result]
-              b2.use Message, I18n.t('vagrant_azure.not_created')
+          b.use Call, IsCreated do |env, b2|
+            unless env[:result]
+              b2.use MessageNotCreated
               next
             end
 
@@ -180,42 +117,31 @@ module VagrantPlugins
 
       def self.action_prepare_boot
         Vagrant::Action::Builder.new.tap do |b|
-          b.use Call, WaitForState, :ReadyRole do |env, b1|
-            if env[:result]
-              env[:machine].id =~ /@/
-              b1.use Message, I18n.t(
-                  'vagrant_azure.vm_started', :name => $`
-              )
-              b1.use action_read_winrm_info
-              b1.use WaitForCommunicator
-              b1.use action_provision
-            end
-          end
+          b.use Provision
+          b.use SyncedFolders
         end
       end
 
-      # This action is called to bring the box up from nothing
+      # This action is called to bring the box up from nothing.
       def self.action_up
         Vagrant::Action::Builder.new.tap do |b|
           b.use HandleBox
           b.use ConfigValidate
+          b.use BoxCheckOutdated
           b.use ConnectAzure
-          b.use OSType
-          b.use Call, IsState, :NotCreated do |env1, b1|
-            if !env1[:result]
-              b1.use Call, IsState, :StoppedDeallocated do |env2, b2|
+          b.use Call, IsCreated do |env1, b1|
+            if env1[:result]
+              b1.use Call, IsStopped do |env2, b2|
                 if env2[:result]
-                  b2.use StartInstance # start this instance again
                   b2.use action_prepare_boot
+                  b2.use StartInstance # restart this instance
                 else
-                  b2.use Message, I18n.t(
-                      'vagrant_azure.already_status', :status => 'created'
-                  )
+                  b2.use MessageAlreadyCreated
                 end
               end
             else
-              b1.use RunInstance # Launch a new instance
               b1.use action_prepare_boot
+              b1.use RunInstance # launch a new instance
             end
           end
         end
@@ -225,20 +151,18 @@ module VagrantPlugins
         Vagrant::Action::Builder.new.tap do |b|
           b.use ConfigValidate
           b.use ConnectAzure
-          b.use Call, IsState, :NotCreated do |env, b2|
-            if env[:result]
-              b2.use Message, I18n.t('vagrant_azure.not_created')
+          b.use Call, IsCreated do |env, b2|
+            unless env[:result]
+              b2.use MessageNotCreated
               next
             end
 
             b2.use action_halt
-            b2.use Call, WaitForState, :StoppedDeallocated do |env2, b3|
+            b2.use Call, WaitForState, :stopped, 120 do |env2, b3|
               if env2[:result]
-                env2[:machine].id =~ /@/
-                b3.use Message, I18n.t('vagrant_azure.vm_stopped', name: $`)
                 b3.use action_up
               else
-                b3.use Message, 'Not able to stop the machine. Please retry.'
+                # ??? it didn't stop
               end
             end
           end
@@ -248,18 +172,19 @@ module VagrantPlugins
       # The autoload farm
       action_root = Pathname.new(File.expand_path('../action', __FILE__))
       autoload :ConnectAzure, action_root.join('connect_azure')
-      autoload :Rdp, action_root.join('rdp')
+      autoload :IsCreated, action_root.join('is_created')
+      autoload :IsStopped, action_root.join('is_stopped')
+      autoload :MessageAlreadyCreated, action_root.join('message_already_created')
+      autoload :MessageNotCreated, action_root.join('message_not_created')
+      autoload :MessageWillNotDestroy, action_root.join('message_will_not_destroy')
       autoload :ReadSSHInfo, action_root.join('read_ssh_info')
-      autoload :ReadWinrmInfo, action_root.join('read_winrm_info')
-      autoload :PowerShellRun, action_root.join('powershell_run')
-      autoload :OSType, action_root.join('os_type')
       autoload :ReadState, action_root.join('read_state')
       autoload :RestartVM, action_root.join('restart_vm')
       autoload :RunInstance, action_root.join('run_instance')
       autoload :StartInstance, action_root.join('start_instance')
       autoload :StopInstance, action_root.join('stop_instance')
-      autoload :SyncFolders, action_root.join('sync_folders')
       autoload :TerminateInstance, action_root.join('terminate_instance')
+      autoload :TimedProvision, action_root.join('timed_provision')
       autoload :WaitForState, action_root.join('wait_for_state')
     end
   end

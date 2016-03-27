@@ -1,8 +1,6 @@
-#--------------------------------------------------------------------------
-# Copyright (c) Microsoft Open Technologies, Inc.
-# All Rights Reserved.  Licensed under the Apache License, Version 2.0.
-# See License.txt in the project root for license information.
-#--------------------------------------------------------------------------
+# encoding: utf-8
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License in the project root for license information.
 begin
   require 'vagrant'
 rescue LoadError
@@ -16,12 +14,12 @@ if Vagrant::VERSION < '1.6.0'
 end
 
 module VagrantPlugins
-  module WinAzure
+  module Azure
     class Plugin < Vagrant.plugin('2')
-      name 'azure'
+      name 'Azure'
       description <<-DESC
       This plugin installs a provider that allows Vagrant to manage
-      machines in Windows Azure.
+      machines in Microsoft Azure.
       DESC
 
       config(:azure, :provider) do
@@ -33,38 +31,16 @@ module VagrantPlugins
         # Setup logging and i18n
         setup_logging
         setup_i18n
-        apply_patches
 
         # Return the provider
         require_relative 'provider'
         Provider
       end
 
-      provider_capability(:azure, :winrm_info) do
-        require_relative 'capabilities/winrm'
-        VagrantPlugins::WinAzure::Cap::WinRM
-      end
-
-      command 'powershell' do
-        require_relative 'command/powershell'
-        VagrantPlugins::WinAzure::Command::PowerShell
-      end
-
-      command 'rdp' do
-        require_relative 'command/rdp'
-        VagrantPlugins::WinAzure::Command::RDP
-      end
-
-      def self.apply_patches
-        lib_path = Pathname.new(File.expand_path('../../vagrant-azure', __FILE__))
-        Vagrant.plugin('2').manager.communicators[:winrm]
-        require lib_path.join('monkey_patch/winrm')
-      end
-
       def self.setup_i18n
         I18n.load_path << File.expand_path(
           'locales/en.yml',
-          WinAzure.source_root
+          Azure.source_root
         )
         I18n.load_path << File.expand_path(
           'templates/locales/en.yml',
@@ -98,7 +74,7 @@ module VagrantPlugins
         # Set the logging level on all "vagrant" namespaced logs as long as
         # we have a valid level
         if level
-          logger = Log4r::Logger.new("vagrant_azure")
+          logger = Log4r::Logger.new('vagrant_azure')
           logger.outputters = Log4r::Outputter.stderr
           logger.level = level
           logger = nil

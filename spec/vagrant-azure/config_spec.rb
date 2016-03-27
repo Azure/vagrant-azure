@@ -2,8 +2,17 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License in the project root for license information.
 
+require 'vagrant'
+require 'vagrant-azure/config'
+
 module VagrantPlugins
   module Azure
-    VERSION = '2.0.0'
+    describe Config do
+
+      it 'should config' do
+
+      end
+
+    end
   end
 end

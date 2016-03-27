@@ -35,3 +35,40 @@ en:
         Server not created. Error is: %{message}
       create_vm_failure: |-
         There was some error in creating the VM.
+    subscription_id:
+      required: |-
+        You must provide an Azure Subscription Id either through ENV['AZURE_SUBSCRIPTION_ID'] or via Vagrantfile.
+    mgmt_endpoint:
+      required: |-
+        You must provide a non-nil Azure Management Endpoint either through ENV['AZURE_MANAGEMENT_ENDPOINT'] or via Vagrantfile.
+    auth:
+      required: |-
+        You must provide Azure Active Directory Tenant ID, Application Client ID and Application Client Secret via ENV or Vagrantfile.
+    states:
+      short_not_created: |-
+        not created
+      long_not_created: |-
+        The Azure instance is not created. Run `vagrant up` to create it.
+      short_stopped: |-
+        stopped
+      long_stopped: |-
+        The Azure instance is stopped. Run `vagrant up` to start it.
+      short_stopping: |-
+        stopping
+      long_stopping: |-
+        The Azure instance is stopping. Wait until is completely stopped to
+        run `vagrant up` and start it.
+      short_pending: |-
+        pending
+      long_pending: |-
+        The Azure instance is pending a start (i.e. this is a transition state).
+      short_running: |-
+        running
+      long_running: |-
+        The Azure instance is running. To stop this machine, you can run
+        `vagrant halt`. To destroy the machine, you can run `vagrant destroy`.
+      short_pending: |-
+        pending
+      long_pending: |-
+        The Azure instance is still being initialized. To destroy this machine,
+        you can run `vagrant destroy`.

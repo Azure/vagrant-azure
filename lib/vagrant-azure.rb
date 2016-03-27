@@ -1,19 +1,14 @@
-#--------------------------------------------------------------------------
-# Copyright (c) Microsoft Open Technologies, Inc.
-# All Rights Reserved.  Licensed under the Apache License, Version 2.0.
-# See License.txt in the project root for license information.
-#--------------------------------------------------------------------------
+# encoding: utf-8
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License in the project root for license information.
 require 'pathname'
 require 'vagrant-azure/plugin'
 
 module VagrantPlugins
-  module WinAzure
+  module Azure
     lib_path = Pathname.new(File.expand_path('../vagrant-azure', __FILE__))
     autoload :Action, lib_path.join('action')
     autoload :Errors, lib_path.join('errors')
-    autoload :Driver, lib_path.join('driver')
-
-    CLOUD_SERVICE_SEMAPHORE = Mutex.new
 
     # This returns the path to the source of this plugin.
     #

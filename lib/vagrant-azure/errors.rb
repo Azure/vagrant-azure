@@ -1,25 +1,23 @@
-#-------------------------------------------------------------------------
-# Copyright (c) Microsoft Open Technologies, Inc.
-# All Rights Reserved.  Licensed under the Apache License, Version 2.0.
-# See License.txt in the project root for license information.
-#--------------------------------------------------------------------------
+# encoding: utf-8
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License in the project root for license information.
 
 module VagrantPlugins
-  module WinAzure
+  module Azure
     module Errors
-      class WinAzureError < Vagrant::Errors::VagrantError
-        error_namespace("vagrant_azure.errors")
+      class AzureError < Vagrant::Errors::VagrantError
+        error_namespace('vagrant_azure.errors')
       end
 
-      class WinRMNotReady < WinAzureError
+      class WinRMNotReady < AzureError
         error_key(:win_rm_not_ready)
       end
 
-      class ServerNotCreated < WinAzureError
+      class ServerNotCreated < AzureError
         error_key(:server_not_created)
       end
 
-      class CreateVMFailure < WinAzureError
+      class CreateVMFailure < AzureError
         error_key(:create_vm_failure)
       end
 

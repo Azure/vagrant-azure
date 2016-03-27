@@ -1,24 +1,15 @@
-#--------------------------------------------------------------------------
-# Copyright (c) Microsoft Open Technologies, Inc.
-# All Rights Reserved.  Licensed under the Apache License, Version 2.0.
-# See License.txt in the project root for license information.
-#--------------------------------------------------------------------------
+# encoding: utf-8
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License in the project root for license information.
 require 'log4r'
 require 'vagrant'
 
 module VagrantPlugins
-  module WinAzure
+  module Azure
     class Provider < Vagrant.plugin('2', :provider)
-      attr_reader :driver
 
       def initialize(machine)
         @machine = machine
-
-        # Load the driver
-        machine_id_changed
-
-        @machine.config.winrm.password = @machine.provider_config.vm_password || @machine.provider_config.vm_user
-        @machine.config.winrm.username = @machine.provider_config.vm_user
       end
 
       def action(name)
@@ -30,10 +21,6 @@ module VagrantPlugins
         nil
       end
 
-      def machine_id_changed
-        @driver = Driver.new(@machine)
-      end
-
       def ssh_info
         # Run a custom action called "read_ssh_info" which does what it
         # says and puts the resulting SSH info into the `:machine_ssh_info`
@@ -42,24 +29,15 @@ module VagrantPlugins
         env[:machine_ssh_info]
       end
 
-      def rdp_info
-        env = @machine.action('read_rdp_info')
-        env[:machine_ssh_info]
-      end
-
-      def winrm_info
-        env = @machine.action('read_winrm_info')
-        env[:machine_winrm_info]
-      end
-
       def state
         # Run a custom action we define called "read_state" which does what it
         # says. It puts the state in the `:machine_state_id` key in the env
         env = @machine.action('read_state')
         state_id = env[:machine_state_id]
 
-        short = "Machine's current state is #{state_id}"
-        long = ""
+        # Get the short and long description
+        short = I18n.t("vagrant_azure.states.short_#{state_id}")
+        long  = I18n.t("vagrant_azure.states.long_#{state_id}")
 
         # Return the MachineState object
         Vagrant::MachineState.new(state_id, short, long)

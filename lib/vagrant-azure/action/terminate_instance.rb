@@ -1,11 +1,10 @@
-#--------------------------------------------------------------------------
-# Copyright (c) Microsoft Open Technologies, Inc.
-# All Rights Reserved. Licensed under the Apache 2.0 License.
-#--------------------------------------------------------------------------
+# encoding: utf-8
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License in the project root for license information.
 require 'log4r'
 
 module VagrantPlugins
-  module WinAzure
+  module Azure
     module Action
       class TerminateInstance
         def initialize(app, env)
