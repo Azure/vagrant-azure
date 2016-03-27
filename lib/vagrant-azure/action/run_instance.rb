@@ -3,6 +3,10 @@
 # Licensed under the MIT License. See License in the project root for license information.
 require 'log4r'
 require 'json'
+require 'azure_mgmt_resources'
+require 'vagrant/util/template_renderer'
+require 'vagrant-azure/util/timer'
+require 'haikunator'
 
 module VagrantPlugins
   module Azure
@@ -16,14 +20,169 @@ module VagrantPlugins
         end
 
         def call(env)
-          config = env[:machine].provider_config
+          # Initialize metrics if they haven't been
+          env[:metrics] ||= {}
 
-          
+          # Get the configs
+          config                    = env[:machine].provider_config
+          endpoint                  = config.endpoint
+          resource_group_name       = config.resource_group_name
+          location                  = config.location
+          vm_name                   = config.vm_name
+          vm_password               = config.vm_password
+          vm_size                   = config.vm_size
+          vm_image_urn              = config.vm_image_urn
+          virtual_network_name      = config.virtual_network_name
+          subnet_name               = config.subnet_name
+          tcp_endpoints             = config.tcp_endpoints
+          availability_set_name     = config.availability_set_name
 
+          # Launch!
+          env[:ui].info(I18n.t('vagrant_azure.launching_instance'))
+          env[:ui].info(" -- Management Endpoint: #{endpoint}")
+          env[:ui].info(" -- Subscription Id: #{config.subscription_id}")
+          env[:ui].info(" -- Resource Group Name: #{resource_group_name}")
+          env[:ui].info(" -- Location: #{location}")
+          env[:ui].info(" -- VM Name: #{vm_name}")
+          env[:ui].info(" -- VM Size: #{vm_size}")
+          env[:ui].info(" -- Image URN: #{vm_image_urn}")
+          env[:ui].info(" -- Virtual Network Name: #{virtual_network_name}") if virtual_network_name
+          env[:ui].info(" -- Subnet Name: #{subnet_name}") if subnet_name
+          env[:ui].info(" -- TCP Endpoints: #{tcp_endpoints}") if tcp_endpoints
+          env[:ui].info(" -- Availability Set Name: #{availability_set_name}") if availability_set_name
 
-          env[:machine].id = "#{server.vm_name}@#{server.cloud_service_name}"
+          image_publisher, image_offer, image_sku, image_version = vm_image_urn.split(':')
+
+          azure = env[:azure_arm_service]
+          image_details = nil
+          env[:metrics]['get_image_details'] = Util::Timer.time do
+            image_details = get_image_details(azure, location, image_publisher, image_offer, image_sku, image_version)
+          end
+          @logger.info("Time to fetch os image details: #{env[:metrics]['get_image_details']}")
+
+          deployment_params = {
+            sshKeyData:           File.read(File.expand_path('~/.ssh/id_rsa.pub')),
+            dnsLabelPrefix:       Haikunator.haikunate(100),
+            vmSize:               vm_size,
+            vmName:               vm_name,
+            imagePublisher:       image_publisher,
+            imageOffer:           image_offer,
+            imageSku:             image_sku,
+            imageVersion:         image_version,
+            subnetName:           subnet_name,
+            virtualNetworkName:   virtual_network_name
+          }
+
+          template_params = {
+              operating_system:     get_image_os(image_details)
+          }
+
+          env[:ui].info(" -- Putting Resource Group: #{resource_group_name}")
+          env[:metrics]['put_resource_group'] = Util::Timer.time do
+            put_resource_group(azure, resource_group_name, location)
+          end
+          @logger.info("Time to create resource group: #{env[:metrics]['put_resource_group']}")
+
+          deployment_params = build_deployment_params(template_params, deployment_params.reject{|_,v| v.nil?})
+
+          env[:ui].info('Starting deployment')
+          env[:metrics]['deployment_time'] = Util::Timer.time do
+            put_deployment(azure, resource_group_name, deployment_params)
+          end
+          env[:ui].info('Finished deploying')
+
+          # Immediately save the ID since it is created at this point.
+          env[:machine].id = "#{resource_group_name}:#{vm_name}"
+
+          @logger.info("Time to deploy: #{env[:metrics]['deployment_time']}")
+          unless env[:interrupted]
+            env[:metrics]['instance_ssh_time'] = Util::Timer.time do
+              # Wait for SSH to be ready.
+              env[:ui].info(I18n.t('vagrant_azure.waiting_for_ssh'))
+              network_ready_retries = 0
+              network_ready_retries_max = 10
+              while true
+                break if env[:interrupted]
+                begin
+                  break if env[:machine].communicate.ready?
+                rescue Exception => e
+                  if network_ready_retries < network_ready_retries_max
+                    network_ready_retries += 1
+                    @logger.warn(I18n.t('vagrant_azure.waiting_for_ssh, retrying'))
+                  else
+                    raise e
+                  end
+                end
+                sleep 2
+              end
+            end
+
+            @logger.info("Time for SSH ready: #{env[:metrics]['instance_ssh_time']}")
+
+            # Ready and booted!
+            env[:ui].info(I18n.t('vagrant_azure.ready'))
+          end
+
+          # Terminate the instance if we were interrupted
+          terminate(env) if env[:interrupted]
 
           @app.call(env)
+        end
+
+        def get_image_os(image_details)
+          image_details.properties.os_disk_image.operating_system
+        end
+
+        def get_image_details(azure, location, publisher, offer, sku, version)
+          if version == 'latest'
+            latest = azure.compute.virtual_machine_images.list(location, publisher, offer, sku).value!.body.last
+            azure.compute.virtual_machine_images.get(location, publisher, offer, sku, latest.name).value!.body
+          else
+            azure.compute.virtual_machine_images.get(location, publisher, offer, sku, version).value!.body
+          end
+        end
+
+        def put_deployment(azure, rg_name, params)
+          azure.resources.deployments.create_or_update(rg_name, 'vagrant', params).value!.body
+        end
+
+        def put_resource_group(azure, name, location)
+          params = ::Azure::ARM::Resources::Models::ResourceGroup.new.tap do |rg|
+            rg.location = location
+          end
+
+          azure.resources.resource_groups.create_or_update(name, params).value!.body
+        end
+
+        # This method generates the deployment template
+        def render_deployment_template(options)
+          Vagrant::Util::TemplateRenderer.render('arm/deployment.json', options.merge(template_root: template_root))
+        end
+
+        def build_deployment_params(template_params, deployment_params)
+          params = ::Azure::ARM::Resources::Models::Deployment.new
+          params.properties = ::Azure::ARM::Resources::Models::DeploymentProperties.new
+          params.properties.template = JSON.parse(render_deployment_template(template_params))
+          params.properties.mode = ::Azure::ARM::Resources::Models::DeploymentMode::Incremental
+          params.properties.parameters = build_parameters(deployment_params)
+          params
+        end
+
+        def build_parameters(options)
+          Hash[*options.map{ |k, v| [k,  {value: v}] }.flatten]
+        end
+
+        # Used to find the base location of aws-vagrant templates
+        def template_root
+          Azure.source_root.join('templates')
+        end
+
+        def terminate(env)
+          destroy_env = env.dup
+          destroy_env.delete(:interrupted)
+          destroy_env[:config_validate] = false
+          destroy_env[:force_confirm_destroy] = true
+          env[:action_runner].run(Action.action_destroy, destroy_env)
         end
       end
     end

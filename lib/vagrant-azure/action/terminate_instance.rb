@@ -13,17 +13,10 @@ module VagrantPlugins
         end
 
         def call(env)
-          env[:machine].id =~ /@/
+          rg_name, vm_name = env[:machine].id.split(':')
 
-          vm = env[:azure_vm_service].get_virtual_machine($`, $')
-
-          if vm.nil?
-            # machine not found. assuming it was not created or destroyed
-            env[:ui].info (I18n.t('vagrant_azure.not_created'))
-          else
-            env[:azure_vm_service].delete_virtual_machine($`, $')
-            env[:machine].id = nil
-          end
+          env[:azure_arm_service].compute.virtual_machines.delete(rg_name, vm_name).value!.body
+          env[:machine].id = nil
 
           @app.call(env)
         end

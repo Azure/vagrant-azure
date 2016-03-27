@@ -9,6 +9,14 @@
         "description": "User name for the Virtual Machine."
       }
     },
+    <% if operating_system == 'Windows' %>
+    "adminPassword": {
+      "type": "string",
+      "metadata": {
+        "description": "Password for the Virtual Machine (only used on Windows)"
+      }
+    },
+    <% end %>
     "sshKeyData": {
       "type": "string",
       "metadata": {
@@ -55,9 +63,16 @@
         "description": "Name of the image sku"
       }
     },
-    "subnet1Name": {
+    "imageVersion": {
       "type": "string",
-      "defaultValue": "vagrant-subnet-1",
+      "defaultValue": "latest",
+      "metadata": {
+        "description": "Name of the image sku"
+      }
+    },
+    "subnetName": {
+      "type": "string",
+      "defaultValue": "vagrant-subnet",
       "metadata": {
         "description": "Name of the subnet"
       }
@@ -71,20 +86,20 @@
     }
   },
   "variables": {
-    "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'sasshvm')]",
+    "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'vagrant')]",
     "location": "[resourceGroup().location]",
     "osDiskName": "osDisk1",
     "addressPrefix": "10.0.0.0/16",
-    "subnet1Prefix": "10.0.0.0/24",
+    "subnetPrefix": "10.0.0.0/24",
     "vmStorageAccountContainerName": "vagrant-vhds",
-    "nicName": "SshNIC",
-    "publicIPAddressName": "vagrantPublicIP",
+    "nicName": "[concat(parameters('vmName'), '-vagrantNIC')]",
+    "publicIPAddressName": "[concat(parameters('vmName'), '-vagrantPublicIP')]",
     "publicIPAddressType": "Dynamic",
     "storageAccountType": "Standard_LRS",
-    "networkSecurityGroupName": "vagrantNetworkSecurityGroup1",
+    "networkSecurityGroupName": "[concat(parameters('vmName'), '-vagrantNSG')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
-    "subnet1Ref": "[concat(variables('vnetID'),'/subnets/',parameters('subnet1Name'))]",
+    "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetName'))]",
     "apiVersion": "2015-06-15"
   },
   "resources": [
@@ -149,9 +164,9 @@
         },
         "subnets": [
           {
-            "name": "[parameters('subnet1Name')]",
+            "name": "[parameters('subnetName')]",
             "properties": {
-              "addressPrefix": "[variables('subnet1Prefix')]",
+              "addressPrefix": "[variables('subnetPrefix')]",
               "networkSecurityGroup": {
                 "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
               }
@@ -179,7 +194,7 @@
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]"
               },
               "subnet": {
-                "id": "[variables('subnet1Ref')]"
+                "id": "[variables('subnetRef')]"
               }
             }
           }

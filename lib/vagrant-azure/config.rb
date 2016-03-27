@@ -38,17 +38,12 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :location
 
-      # (Optional) Name of the storage account to use -- ENV['AZURE_STORAGE_ACCOUNT']
-      #
-      # @return [String]
-      attr_accessor :storage_acct_name
-
       # (Optional) Name of the virtual machine
       #
       # @return [String]
       attr_accessor :vm_name
 
-      # (Optional) Password for the VM
+      # Password for the VM -- This is not recommended for *nix deployments
       #
       # @return [String]
       attr_accessor :vm_password
@@ -96,17 +91,16 @@ module VagrantPlugins
       # (Optional) The Azure Management API endpoint -- default 'https://management.azure.com' seconds -- ENV['AZURE_MANAGEMENT_ENDPOINT'].
       #
       # @return [String]
-      attr_accessor :management_endpoint
+      attr_accessor :endpoint
 
       def initialize
         @tenant_id = UNSET_VALUE
         @client_id = UNSET_VALUE
         @client_secret = UNSET_VALUE
-        @management_endpoint = UNSET_VALUE
+        @endpoint = UNSET_VALUE
         @subscription_id = UNSET_VALUE
         @resource_group_name = UNSET_VALUE
         @location = UNSET_VALUE
-        @storage_acct_name = UNSET_VALUE
         @vm_name = UNSET_VALUE
         @vm_password = UNSET_VALUE
         @vm_image_urn = UNSET_VALUE
@@ -120,8 +114,7 @@ module VagrantPlugins
       end
 
       def finalize!
-        @storage_acct_name = ENV['AZURE_STORAGE_ACCOUNT'] if @storage_acct_name == UNSET_VALUE
-        @management_endpoint = (ENV['AZURE_MANAGEMENT_ENDPOINT'] || 'https://management.azure.com') if @management_endpoint == UNSET_VALUE
+        @endpoint = (ENV['AZURE_MANAGEMENT_ENDPOINT'] || 'https://management.azure.com') if @endpoint == UNSET_VALUE
         @subscription_id = ENV['AZURE_SUBSCRIPTION_ID'] if @subscription_id == UNSET_VALUE
         @tenant_id = ENV['AZURE_TENANT_ID'] if @tenant_id == UNSET_VALUE
         @client_id = ENV['AZURE_CLIENT_ID'] if @client_id == UNSET_VALUE
@@ -146,9 +139,9 @@ module VagrantPlugins
         errors = _detected_errors
 
         # Azure connection properties related validation.
-        errors << 'vagrant_azure.subscription_id.required' if @subscription_id.nil?
-        errors << 'vagrant_azure.mgmt_endpoint.required' if @management_endpoint.nil?
-        errors << 'vagrant_azure.auth.required' if @tenant_id.nil? || @client_secret.nil? || @client_id.nil?
+        errors << I18n.t('vagrant_azure.subscription_id.required') if @subscription_id.nil?
+        errors << I18n.t('vagrant_azure.mgmt_endpoint.required') if @endpoint.nil?
+        errors << I18n.t('vagrant_azure.auth.required') if @tenant_id.nil? || @client_secret.nil? || @client_id.nil?
 
         { 'Microsoft Azure Provider' => errors }
       end

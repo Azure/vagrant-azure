@@ -1,5 +1,7 @@
 en:
   vagrant_azure:
+    launching_instance: |-
+      Launching an instance with the following settings...
     not_created: |-
       The machine does not exist. Please run `vagrant up` first.
     will_not_destroy: |-
@@ -72,3 +74,7 @@ en:
       long_pending: |-
         The Azure instance is still being initialized. To destroy this machine,
         you can run `vagrant destroy`.
+    waiting_for_ssh: |-
+      Waiting for SSH to become available...
+    ready: |-
+      Machine is booted and ready for use!
