@@ -28,7 +28,7 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :subscription_id
 
-      # (Optional) Name of the resource group to use. WARNING: the resource group will be removed upon destroy!!!
+      # (Optional) Name of the resource group to use.
       #
       # @return [String]
       attr_accessor :resource_group_name

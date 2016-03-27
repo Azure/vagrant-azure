@@ -10,7 +10,7 @@ module VagrantPlugins
         end
 
         def call(env)
-          env[:result] = env[:machine].state.id != :stopped
+          env[:result] = env[:machine].state.id == :stopped
           @app.call(env)
         end
       end

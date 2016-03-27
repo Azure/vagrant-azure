@@ -9,13 +9,25 @@ en:
     already_status: |-
       The machine is already %{status}.
     stopping: |-
-      Stopping '%{vm_name}' in '%{cloud_service_name}'
+      Stopping '%{name}' in '%{group}'
+    terminating: |-
+      Terminating '%{name}'
+    terminated: |-
+      Terminated '%{name}'
     rdp_not_ready: |-
       RDP not ready
-    vm_started: |-
+    starting: |-
+      VM '%{name}' is starting
+    started: |-
       VM '%{name}' has been started
-    vm_stopped: |-
+    stopping: |-
+      VM '%{name}' is stopping
+    stopped: |-
       VM '%{name}' has been stopped
+    restarting: |-
+      VM '%{name}' is restarting
+    restarted: |-
+      VM '%{name}' has been restarted
     copy_folder: |-
       Copying folder: %{hostpath} ==>
       %{guestpath}
@@ -37,6 +49,10 @@ en:
         Server not created. Error is: %{message}
       create_vm_failure: |-
         There was some error in creating the VM.
+      failed_starting: |-
+        Failed to start VM '%{name}'!!
+      failed_stopping: |-
+        Failed to stopping VM '%{name}'!!
     subscription_id:
       required: |-
         You must provide an Azure Subscription Id either through ENV['AZURE_SUBSCRIPTION_ID'] or via Vagrantfile.
@@ -78,3 +94,15 @@ en:
       Waiting for SSH to become available...
     ready: |-
       Machine is booted and ready for use!
+    public_key_path_private_key: |-
+      We expect the public key to be added to the Azure VM to be located at the
+      same place as the config.ssh.private_key_path + '.pub'. We couldn't find
+      any public keys for these private key paths:
+    private_key_not_specified: |-
+      Please specify a secure key to use with config.ssh.private_key_path
+      (see: https://www.vagrantup.com/docs/vagrantfile/ssh_settings.html).
+      If not, you publicly accessible Azure VM will be extremely insecure.
+    waiting_for_ready: |-
+      Waiting for instance to become "ready"...
+    waiting_for_stop: |-
+      Waiting for instance to become "stopped"...

@@ -6,6 +6,7 @@ require 'json'
 require 'azure_mgmt_resources'
 require 'vagrant/util/template_renderer'
 require 'vagrant-azure/util/timer'
+require 'vagrant-azure/util/machine_id_helper'
 require 'haikunator'
 
 module VagrantPlugins
@@ -13,6 +14,7 @@ module VagrantPlugins
     module Action
       class RunInstance
         include Vagrant::Util::Retryable
+        include VagrantPlugins::Azure::Util::MachineIdHelper
 
         def initialize(app, env)
           @app = app
@@ -23,8 +25,10 @@ module VagrantPlugins
           # Initialize metrics if they haven't been
           env[:metrics] ||= {}
 
+          machine = env[:machine]
+
           # Get the configs
-          config                    = env[:machine].provider_config
+          config                    = machine.provider_config
           endpoint                  = config.endpoint
           resource_group_name       = config.resource_group_name
           location                  = config.location
@@ -61,7 +65,6 @@ module VagrantPlugins
           @logger.info("Time to fetch os image details: #{env[:metrics]['get_image_details']}")
 
           deployment_params = {
-            sshKeyData:           File.read(File.expand_path('~/.ssh/id_rsa.pub')),
             dnsLabelPrefix:       Haikunator.haikunate(100),
             vmSize:               vm_size,
             vmName:               vm_name,
@@ -73,11 +76,22 @@ module VagrantPlugins
             virtualNetworkName:   virtual_network_name
           }
 
+          if get_image_os(image_details) != 'Windows'
+            private_key_paths = machine.config.ssh.private_key_path
+            if private_key_paths.empty?
+              raise I18n.t('vagrant_azure.private_key_not_specified')
+            end
+
+            paths_to_pub = private_key_paths.map{ |k| File.expand_path( k + '.pub') }.select{ |p| File.exists?(p) }
+            raise I18n.t('vagrant_azure.public_key_path_private_key', private_key_paths.join(', ')) if paths_to_pub.empty?
+            deployment_params.merge!(sshKeyData: File.read(paths_to_pub.first))
+          end
+
           template_params = {
-              operating_system:     get_image_os(image_details)
+              operating_system:   get_image_os(image_details)
           }
 
-          env[:ui].info(" -- Putting Resource Group: #{resource_group_name}")
+          env[:ui].info(" -- Create or Update of Resource Group: #{resource_group_name}")
           env[:metrics]['put_resource_group'] = Util::Timer.time do
             put_resource_group(azure, resource_group_name, location)
           end
@@ -92,7 +106,7 @@ module VagrantPlugins
           env[:ui].info('Finished deploying')
 
           # Immediately save the ID since it is created at this point.
-          env[:machine].id = "#{resource_group_name}:#{vm_name}"
+          env[:machine].id = serialize_machine_id(resource_group_name, vm_name, location)
 
           @logger.info("Time to deploy: #{env[:metrics]['deployment_time']}")
           unless env[:interrupted]

@@ -2,32 +2,36 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License in the project root for license information.
 require 'log4r'
+require 'vagrant-azure/util/vm_status_translator'
+require 'vagrant-azure/util/machine_id_helper'
 
 module VagrantPlugins
   module Azure
     module Action
       class ReadState
+        include VagrantPlugins::Azure::Util::VMStatusTranslator
+        include VagrantPlugins::Azure::Util::MachineIdHelper
+
         def initialize(app, env)
           @app = app
           @logger = Log4r::Logger.new('vagrant_azure::action::read_state')
         end
 
         def call(env)
-          env[:machine_state_id] = read_state(env[:azure_arm_service], env)
+          env[:machine_state_id] = read_state(env[:azure_arm_service], env[:machine])
           @app.call(env)
         end
 
-        def read_state(azure, env)
-          machine = env[:machine]
+        def read_state(azure, machine)
           return :not_created if machine.id.nil?
 
           # Find the machine
-          rg_name, vm_name = machine.id.split(':')
+          parsed = parse_machine_id(machine.id)
           vm = nil
           begin
-            vm = azure.compute.virtual_machines.get(rg_name, vm_name, 'instanceView').value!.body
+            vm = azure.compute.virtual_machines.get(parsed[:group], parsed[:name], 'instanceView').value!.body
           rescue MsRestAzure::AzureOperationError => ex
-            if vm.nil? || [:'shutting-down', :terminated].include?(vm.state.to_sym)
+            if vm.nil? || tearing_down?(vm.properties.instance_view.statuses)
               # The machine can't be found
               @logger.info('Machine not found or terminated, assuming it got destroyed.')
               machine.id = nil
@@ -36,7 +40,7 @@ module VagrantPlugins
           end
 
           # Return the state
-          vm.state.to_sym
+          power_state(vm.properties.instance_view.statuses)
         end
 
       end
