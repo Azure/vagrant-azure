@@ -1,14 +1,15 @@
-#--------------------------------------------------------------------------
-# Copyright (c) Microsoft Open Technologies, Inc.
-# All Rights Reserved.  Licensed under the Apache License, Version 2.0.
-# See License.txt in the project root for license information.
-#--------------------------------------------------------------------------
+# encoding: utf-8
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License in the project root for license information.
 require 'log4r'
+require 'vagrant-azure/util/machine_id_helper'
 
 module VagrantPlugins
-  module WinAzure
+  module Azure
     module Action
       class ReadSSHInfo
+        include VagrantPlugins::Azure::Util::MachineIdHelper
+
         def initialize(app, env, port = 22)
           @app = app
           @port = port
@@ -16,37 +17,16 @@ module VagrantPlugins
         end
 
         def call(env)
-          env[:ui].detail "Looking for local port #{@port}"
-
-          env[:machine_ssh_info] = read_ssh_info(
-            env[:azure_vm_service],
-            env[:machine]
-          )
-
-          env[:ui].detail "Found port mapping #{env[:machine_ssh_info][:port]} --> #{@port}"
-
+          env[:machine_ssh_info] = read_ssh_info(env[:azure_arm_service], env)
           @app.call(env)
         end
 
-        def read_ssh_info(azure, machine)
-          return nil if machine.id.nil?
-          machine.id =~ /@/
-          vm = azure.get_virtual_machine($`, $')
+        def read_ssh_info(azure, env)
+          return nil if env[:machine].id.nil?
+          parsed = parse_machine_id(env[:machine].id)
+          public_ip = azure.network.public_ipaddresses.get(parsed[:group], "#{parsed[:name]}-vagrantPublicIP").value!.body
 
-          if vm.nil? || !vm.instance_of?(Azure::VirtualMachineManagement::VirtualMachine)
-            # Machine cannot be found
-            @logger.info 'Machine not found. Assuming it was destroyed'
-            machine.id = nil
-            return nil
-          end
-
-          vm.tcp_endpoints.each do |endpoint|
-            if endpoint[:local_port] == "#{@port}"
-              return { :host => "#{vm.cloud_service_name}.cloudapp.net", :port => endpoint[:public_port] }
-            end
-          end
-
-          return nil
+          {:host => public_ip.properties.dns_settings.fqdn, :port => 22}
         end
       end
     end

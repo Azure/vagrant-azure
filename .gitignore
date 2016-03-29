@@ -17,3 +17,4 @@ modules/
 *.pem
 .ruby-version
 *.ps1
+.env
