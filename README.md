@@ -12,7 +12,7 @@ Install Vagrant 1.7.3 or higher - [Download Vagrant](http://www.vagrantup.com/do
 Install the vagrant-azure plugin using the standard Vagrant 1.1+ installation methods. After installing the plugin, you can ```vagrant up``` and use ```azure``` provider. For example:
 
 ```
-C:\> vagrant plugin install vagrant-azure 2.0.0.pre1
+C:\> vagrant plugin install vagrant-azure
 ...
 C:\> vagrant up --provider=azure
 ...
