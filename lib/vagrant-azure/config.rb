@@ -92,6 +92,17 @@ module VagrantPlugins
       #
       # @return [String]
       attr_accessor :endpoint
+      
+      # (Optional - requrired for Windows) The admin username for Windows templates -- ENV['AZURE_VM_ADMIN_USERNAME']
+      # 
+      # @return [String]
+      attr_accessor :admin_username
+            
+      # (Optional - Required for Windows) The admin username for Windows templates -- ENV['AZURE_VM_ADMIN_PASSWORD']
+      # 
+      # @return [String]
+      attr_accessor :admin_password
+      
 
       def initialize
         @tenant_id = UNSET_VALUE
@@ -111,6 +122,8 @@ module VagrantPlugins
         @availability_set_name = UNSET_VALUE
         @instance_ready_timeout = UNSET_VALUE
         @instance_check_interval = UNSET_VALUE
+        @admin_username = UNSET_VALUE
+        @admin_password = UNSET_VALUE
       end
 
       def finalize!
@@ -133,6 +146,9 @@ module VagrantPlugins
 
         @instance_ready_timeout = 120 if @instance_ready_timeout == UNSET_VALUE
         @instance_check_interval = 2 if @instance_check_interval == UNSET_VALUE
+        
+        @admin_username = ENV['AZURE_VM_ADMIN_USERNAME'] if @admin_username == UNSET_VALUE
+        @admin_password = ENV['AZURE_VM_ADMIN_PASSWORD'] if @admin_password == UNSET_VALUE
       end
 
       def validate(machine)

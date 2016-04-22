@@ -12,7 +12,7 @@ Install Vagrant 1.7.3 or higher - [Download Vagrant](http://www.vagrantup.com/do
 Install the vagrant-azure plugin using the standard Vagrant 1.1+ installation methods. After installing the plugin, you can ```vagrant up``` and use ```azure``` provider. For example:
 
 ```
-C:\> vagrant plugin install vagrant-azure
+C:\> vagrant plugin install vagrant-azure 2.0.0.pre1
 ...
 C:\> vagrant up --provider=azure
 ...
@@ -94,3 +94,5 @@ For instructions on how to setup an Azure Active Directory Application see: http
 * `instance_ready_timeout`: (Optional) The timeout to wait for an instance to become ready -- default 120 seconds.
 * `instance_check_interval`: (Optional) The interval to wait for checking an instance's state -- default 2 seconds.
 * `endpoint`: (Optional) The Azure Management API endpoint -- default 'https://management.azure.com' seconds -- ENV['AZURE_MANAGEMENT_ENDPOINT'].
+* `admin_username`: (Required for Windows) The username for the VM -- ENV['AZURE_VM_ADMIN_USERNAME'].
+* `admin_password`: (Required for Windows) The password for the admin user account on the VM -- ENV['AZURE_VM_ADMIN_USERNAME'].

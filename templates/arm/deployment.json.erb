@@ -16,13 +16,14 @@
         "description": "Password for the Virtual Machine (only used on Windows)"
       }
     },
-    <% end %>
+    <% else %>
     "sshKeyData": {
       "type": "string",
       "metadata": {
         "description": "SSH rsa public key file as a string."
       }
     },
+    <% end %>
     "dnsLabelPrefix": {
       "type": "string",
       "metadata": {
@@ -119,6 +120,36 @@
       "location": "[variables('location')]",
       "properties": {
         "securityRules": [
+          <% if operating_system == 'Windows' %>
+          {
+            "name": "rdp_rule",
+            "properties": {
+              "description": "Enable Inbound RDP",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3389",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 123,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "winrm_rule",
+            "properties": {
+              "description": "Enable Inbound RDP",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "5896",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 124,
+              "direction": "Inbound"
+            }
+          }            
+          <% else %>
           {
             "name": "ssh_rule",
             "properties": {
@@ -133,6 +164,7 @@
               "direction": "Inbound"
             }
           }
+          <% end %>
         ]
       }
     },
@@ -217,6 +249,9 @@
         "osProfile": {
           "computerName": "[parameters('vmName')]",
           "adminUsername": "[parameters('adminUsername')]",
+          <% if operating_system == 'Windows' %>
+          "adminPassword": "[parameters('adminPassword')]"
+          <% else %>
           "linuxConfiguration": {
             "disablePasswordAuthentication": "true",
             "ssh": {
@@ -228,6 +263,7 @@
               ]
             }
           }
+          <% end %>
         },
         "storageProfile": {
           "imageReference": {
