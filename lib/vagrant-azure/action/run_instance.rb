@@ -8,6 +8,7 @@ require 'vagrant/util/template_renderer'
 require 'vagrant-azure/util/timer'
 require 'vagrant-azure/util/machine_id_helper'
 require 'haikunator'
+require 'pp'
 
 module VagrantPlugins
   module Azure
@@ -40,6 +41,8 @@ module VagrantPlugins
           subnet_name               = config.subnet_name
           tcp_endpoints             = config.tcp_endpoints
           availability_set_name     = config.availability_set_name
+          adminUsername             = config.admin_username
+          adminPassword             = config.admin_password
 
           # Launch!
           env[:ui].info(I18n.t('vagrant_azure.launching_instance'))
@@ -54,7 +57,7 @@ module VagrantPlugins
           env[:ui].info(" -- Subnet Name: #{subnet_name}") if subnet_name
           env[:ui].info(" -- TCP Endpoints: #{tcp_endpoints}") if tcp_endpoints
           env[:ui].info(" -- Availability Set Name: #{availability_set_name}") if availability_set_name
-
+          env[:ui].info(" -- Admin Username: #{adminUsername}") if adminUsername
           image_publisher, image_offer, image_sku, image_version = vm_image_urn.split(':')
 
           azure = env[:azure_arm_service]
@@ -73,10 +76,17 @@ module VagrantPlugins
             imageSku:             image_sku,
             imageVersion:         image_version,
             subnetName:           subnet_name,
-            virtualNetworkName:   virtual_network_name
+            virtualNetworkName:   virtual_network_name,
           }
 
-          if get_image_os(image_details) != 'Windows'
+          # we need to pass different parameters depending upon the OS
+          operating_system = get_image_os(image_details)
+
+          template_params = {
+              operating_system:   operating_system,
+          }
+
+          if operating_system != 'Windows'
             private_key_paths = machine.config.ssh.private_key_path
             if private_key_paths.empty?
               raise I18n.t('vagrant_azure.private_key_not_specified')
@@ -85,11 +95,14 @@ module VagrantPlugins
             paths_to_pub = private_key_paths.map{ |k| File.expand_path( k + '.pub') }.select{ |p| File.exists?(p) }
             raise I18n.t('vagrant_azure.public_key_path_private_key', private_key_paths.join(', ')) if paths_to_pub.empty?
             deployment_params.merge!(sshKeyData: File.read(paths_to_pub.first))
+          else
+            windows_params = {
+              adminUsername:  adminUsername,
+              adminPassword:  adminPassword,    
+            }
+            deployment_params.merge!(windows_params)
+            @logger.info(pp(deployment_params))
           end
-
-          template_params = {
-              operating_system:   get_image_os(image_details)
-          }
 
           env[:ui].info(" -- Create or Update of Resource Group: #{resource_group_name}")
           env[:metrics]['put_resource_group'] = Util::Timer.time do
