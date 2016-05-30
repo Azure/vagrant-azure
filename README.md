@@ -7,14 +7,14 @@ provider to Vagrant, allowing Vagrant to control and provision machines in Micro
 
 ## Usage
 
-Install Vagrant 1.7.3 or higher - [Download Vagrant](http://www.vagrantup.com/downloads.html)
+[Download Vagrant](http://www.vagrantup.com/downloads.html)
 
 Install the vagrant-azure plugin using the standard Vagrant 1.1+ installation methods. After installing the plugin, you can ```vagrant up``` and use ```azure``` provider. For example:
 
 ```
-C:\> vagrant plugin install vagrant-azure
+vagrant plugin install vagrant-azure --plugin-version '2.0.0.pre1' --plugin-prerelease
 ...
-C:\> vagrant up --provider=azure
+vagrant up --provider=azure
 ...
 ```
 
@@ -25,7 +25,7 @@ You'll need an ```azure``` box before you can do ```vagrant up``` though.
 You can use the dummy box and specify all the required details manually in the ```config.vm.provider``` block in your ```Vagrantfile```. Add the dummy box with the name you want:
 
 ```
-C:\> vagrant box add azure https://github.com/azure/vagrant-azure/raw/v2.0/dummy.box
+vagrant box add azure https://github.com/azure/vagrant-azure/raw/v2.0/dummy.box
 ...
 ```
 
@@ -55,7 +55,7 @@ end
 Now you can run
 
 ```
-C:\> vagrant up --provider=azure
+vagrant up --provider=azure
 ```
 
 This will bring up an Azure VM as per the configuration options set above.
