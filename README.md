@@ -1,4 +1,4 @@
-# Vagrant Azure Provider
+﻿# Vagrant Azure Provider
 
 [![Gem Version](https://badge.fury.io/rb/vagrant-azure.png)](https://rubygems.org/gems/vagrant-azure)
 
@@ -77,7 +77,7 @@ This will bring up an Azure VM as per the configuration options set above.
 
 You can now either SSH (if its a *Nix VM) using ```vagrant ssh```, RDP (if its a Windows VM) using ```vagrant rdp``` or PowerShell ```vagrant powershell```.
 
-Normally, a lot of this options, e.g., ```vm_image```, will be embedded in a box file and you just have to provide minimal options in the ```Vagrantfile```. Since, we're using a dummy box, there are no pre-configured defaults.
+Normally, a lot of these options, e.g., ```vm_image```, will be embedded in a box file, and you just have to provide minimal options in the ```Vagrantfile```. Since we're using a dummy box, there are no pre-configured defaults.
 
 ## Azure Boxes
 
@@ -87,7 +87,7 @@ Please see [Vagrant Docs](http://docs.vagrantup.com/v2/) for more details.
 
 ## Configuration
 
-The vagrant-azure provide exposes a few Azure specific configuration options:
+The vagrant-azure provider exposes a few Azure specific configuration options:
 
 ### Mandatory
 
