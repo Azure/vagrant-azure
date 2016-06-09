@@ -157,6 +157,21 @@ In order to use vagrant-azure's `vm_virtual_network_name` support, create virtua
     azure network vnet create --vnet "vnet-name" --location "West US" --create-new-affinity-group
 
 
+##Certificate generation
+We will use `makecert.exe` distributed as part of the in the Windows 7 SDK.  The following commands will create the required certificates and insert them into the current user’s personal store.
+
+* makecert.exe -r -pe -a sha1 -n "CN=My Azure Management Certificate"
+-ss My -sr CurrentUser -len 2048 -sky exchange -sp "Microsoft Enhanced RSA
+and AES Cryptographic Provider" -sy 24
+
+* makecert.exe -r -pe -a sha1 -n "CN=My Azure RDP Certificate" -ss My -sr CurrentUser -len 2048 -sky exchange -sp "Microsoft Enhanced RSA and AES Cryptographic Provider" -sy 24
+
+* makecert.exe -r -pe -a sha1 -n "CN=My Azure SSL Certificate" -ss My -sr CurrentUser -len 2048 -sky exchange -sp "Microsoft Enhanced RSA and AES Cryptographic Provider" -sy 24
+
+In order to have more details with images in Windows, access: http://blogs.msdn.com/b/cclayton/archive/2012/03/21/windows-azure-and-x509-certificates.aspx
+
+As Windows Azure is constantly being updated, the Windows Azure images used in this tutorial might be out-of-date.
+
 ## New Commands for `azure` provider
 
 The `azure` provider introduces the following new `vagrant` commands.
