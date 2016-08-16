@@ -78,7 +78,7 @@ module VagrantPlugins
 
           if get_image_os(image_details) != 'Windows'
             private_key_paths = machine.config.ssh.private_key_path
-            if private_key_paths.empty?
+            if private_key_paths.nil? || private_key_paths.empty?
               raise I18n.t('vagrant_azure.private_key_not_specified')
             end
 
