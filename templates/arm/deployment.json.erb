@@ -201,6 +201,14 @@
         ]
       }
     },
+    <% if availabilitySetName = availability_set_name.nil? || availability_set_name.empty? ? nil : availability_set_name %>
+    {
+      "apiVersion": "[variables('apiVersion')]",
+      "type": "Microsoft.Compute/availabilitySets",
+      "name": "<%= availabilitySetName %>",
+      "location": "[variables('location')]"
+    },
+    <% end %>
     {
       "apiVersion": "[variables('apiVersion')]",
       "type": "Microsoft.Compute/virtualMachines",
@@ -209,6 +217,9 @@
       "dependsOn": [
         "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
         "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
+        <% if availabilitySetName %>,
+        "[resourceId('Microsoft.Compute/availabilitySets', '<%= availabilitySetName %>')]"
+        <% end %>
       ],
       "properties": {
         "hardwareProfile": {
@@ -258,6 +269,11 @@
             "storageUri": "[concat('http://',variables('storageAccountName'),'.blob.core.windows.net')]"
           }
         }
+        <% if availabilitySetName %>,
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', '<%= availabilitySetName %>')]"
+        }
+        <% end %>
       }
     }
   ]
