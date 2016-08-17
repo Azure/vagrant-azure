@@ -88,6 +88,7 @@ module VagrantPlugins
           end
 
           template_params = {
+              availability_set_name: availability_set_name,
               operating_system:   get_image_os(image_details)
           }
 
