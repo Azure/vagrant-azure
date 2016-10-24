@@ -86,6 +86,7 @@ For instructions on how to setup an Azure Active Directory Application see: http
 * `resource_group_name`: (Optional) Name of the resource group to use.
 * `location`: (Optional) Azure location to build the VM -- defaults to 'westus'
 * `vm_name`: (Optional) Name of the virtual machine
+* `dns_name`: (Optional) DNS prefix of the virtual machine -- full name will be [dns_name].[location].cloudapp.azure.com
 * `vm_password`: (Optional for *nix) Password for the VM -- This is not recommended for *nix deployments
 * `vm_size`: (Optional) VM size to be used -- defaults to 'Standard_D1'. See: https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-sizes/
 * `vm_image_urn`: (Optional) Name of the virtual machine image urn to use -- defaults to 'canonical:ubuntuserver:16.04.0-DAILY-LTS:latest'. See: https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-cli-ps-findimage/
