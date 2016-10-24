@@ -33,6 +33,7 @@ module VagrantPlugins
           resource_group_name       = config.resource_group_name
           location                  = config.location
           vm_name                   = config.vm_name
+          dns_name                  = config.dns_name
           vm_password               = config.vm_password
           vm_size                   = config.vm_size
           vm_image_urn              = config.vm_image_urn
@@ -48,6 +49,7 @@ module VagrantPlugins
           env[:ui].info(" -- Resource Group Name: #{resource_group_name}")
           env[:ui].info(" -- Location: #{location}")
           env[:ui].info(" -- VM Name: #{vm_name}")
+          env[:ui].info(" -- DNS Prefix Name: #{dns_name}") if dns_name
           env[:ui].info(" -- VM Size: #{vm_size}")
           env[:ui].info(" -- Image URN: #{vm_image_urn}")
           env[:ui].info(" -- Virtual Network Name: #{virtual_network_name}") if virtual_network_name
@@ -65,7 +67,7 @@ module VagrantPlugins
           @logger.info("Time to fetch os image details: #{env[:metrics]['get_image_details']}")
 
           deployment_params = {
-            dnsLabelPrefix:       Haikunator.haikunate(100),
+            dnsLabelPrefix:       dns_name,
             vmSize:               vm_size,
             vmName:               vm_name,
             imagePublisher:       image_publisher,

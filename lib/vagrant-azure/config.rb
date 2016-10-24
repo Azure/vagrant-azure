@@ -43,6 +43,11 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :vm_name
 
+      # (Optional) DNS prefix name of the virtual machine
+      #
+      # @return [String]
+      attr_accessor :dns_name
+
       # Password for the VM -- This is not recommended for *nix deployments
       #
       # @return [String]
@@ -102,6 +107,7 @@ module VagrantPlugins
         @resource_group_name = UNSET_VALUE
         @location = UNSET_VALUE
         @vm_name = UNSET_VALUE
+        @dns_name = UNSET_VALUE
         @vm_password = UNSET_VALUE
         @vm_image_urn = UNSET_VALUE
         @virtual_network_name = UNSET_VALUE
@@ -121,6 +127,7 @@ module VagrantPlugins
         @client_secret = ENV['AZURE_CLIENT_SECRET'] if @client_secret == UNSET_VALUE
 
         @vm_name = Haikunator.haikunate(100) if @vm_name == UNSET_VALUE
+        @dns_name = Haikunator.haikunate(100) if @dns_name == UNSET_VALUE
         @resource_group_name = Haikunator.haikunate(100) if @resource_group_name == UNSET_VALUE
         @vm_password = nil if @vm_password == UNSET_VALUE
         @vm_image_urn = 'canonical:ubuntuserver:16.04.0-DAILY-LTS:latest' if @vm_image_urn == UNSET_VALUE
