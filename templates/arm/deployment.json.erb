@@ -102,7 +102,7 @@
   "variables": {
     "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'vagrant')]",
     "location": "[resourceGroup().location]",
-    "osDiskName": "osDisk1",
+    "osDiskName": "[concat(parameters('vmName'), 'OSDisk1')]",
     "addressPrefix": "10.0.0.0/16",
     "subnetPrefix": "10.0.0.0/24",
     "vmStorageAccountContainerName": "vagrant-vhds",
