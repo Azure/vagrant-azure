@@ -147,13 +147,14 @@
               "access": "Allow",
               "priority": 123,
               "direction": "Inbound"
+            }
           },
           {
             "name": "http_rule",
             "properties": {
               "description": "http inbound on port 80.",
               "protocol": "Tcp",
-             "sourcePortRange": "*",
+              "sourcePortRange": "*",
               "destinationPortRange": "80",
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "*",
