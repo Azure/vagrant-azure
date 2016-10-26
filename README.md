@@ -5,6 +5,21 @@
 This is a [Vagrant](http://www.vagrantup.com) 1.7.3+ plugin that adds [Microsoft Azure](https://azure.microsoft.com)
 provider to Vagrant, allowing Vagrant to control and provision machines in Microsoft Azure.
 
+## Dojo install
+
+```
+git clone https://github.com/ojacques/vagrant-azure.git
+cd vagrant-azure
+sudo apt-get install ruby
+gem build vagrant-azure.gemspec
+vagrant plugin install ./vagrant-azure-2.0.0.pre1.dojo.gem
+```
+
+Then, get an azure box in Vagrant:
+```
+vagrant box add azure https://github.com/azure/vagrant-azure/raw/v2.0/dummy.box
+```
+
 ## Usage
 
 [Download Vagrant](http://www.vagrantup.com/downloads.html)
