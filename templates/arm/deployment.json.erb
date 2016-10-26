@@ -103,8 +103,8 @@
     "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'vagrant')]",
     "location": "[resourceGroup().location]",
     "osDiskName": "[concat(parameters('vmName'), 'OSDisk1')]",
-    "addressPrefix": "10.0.0.0/16",
-    "subnetPrefix": "10.0.0.0/24",
+    "addressPrefix": "10.211.55.0/24",
+    "subnetPrefix": "10.211.55.0/24",
     "vmStorageAccountContainerName": "vagrant-vhds",
     "nicName": "[concat(parameters('vmName'), '-vagrantNIC')]",
     "publicIPAddressName": "[concat(parameters('vmName'), '-vagrantPublicIP')]",
@@ -147,6 +147,33 @@
               "access": "Allow",
               "priority": 123,
               "direction": "Inbound"
+          },
+          {
+            "name": "http_rule",
+            "properties": {
+              "description": "http inbound on port 80.",
+              "protocol": "Tcp",
+             "sourcePortRange": "*",
+              "destinationPortRange": "80",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 133,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "http2_rule",
+            "properties": {
+              "description": "http 2 port 8080.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "8080",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 143,
+             "direction": "Inbound"
             }
           }
         ]
