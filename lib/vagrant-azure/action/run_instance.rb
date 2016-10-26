@@ -38,6 +38,8 @@ module VagrantPlugins
           vm_size                   = config.vm_size
           vm_image_urn              = config.vm_image_urn
           virtual_network_name      = config.virtual_network_name
+          private_ip_allocation_method = config.private_ip_allocation_method
+          private_ip_address        = config.private_ip_address
           subnet_name               = config.subnet_name
           tcp_endpoints             = config.tcp_endpoints
           availability_set_name     = config.availability_set_name
@@ -53,6 +55,8 @@ module VagrantPlugins
           env[:ui].info(" -- VM Size: #{vm_size}")
           env[:ui].info(" -- Image URN: #{vm_image_urn}")
           env[:ui].info(" -- Virtual Network Name: #{virtual_network_name}") if virtual_network_name
+          env[:ui].info(" -- Private IP Allocation Method: #{private_ip_allocation_method}") if private_ip_allocation_method
+          env[:ui].info(" -- Private IP Address: #{private_ip_address}") if private_ip_allocation_method == 'Static'
           env[:ui].info(" -- Subnet Name: #{subnet_name}") if subnet_name
           env[:ui].info(" -- TCP Endpoints: #{tcp_endpoints}") if tcp_endpoints
           env[:ui].info(" -- Availability Set Name: #{availability_set_name}") if availability_set_name
@@ -75,7 +79,9 @@ module VagrantPlugins
             imageSku:             image_sku,
             imageVersion:         image_version,
             subnetName:           subnet_name,
-            virtualNetworkName:   virtual_network_name
+            virtualNetworkName:   virtual_network_name,
+            privateIPAllocationMethod:  private_ip_allocation_method,
+            privateIPAddress:     private_ip_address
           }
 
           if get_image_os(image_details) != 'Windows'

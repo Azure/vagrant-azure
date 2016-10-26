@@ -83,6 +83,20 @@
       "metadata": {
         "description": "Name of the virtual network"
       }
+    },
+    "privateIPAllocationMethod": {
+      "type": "string",
+      "defaultValue": "Dynamic",
+      "metadata": {
+        "description": "Private IP Allocation method"
+      }
+    },
+    "privateIPAddress": {
+      "type": "string",
+      "defaultValue": "10.0.0.4",
+      "metadata": {
+        "description": "Private IP Address"
+      }
     }
   },
   "variables": {
@@ -95,6 +109,8 @@
     "nicName": "[concat(parameters('vmName'), '-vagrantNIC')]",
     "publicIPAddressName": "[concat(parameters('vmName'), '-vagrantPublicIP')]",
     "publicIPAddressType": "Dynamic",
+    "privateIPAllocationMethod": "[parameters('privateIPAllocationMethod')]",
+    "privateIPAddress": "[parameters('privateIPAddress')]",
     "storageAccountType": "Standard_LRS",
     "networkSecurityGroupName": "[concat(parameters('vmName'), '-vagrantNSG')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
@@ -189,7 +205,8 @@
           {
             "name": "ipconfig1",
             "properties": {
-              "privateIPAllocationMethod": "Dynamic",
+              "privateIPAllocationMethod": "[variables('privateIPAllocationMethod')]",
+              "privateIPAddress":"[variables('privateIPAddress')]",
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]"
               },

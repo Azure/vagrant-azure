@@ -73,6 +73,16 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :subnet_name
 
+      # (Optional) Private IP allocation method: Dynamic (default) or Static
+      #
+      # @return [String]
+      attr_accessor :private_ip_allocation_method
+
+      # (Optional) Private IP Address if private IP allocation method is set to Static
+      #
+      # @return [String]
+      attr_accessor :private_ip_address
+
       # (Optional) TCP endpoints to open up for the VM
       #
       # @return [String]
@@ -112,6 +122,8 @@ module VagrantPlugins
         @vm_image_urn = UNSET_VALUE
         @virtual_network_name = UNSET_VALUE
         @subnet_name = UNSET_VALUE
+        @private_ip_allocation_method = UNSET_VALUE
+        @private_ip = UNSET_VALUE
         @tcp_endpoints = UNSET_VALUE
         @vm_size = UNSET_VALUE
         @availability_set_name = UNSET_VALUE
@@ -134,6 +146,8 @@ module VagrantPlugins
         @location = 'westus' if @location == UNSET_VALUE
         @virtual_network_name = nil if @virtual_network_name == UNSET_VALUE
         @subnet_name = nil if @subnet_name == UNSET_VALUE
+        @private_ip_allocation_method = 'Dynamic' if @private_ip_allocation_method == UNSET_VALUE
+        @private_ip = '10.0.0.4' if @private_ip == UNSET_VALUE
         @tcp_endpoints = nil if @tcp_endpoints == UNSET_VALUE
         @vm_size = 'Standard_D1' if @vm_size == UNSET_VALUE
         @availability_set_name = nil if @availability_set_name == UNSET_VALUE
