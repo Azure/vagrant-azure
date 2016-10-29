@@ -29,9 +29,9 @@ module VagrantPlugins
           parsed = parse_machine_id(machine.id)
           vm = nil
           begin
-            vm = azure.compute.virtual_machines.get(parsed[:group], parsed[:name], 'instanceView').value!.body
+            vm = azure.compute.virtual_machines.get(parsed[:group], parsed[:name], 'instanceView')
           rescue MsRestAzure::AzureOperationError => ex
-            if vm.nil? || tearing_down?(vm.properties.instance_view.statuses)
+            if vm.nil? || tearing_down?(vm.instance_view.statuses)
               # The machine can't be found
               @logger.info('Machine not found or terminated, assuming it got destroyed.')
               machine.id = nil
@@ -40,7 +40,7 @@ module VagrantPlugins
           end
 
           # Return the state
-          power_state(vm.properties.instance_view.statuses)
+          power_state(vm.instance_view.statuses)
         end
 
       end
