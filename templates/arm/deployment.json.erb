@@ -176,6 +176,20 @@
               "priority": 143,
              "direction": "Inbound"
             }
+          },
+          {
+            "name": "http3_rule",
+            "properties": {
+              "description": "http 3 port 18090.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "18090",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 153,
+             "direction": "Inbound"
+            }
           }
         ]
       }
