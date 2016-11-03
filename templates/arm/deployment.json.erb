@@ -189,7 +189,20 @@
               "access": "Allow",
               "priority": 153,
              "direction": "Inbound"
-            }
+           },
+           {
+             "name": "http4_rule",
+             "properties": {
+               "description": "http 4 port 9200.",
+               "protocol": "Tcp",
+               "sourcePortRange": "*",
+               "destinationPortRange": "9200",
+               "sourceAddressPrefix": "*",
+               "destinationAddressPrefix": "*",
+               "access": "Allow",
+               "priority": 163,
+               "direction": "Inbound"
+             }
           }
         ]
       }
