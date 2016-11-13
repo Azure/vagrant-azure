@@ -83,18 +83,34 @@
       "metadata": {
         "description": "Name of the virtual network"
       }
+    },
+    "privateIPAllocationMethod": {
+      "type": "string",
+      "defaultValue": "Dynamic",
+      "metadata": {
+        "description": "Private IP Allocation method"
+      }
+    },
+    "privateIPAddress": {
+      "type": "string",
+      "defaultValue": "10.0.0.4",
+      "metadata": {
+        "description": "Private IP Address"
+      }
     }
   },
   "variables": {
     "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'vagrant')]",
     "location": "[resourceGroup().location]",
-    "osDiskName": "osDisk1",
-    "addressPrefix": "10.0.0.0/16",
-    "subnetPrefix": "10.0.0.0/24",
+    "osDiskName": "[concat(parameters('vmName'), 'OSDisk1')]",
+    "addressPrefix": "10.211.55.0/24",
+    "subnetPrefix": "10.211.55.0/24",
     "vmStorageAccountContainerName": "vagrant-vhds",
     "nicName": "[concat(parameters('vmName'), '-vagrantNIC')]",
     "publicIPAddressName": "[concat(parameters('vmName'), '-vagrantPublicIP')]",
     "publicIPAddressType": "Dynamic",
+    "privateIPAllocationMethod": "[parameters('privateIPAllocationMethod')]",
+    "privateIPAddress": "[parameters('privateIPAddress')]",
     "storageAccountType": "Standard_LRS",
     "networkSecurityGroupName": "[concat(parameters('vmName'), '-vagrantNSG')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
@@ -132,7 +148,63 @@
               "priority": 123,
               "direction": "Inbound"
             }
-          }
+          },
+          {
+            "name": "http_rule",
+            "properties": {
+              "description": "http inbound on port 80.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "80",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 133,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "http2_rule",
+            "properties": {
+              "description": "http 2 port 8080.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "8080",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 143,
+             "direction": "Inbound"
+            }
+          },
+          {
+            "name": "http3_rule",
+            "properties": {
+              "description": "http 3 port 18090.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "18090",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 153,
+             "direction": "Inbound"
+            }
+           },
+           {
+             "name": "http4_rule",
+             "properties": {
+               "description": "http 4 port 9200.",
+               "protocol": "Tcp",
+               "sourcePortRange": "*",
+               "destinationPortRange": "9200",
+               "sourceAddressPrefix": "*",
+               "destinationAddressPrefix": "*",
+               "access": "Allow",
+               "priority": 163,
+               "direction": "Inbound"
+             }
+            }
         ]
       }
     },
@@ -189,7 +261,8 @@
           {
             "name": "ipconfig1",
             "properties": {
-              "privateIPAllocationMethod": "Dynamic",
+              "privateIPAllocationMethod": "[variables('privateIPAllocationMethod')]",
+              "privateIPAddress":"[variables('privateIPAddress')]",
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]"
               },

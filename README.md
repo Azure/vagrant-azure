@@ -5,6 +5,21 @@
 This is a [Vagrant](http://www.vagrantup.com) 1.7.3+ plugin that adds [Microsoft Azure](https://azure.microsoft.com)
 provider to Vagrant, allowing Vagrant to control and provision machines in Microsoft Azure.
 
+## Dojo install
+
+```
+git clone https://github.com/ojacques/vagrant-azure.git
+cd vagrant-azure
+sudo apt-get install ruby
+gem build vagrant-azure.gemspec
+vagrant plugin install ./vagrant-azure-2.0.0.pre1.dojo.gem
+```
+
+Then, get an azure box in Vagrant:
+```
+vagrant box add azure https://github.com/azure/vagrant-azure/raw/v2.0/dummy.box
+```
+
 ## Usage
 
 [Download Vagrant](http://www.vagrantup.com/downloads.html)
@@ -86,11 +101,14 @@ For instructions on how to setup an Azure Active Directory Application see: http
 * `resource_group_name`: (Optional) Name of the resource group to use.
 * `location`: (Optional) Azure location to build the VM -- defaults to 'westus'
 * `vm_name`: (Optional) Name of the virtual machine
+* `dns_name`: (Optional) DNS prefix of the virtual machine -- full name will be [dns_name].[location].cloudapp.azure.com
 * `vm_password`: (Optional for *nix) Password for the VM -- This is not recommended for *nix deployments
 * `vm_size`: (Optional) VM size to be used -- defaults to 'Standard_D1'. See: https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-sizes/
 * `vm_image_urn`: (Optional) Name of the virtual machine image urn to use -- defaults to 'canonical:ubuntuserver:16.04.0-DAILY-LTS:latest'. See: https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-cli-ps-findimage/
 * `virtual_network_name`: (Optional) Name of the virtual network resource
 * `subnet_name`: (Optional) Name of the virtual network subnet resource
+* `private_ip_allocation_method`: (Optional) `Dynamic` (default) or `Static`
+* `private_ip`: (Optional) private IP address if `private_ip_allocation_method` is set to `Static`. Defaults to `10.0.0.4`
 * `instance_ready_timeout`: (Optional) The timeout to wait for an instance to become ready -- default 120 seconds.
 * `instance_check_interval`: (Optional) The interval to wait for checking an instance's state -- default 2 seconds.
 * `endpoint`: (Optional) The Azure Management API endpoint -- default 'https://management.azure.com' seconds -- ENV['AZURE_MANAGEMENT_ENDPOINT'].

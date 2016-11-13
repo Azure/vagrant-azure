@@ -33,10 +33,13 @@ module VagrantPlugins
           resource_group_name       = config.resource_group_name
           location                  = config.location
           vm_name                   = config.vm_name
+          dns_name                  = config.dns_name
           vm_password               = config.vm_password
           vm_size                   = config.vm_size
           vm_image_urn              = config.vm_image_urn
           virtual_network_name      = config.virtual_network_name
+          private_ip_allocation_method = config.private_ip_allocation_method
+          private_ip_address        = config.private_ip_address
           subnet_name               = config.subnet_name
           tcp_endpoints             = config.tcp_endpoints
           availability_set_name     = config.availability_set_name
@@ -48,9 +51,12 @@ module VagrantPlugins
           env[:ui].info(" -- Resource Group Name: #{resource_group_name}")
           env[:ui].info(" -- Location: #{location}")
           env[:ui].info(" -- VM Name: #{vm_name}")
+          env[:ui].info(" -- DNS Prefix Name: #{dns_name}") if dns_name
           env[:ui].info(" -- VM Size: #{vm_size}")
           env[:ui].info(" -- Image URN: #{vm_image_urn}")
           env[:ui].info(" -- Virtual Network Name: #{virtual_network_name}") if virtual_network_name
+          env[:ui].info(" -- Private IP Allocation Method: #{private_ip_allocation_method}") if private_ip_allocation_method
+          env[:ui].info(" -- Private IP Address: #{private_ip_address}") if private_ip_allocation_method == 'Static'
           env[:ui].info(" -- Subnet Name: #{subnet_name}") if subnet_name
           env[:ui].info(" -- TCP Endpoints: #{tcp_endpoints}") if tcp_endpoints
           env[:ui].info(" -- Availability Set Name: #{availability_set_name}") if availability_set_name
@@ -65,7 +71,7 @@ module VagrantPlugins
           @logger.info("Time to fetch os image details: #{env[:metrics]['get_image_details']}")
 
           deployment_params = {
-            dnsLabelPrefix:       Haikunator.haikunate(100),
+            dnsLabelPrefix:       dns_name,
             vmSize:               vm_size,
             vmName:               vm_name,
             imagePublisher:       image_publisher,
@@ -73,7 +79,9 @@ module VagrantPlugins
             imageSku:             image_sku,
             imageVersion:         image_version,
             subnetName:           subnet_name,
-            virtualNetworkName:   virtual_network_name
+            virtualNetworkName:   virtual_network_name,
+            privateIPAllocationMethod:  private_ip_allocation_method,
+            privateIPAddress:     private_ip_address
           }
 
           if get_image_os(image_details) != 'Windows'
