@@ -32,6 +32,7 @@ module VagrantPlugins
           endpoint                  = config.endpoint
           resource_group_name       = config.resource_group_name
           location                  = config.location
+          admin_user_name           = machine.config.ssh.username
           vm_name                   = config.vm_name
           vm_password               = config.vm_password
           vm_size                   = config.vm_size
@@ -47,6 +48,7 @@ module VagrantPlugins
           env[:ui].info(" -- Subscription Id: #{config.subscription_id}")
           env[:ui].info(" -- Resource Group Name: #{resource_group_name}")
           env[:ui].info(" -- Location: #{location}")
+          env[:ui].info(" -- Admin User Name: #{admin_user_name}") if admin_user_name
           env[:ui].info(" -- VM Name: #{vm_name}")
           env[:ui].info(" -- VM Size: #{vm_size}")
           env[:ui].info(" -- Image URN: #{vm_image_urn}")
@@ -65,6 +67,7 @@ module VagrantPlugins
           @logger.info("Time to fetch os image details: #{env[:metrics]['get_image_details']}")
 
           deployment_params = {
+            adminUserName:        admin_user_name,
             dnsLabelPrefix:       Haikunator.haikunate(100),
             vmSize:               vm_size,
             vmName:               vm_name,
