@@ -8,7 +8,7 @@ module VagrantPlugins
   module Azure
     module Action
       class ConnectAzure
-        def initialize(app, env)
+        def initialize(app, _)
           @app = app
           @logger = Log4r::Logger.new('vagrant_azure::action::connect_azure')
         end

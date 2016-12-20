@@ -12,7 +12,7 @@ module VagrantPlugins
         include VagrantPlugins::Azure::Util::VMStatusTranslator
         include VagrantPlugins::Azure::Util::MachineIdHelper
 
-        def initialize(app, env)
+        def initialize(app, _)
           @app = app
           @logger = Log4r::Logger.new('vagrant_azure::action::read_state')
         end
