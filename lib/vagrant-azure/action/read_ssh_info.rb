@@ -10,7 +10,7 @@ module VagrantPlugins
       class ReadSSHInfo
         include VagrantPlugins::Azure::Util::MachineIdHelper
 
-        def initialize(app, env, port = 22)
+        def initialize(app, _, port = 22)
           @app = app
           @port = port
           @logger = Log4r::Logger.new('vagrant_azure::action::read_ssh_info')

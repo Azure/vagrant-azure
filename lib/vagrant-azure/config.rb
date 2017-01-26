@@ -135,7 +135,7 @@ module VagrantPlugins
         @instance_check_interval = 2 if @instance_check_interval == UNSET_VALUE
       end
 
-      def validate(machine)
+      def validate(_)
         errors = _detected_errors
 
         # Azure connection properties related validation.

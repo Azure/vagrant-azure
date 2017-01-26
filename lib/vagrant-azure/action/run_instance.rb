@@ -16,7 +16,7 @@ module VagrantPlugins
         include Vagrant::Util::Retryable
         include VagrantPlugins::Azure::Util::MachineIdHelper
 
-        def initialize(app, env)
+        def initialize(app, _)
           @app = app
           @logger = Log4r::Logger.new('vagrant_azure::action::run_instance')
         end
@@ -34,7 +34,6 @@ module VagrantPlugins
           location                  = config.location
           admin_user_name           = machine.config.ssh.username
           vm_name                   = config.vm_name
-          vm_password               = config.vm_password
           vm_size                   = config.vm_size
           vm_image_urn              = config.vm_image_urn
           virtual_network_name      = config.virtual_network_name
@@ -85,7 +84,7 @@ module VagrantPlugins
               raise I18n.t('vagrant_azure.private_key_not_specified')
             end
 
-            paths_to_pub = private_key_paths.map{ |k| File.expand_path( k + '.pub') }.select{ |p| File.exists?(p) }
+            paths_to_pub = private_key_paths.map{ |k| File.expand_path( k + '.pub') }.select{ |p| File.exist?(p) }
             raise I18n.t('vagrant_azure.public_key_path_private_key', private_key_paths.join(', ')) if paths_to_pub.empty?
             deployment_params.merge!(sshKeyData: File.read(paths_to_pub.first))
           end

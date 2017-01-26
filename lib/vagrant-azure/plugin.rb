@@ -77,7 +77,6 @@ module VagrantPlugins
           logger = Log4r::Logger.new('vagrant_azure')
           logger.outputters = Log4r::Outputter.stderr
           logger.level = level
-          logger = nil
         end
       end
     end

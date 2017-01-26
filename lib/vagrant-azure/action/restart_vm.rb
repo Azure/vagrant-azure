@@ -10,7 +10,7 @@ module VagrantPlugins
       class RestartVM
         include VagrantPlugins::Azure::Util::MachineIdHelper
 
-        def initialize(app, env)
+        def initialize(app, _)
           @app = app
           @logger = Log4r::Logger.new('vagrant_azure::action::restart_vm')
         end

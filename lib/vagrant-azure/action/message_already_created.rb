@@ -5,7 +5,7 @@ module VagrantPlugins
   module Azure
     module Action
       class MessageAlreadyCreated
-        def initialize(app, env)
+        def initialize(app, _)
           @app = app
         end
 

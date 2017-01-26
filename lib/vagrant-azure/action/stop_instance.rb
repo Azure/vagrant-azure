@@ -15,7 +15,7 @@ module VagrantPlugins
         include VagrantPlugins::Azure::Util::VMAwait
         include VagrantPlugins::Azure::Util::VMStatusTranslator
 
-        def initialize(app, env)
+        def initialize(app, _)
           @app = app
           @logger = Log4r::Logger.new('vagrant_azure::action::stop_instance')
         end
