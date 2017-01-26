@@ -147,20 +147,20 @@ module VagrantPlugins
         end
 
         def get_image_os(image_details)
-          image_details.properties.os_disk_image.operating_system
+          image_details.os_disk_image.operating_system
         end
 
         def get_image_details(azure, location, publisher, offer, sku, version)
           if version == 'latest'
-            latest = azure.compute.virtual_machine_images.list(location, publisher, offer, sku).value!.body.last
-            azure.compute.virtual_machine_images.get(location, publisher, offer, sku, latest.name).value!.body
+            latest = azure.compute.virtual_machine_images.list(location, publisher, offer, sku)
+            azure.compute.virtual_machine_images.get(location, publisher, offer, sku, latest.name)
           else
-            azure.compute.virtual_machine_images.get(location, publisher, offer, sku, version).value!.body
+            azure.compute.virtual_machine_images.get(location, publisher, offer, sku, version)
           end
         end
 
         def put_deployment(azure, rg_name, params)
-          azure.resources.deployments.create_or_update(rg_name, 'vagrant', params).value!.body
+          azure.resources.deployments.create_or_update(rg_name, 'vagrant', params)
         end
 
         def put_resource_group(azure, name, location)
@@ -168,7 +168,7 @@ module VagrantPlugins
             rg.location = location
           end
 
-          azure.resources.resource_groups.create_or_update(name, params).value!.body
+          azure.resources.resource_groups.create_or_update(name, params)
         end
 
         # This method generates the deployment template
