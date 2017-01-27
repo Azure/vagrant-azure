@@ -10,6 +10,12 @@ module VagrantPlugins
 
       def initialize(machine)
         @machine = machine
+
+        # Load the driver
+        machine_id_changed
+
+        @machine.config.winrm.password = @machine.provider_config.admin_password
+        @machine.config.winrm.username = @machine.provider_config.admin_username
       end
 
       def action(name)
@@ -27,6 +33,11 @@ module VagrantPlugins
         # key in the environment.
         env = @machine.action('read_ssh_info')
         env[:machine_ssh_info]
+      end
+
+      def winrm_info
+        env = @machine.action('read_winrm_info')
+        env[:machine_winrm_info]
       end
 
       def state
