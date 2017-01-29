@@ -51,7 +51,7 @@ module VagrantPlugins
           env[:ui].info(" -- Resource Group Name: #{resource_group_name}")
           env[:ui].info(" -- Location: #{location}")
           env[:ui].info(" -- SSH User Name: #{ssh_user_name}") if ssh_user_name
-          env[:ui].info(" -- Admin Username: #{adminUsername}") if admin_user_name
+          env[:ui].info(" -- Admin Username: #{admin_user_name}") if admin_user_name
           env[:ui].info(" -- VM Name: #{vm_name}")
           env[:ui].info(" -- VM Size: #{vm_size}")
           env[:ui].info(" -- Image URN: #{vm_image_urn}")
