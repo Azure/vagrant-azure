@@ -43,7 +43,7 @@ module VagrantPlugins
           availability_set_name     = config.availability_set_name
           admin_user_name           = config.admin_username
           admin_password            = config.admin_password
-          winrm_port                = config.winrm_port
+          winrm_port                = machine.config.winrm.port
 
           # Launch!
           env[:ui].info(I18n.t('vagrant_azure.launching_instance'))
