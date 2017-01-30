@@ -32,7 +32,7 @@ module VagrantPlugins
           env[:machine].config.winrm.ssl_peer_verification = false
           env[:machine].config.winrm.transport = :ssl
 
-          {:host => public_ip.properties.dns_settings.fqdn, :port => 5986}
+          {:host => public_ip.properties.dns_settings.fqdn, :port => env[:machine].config.winrm.port}
         end
       end
     end

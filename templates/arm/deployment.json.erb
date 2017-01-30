@@ -84,6 +84,13 @@
       "metadata": {
         "description": "Name of the virtual network"
       }
+    },
+    "winRmPort": {
+      "type": "int",
+      "defaultValue": 5986,
+      "metadata": {
+        "description": "WinRM port"
+      }
     }
   },
   "variables": {
@@ -141,7 +148,7 @@
               "description": "Enable Inbound WinRM",
               "protocol": "Tcp",
               "sourcePortRange": "*",
-              "destinationPortRange": "5986",
+              "destinationPortRange": "[parameters('winRmPort')]",
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "*",
               "access": "Allow",

@@ -43,6 +43,7 @@ module VagrantPlugins
           availability_set_name     = config.availability_set_name
           admin_user_name           = config.admin_username
           admin_password            = config.admin_password
+          winrm_port                = config.winrm_port
 
           # Launch!
           env[:ui].info(I18n.t('vagrant_azure.launching_instance'))
@@ -101,13 +102,14 @@ module VagrantPlugins
           else
             env[:machine].config.vm.communicator = :winrm
              #this should probably be parameterised and passed into the template
-            machine.config.winrm.port = 5986
+            machine.config.winrm.port = winrm_port
             machine.config.winrm.username = admin_user_name
             machine.config.winrm.password = admin_password
             communicator_message = 'vagrant_azure.waiting_for_winrm'
             windows_params = {
               adminUsername:  admin_user_name,
               adminPassword:  admin_password,
+              winRmPort:      winrm_port
             }
             deployment_params.merge!(windows_params)
           end
