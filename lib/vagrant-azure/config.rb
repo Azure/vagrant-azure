@@ -93,7 +93,6 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :endpoint
 
-
       # (Optional - requrired for Windows) The admin username for Windows templates -- ENV['AZURE_VM_ADMIN_USERNAME']
       #
       # @return [String]
@@ -103,6 +102,11 @@ module VagrantPlugins
       #
       # @return [String]
       attr_accessor :admin_password
+
+      # (Optional) Whether to automatically install a self-signed cert and open the firewall port for winrm over https -- default true
+      #
+      # @return [String]
+      attr_accessor :winrm_install_self_signed_cert
 
       def initialize
         @tenant_id = UNSET_VALUE
@@ -124,6 +128,7 @@ module VagrantPlugins
         @instance_check_interval = UNSET_VALUE
         @admin_username = UNSET_VALUE
         @admin_password = UNSET_VALUE
+        @winrm_install_self_signed_cert = UNSET_VALUE
       end
 
       def finalize!
@@ -149,6 +154,7 @@ module VagrantPlugins
 
         @admin_username = ENV['AZURE_VM_ADMIN_USERNAME'] if @admin_username == UNSET_VALUE
         @admin_password = ENV['AZURE_VM_ADMIN_PASSWORD'] if @admin_password == UNSET_VALUE
+        @winrm_install_self_signed_cert = true if @winrm_install_self_signed_cert = UNSET_VALUE
       end
 
       def validate(machine)

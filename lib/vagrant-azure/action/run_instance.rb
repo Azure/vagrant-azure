@@ -28,22 +28,24 @@ module VagrantPlugins
           machine = env[:machine]
 
           # Get the configs
-          config                    = machine.provider_config
-          endpoint                  = config.endpoint
-          resource_group_name       = config.resource_group_name
-          location                  = config.location
-          ssh_user_name             = machine.config.ssh.username
-          vm_name                   = config.vm_name
-          vm_password               = config.vm_password
-          vm_size                   = config.vm_size
-          vm_image_urn              = config.vm_image_urn
-          virtual_network_name      = config.virtual_network_name
-          subnet_name               = config.subnet_name
-          tcp_endpoints             = config.tcp_endpoints
-          availability_set_name     = config.availability_set_name
-          admin_user_name           = config.admin_username
-          admin_password            = config.admin_password
-          winrm_port                = machine.config.winrm.port
+          config                         = machine.provider_config
+          endpoint                       = config.endpoint
+          resource_group_name            = config.resource_group_name
+          location                       = config.location
+          ssh_user_name                  = machine.config.ssh.username
+          vm_name                        = config.vm_name
+          vm_password                    = config.vm_password
+          vm_size                        = config.vm_size
+          vm_image_urn                   = config.vm_image_urn
+          virtual_network_name           = config.virtual_network_name
+          subnet_name                    = config.subnet_name
+          tcp_endpoints                  = config.tcp_endpoints
+          availability_set_name          = config.availability_set_name
+          admin_user_name                = config.admin_username
+          admin_password                 = config.admin_password
+          winrm_port                     = machine.config.winrm.port
+          winrm_install_self_signed_cert = config.winrm_install_self_signed_cert
+          dns_label_prefix               = Haikunator.haikunate(100)
 
           # Launch!
           env[:ui].info(I18n.t('vagrant_azure.launching_instance'))
@@ -60,6 +62,8 @@ module VagrantPlugins
           env[:ui].info(" -- Subnet Name: #{subnet_name}") if subnet_name
           env[:ui].info(" -- TCP Endpoints: #{tcp_endpoints}") if tcp_endpoints
           env[:ui].info(" -- Availability Set Name: #{availability_set_name}") if availability_set_name
+          env[:ui].info(" -- DNS Label Prefix: #{dns_label_prefix}")
+
           image_publisher, image_offer, image_sku, image_version = vm_image_urn.split(':')
 
           azure = env[:azure_arm_service]
@@ -70,7 +74,7 @@ module VagrantPlugins
           @logger.info("Time to fetch os image details: #{env[:metrics]['get_image_details']}")
 
           deployment_params = {
-            dnsLabelPrefix:       Haikunator.haikunate(100),
+            dnsLabelPrefix:       dns_label_prefix,
             vmSize:               vm_size,
             vmName:               vm_name,
             imagePublisher:       image_publisher,
@@ -85,7 +89,11 @@ module VagrantPlugins
           operating_system = get_image_os(image_details)
 
           template_params = {
-              operating_system:   operating_system,
+            operating_system:               operating_system,
+            winrm_install_self_signed_cert: winrm_install_self_signed_cert,
+            winrm_port:                     winrm_port,
+            dns_label_prefix:               dns_label_prefix,
+            location:                       location
           }
 
           if operating_system != 'Windows'
@@ -101,7 +109,6 @@ module VagrantPlugins
             communicator_message = 'vagrant_azure.waiting_for_ssh'
           else
             env[:machine].config.vm.communicator = :winrm
-             #this should probably be parameterised and passed into the template
             machine.config.winrm.port = winrm_port
             machine.config.winrm.username = admin_user_name
             machine.config.winrm.password = admin_password
@@ -193,7 +200,15 @@ module VagrantPlugins
 
         # This method generates the deployment template
         def render_deployment_template(options)
-          Vagrant::Util::TemplateRenderer.render('arm/deployment.json', options.merge(template_root: template_root))
+          if options[:operating_system] == 'Windows' && options[:winrm_install_self_signed_cert]
+            setup_winrm_powershell = Vagrant::Util::TemplateRenderer.render('arm/setup-winrm.ps1', options.merge({template_root: template_root}))
+            encoded_setup_winrm_powershell = setup_winrm_powershell.
+              gsub("'", "', variables('singleQuote'), '").
+              gsub("\r\n", "\n").
+              gsub("\n", "; ")
+            self_signed_cert_resource = Vagrant::Util::TemplateRenderer.render('arm/selfsignedcert.json', options.merge({template_root: template_root, setup_winrm_powershell: encoded_setup_winrm_powershell}))
+          end
+          Vagrant::Util::TemplateRenderer.render('arm/deployment.json', options.merge({ template_root: template_root, self_signed_cert_resource: self_signed_cert_resource}))
         end
 
         def build_deployment_params(template_params, deployment_params)
