@@ -46,6 +46,7 @@ module VagrantPlugins
           winrm_port                     = machine.config.winrm.port
           winrm_install_self_signed_cert = config.winrm_install_self_signed_cert
           dns_label_prefix               = Haikunator.haikunate(100)
+          deployment_template            = config.deployment_template
 
           # Launch!
           env[:ui].info(I18n.t('vagrant_azure.launching_instance'))
@@ -93,7 +94,8 @@ module VagrantPlugins
             winrm_install_self_signed_cert: winrm_install_self_signed_cert,
             winrm_port:                     winrm_port,
             dns_label_prefix:               dns_label_prefix,
-            location:                       location
+            location:                       location,
+            deployment_template:            deployment_template
           }
 
           if operating_system != 'Windows'
@@ -214,7 +216,11 @@ module VagrantPlugins
         def build_deployment_params(template_params, deployment_params)
           params = ::Azure::ARM::Resources::Models::Deployment.new
           params.properties = ::Azure::ARM::Resources::Models::DeploymentProperties.new
-          params.properties.template = JSON.parse(render_deployment_template(template_params))
+          if (template_params[:deployment_template].nil?)
+            params.properties.template = JSON.parse(render_deployment_template(template_params))
+          else
+            params.properties.template = JSON.parse(template_params[:deployment_template])
+          end
           params.properties.mode = ::Azure::ARM::Resources::Models::DeploymentMode::Incremental
           params.properties.parameters = build_parameters(deployment_params)
           params
