@@ -20,7 +20,9 @@ module VagrantPlugins
 
           begin
             env[:ui].info(I18n.t('vagrant_azure.terminating', parsed))
+            env[:ui].info('Deleting resource group')
             env[:azure_arm_service].resources.resource_groups.delete(parsed[:group]).value!.body
+            env[:ui].info('Resource group deleted...')
           rescue MsRestAzure::AzureOperationError => ex
             unless ex.response.status == 404
               raise ex

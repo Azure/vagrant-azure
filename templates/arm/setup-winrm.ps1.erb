@@ -1,0 +1,7 @@
+$hostname = '<%= dns_label_prefix %>.<%= location %>.cloudapp.azure.com'
+$Cert = (New-SelfSignedCertificate -CertstoreLocation Cert:/LocalMachine/My -DnsName $hostname).Thumbprint
+$transport = New-Item -Path WSMan:/LocalHost/Listener -Transport HTTPS -Address * -CertificateThumbPrint $Cert -Force
+cd $transport.PSPath
+set-item  ./HostName -value $hostname -force
+set-item  ./Port -value <%= winrm_port %> -force
+netsh advfirewall firewall add rule name=WinRM_HTTPS dir=in action=allow protocol=TCP localport=<%= winrm_port %>
