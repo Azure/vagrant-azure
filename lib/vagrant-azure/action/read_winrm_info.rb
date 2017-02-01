@@ -28,9 +28,9 @@ module VagrantPlugins
         def read_winrm_info(azure, env)
           return nil if env[:machine].id.nil?
           parsed = parse_machine_id(env[:machine].id)
-          public_ip = azure.network.public_ipaddresses.get(parsed[:group], "#{parsed[:name]}-vagrantPublicIP").value!.body
+          public_ip = azure.network.public_ipaddresses.get(parsed[:group], "#{parsed[:name]}-vagrantPublicIP")
 
-          {:host => public_ip.properties.dns_settings.fqdn, :port => env[:machine].config.winrm.port}
+          {:host => public_ip.dns_settings.fqdn, :port => env[:machine].config.winrm.port}
         end
       end
     end

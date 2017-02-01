@@ -11,4 +11,9 @@ group :development do
   # gem dependency because we expect to be installed within the
   # Vagrant environment itself using `vagrant plugin`.
   gem 'vagrant', git: 'https://github.com/mitchellh/vagrant.git'
+  gem 'bundler', '~>1.10.5'
+end
+
+group :plugins do
+  gem 'vagrant-azure', path: '.'
 end

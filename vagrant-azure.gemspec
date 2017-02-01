@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'azure_mgmt_network',    '~>0.8.0'
   s.add_runtime_dependency 'azure_mgmt_storage',    '~>0.8.0'
   s.add_runtime_dependency 'haikunator',            '~>1.1'
+  s.add_runtime_dependency 'highline',              '~>1.7'
 
   s.add_development_dependency 'bundler',           '~>1.9'
   s.add_development_dependency 'rake',              '~>11.1'
