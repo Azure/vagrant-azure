@@ -12,7 +12,7 @@ provider to Vagrant, allowing Vagrant to control and provision machines in Micro
 Install the vagrant-azure plugin using the standard Vagrant 1.1+ installation methods. After installing the plugin, you can ```vagrant up``` and use ```azure``` provider. For example:
 
 ```sh
-$ vagrant plugin install vagrant-azure --plugin-version '2.0.0.pre1' --plugin-prerelease
+& vagrant plugin install vagrant-azure --plugin-version '2.0.0.pre2'
 ...
 $ vagrant up --provider=azure
 ...
@@ -120,8 +120,8 @@ For instructions on how to setup an Azure Active Directory Application see: <htt
 * `location`: (Optional) Azure location to build the VM -- defaults to `westus`
 * `vm_name`: (Optional) Name of the virtual machine
 * `vm_password`: (Optional for *nix) Password for the VM -- This is not recommended for *nix deployments
-* `vm_size`: (Optional) VM size to be used -- defaults to `Standard_D1`. See sizes for [*nix](https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-sizes/), [Windows](https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes/).
-* `vm_image_urn`: (Optional) Name of the virtual machine image urn to use -- defaults to `canonical:ubuntuserver:16.04.0-DAILY-LTS:latest`. See documentation for [*nix](https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-cli-ps-findimage/), [Windows](https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-cli-ps-findimage).
+* `vm_size`: (Optional) VM size to be used -- defaults to 'Standard_DS2_v2'. See sizes for [*nix](https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-sizes/), [Windows](https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes/).
+* `vm_image_urn`: (Optional) Name of the virtual machine image urn to use -- defaults to 'canonical:ubuntuserver:16.04-LTS:latest'. See documentation for [*nix](https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-cli-ps-findimage/), [Windows](https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-cli-ps-findimage).
 * `virtual_network_name`: (Optional) Name of the virtual network resource
 * `subnet_name`: (Optional) Name of the virtual network subnet resource
 * `instance_ready_timeout`: (Optional) The timeout to wait for an instance to become ready -- default 120 seconds.

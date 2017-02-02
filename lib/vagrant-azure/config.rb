@@ -147,19 +147,19 @@ module VagrantPlugins
         @vm_name = Haikunator.haikunate(100) if @vm_name == UNSET_VALUE
         @resource_group_name = Haikunator.haikunate(100) if @resource_group_name == UNSET_VALUE
         @vm_password = nil if @vm_password == UNSET_VALUE
-        @vm_image_urn = 'canonical:ubuntuserver:16.04.0-DAILY-LTS:latest' if @vm_image_urn == UNSET_VALUE
+        @vm_image_urn = 'canonical:ubuntuserver:16.04.0-LTS:latest' if @vm_image_urn == UNSET_VALUE
         @location = 'westus' if @location == UNSET_VALUE
         @virtual_network_name = nil if @virtual_network_name == UNSET_VALUE
         @subnet_name = nil if @subnet_name == UNSET_VALUE
         @tcp_endpoints = nil if @tcp_endpoints == UNSET_VALUE
-        @vm_size = 'Standard_D1' if @vm_size == UNSET_VALUE
+        @vm_size = 'Standard_DS2_v2' if @vm_size == UNSET_VALUE
         @availability_set_name = nil if @availability_set_name == UNSET_VALUE
 
         @instance_ready_timeout = 120 if @instance_ready_timeout == UNSET_VALUE
         @instance_check_interval = 2 if @instance_check_interval == UNSET_VALUE
 
-        @admin_username = ENV['AZURE_VM_ADMIN_USERNAME'] if @admin_username == UNSET_VALUE
-        @admin_password = ENV['AZURE_VM_ADMIN_PASSWORD'] if @admin_password == UNSET_VALUE
+        @admin_username = (ENV['AZURE_VM_ADMIN_USERNAME'] || 'vagrant') if @admin_username == UNSET_VALUE
+        @admin_password = (ENV['AZURE_VM_ADMIN_PASSWORD'] || '$Vagrant(0)') if @admin_password == UNSET_VALUE
         @winrm_install_self_signed_cert = true if @winrm_install_self_signed_cert == UNSET_VALUE
         @deployment_template = nil if @deployment_template == UNSET_VALUE
       end

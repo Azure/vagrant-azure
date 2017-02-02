@@ -14,6 +14,8 @@ module VagrantPlugins
         # Load the driver
         machine_id_changed
 
+        # turn off nfs functionality by default, so the machine will fall back to rsync by default
+        @machine.config.nfs.functional = false
         @machine.config.winrm.password = @machine.provider_config.admin_password
         @machine.config.winrm.username = @machine.provider_config.admin_username
       end
