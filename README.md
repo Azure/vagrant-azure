@@ -87,8 +87,8 @@ For instructions on how to setup an Azure Active Directory Application see: http
 * `location`: (Optional) Azure location to build the VM -- defaults to 'westus'
 * `vm_name`: (Optional) Name of the virtual machine
 * `vm_password`: (Optional for *nix) Password for the VM -- This is not recommended for *nix deployments
-* `vm_size`: (Optional) VM size to be used -- defaults to 'Standard_D1'. See: https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-sizes/
-* `vm_image_urn`: (Optional) Name of the virtual machine image urn to use -- defaults to 'canonical:ubuntuserver:16.04.0-DAILY-LTS:latest'. See: https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-cli-ps-findimage/
+* `vm_size`: (Optional) VM size to be used -- defaults to 'Standard_DS2_v2'. See: https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-sizes/
+* `vm_image_urn`: (Optional) Name of the virtual machine image urn to use -- defaults to 'canonical:ubuntuserver:16.04-LTS:latest'. See: https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-cli-ps-findimage/
 * `virtual_network_name`: (Optional) Name of the virtual network resource
 * `subnet_name`: (Optional) Name of the virtual network subnet resource
 * `instance_ready_timeout`: (Optional) The timeout to wait for an instance to become ready -- default 120 seconds.

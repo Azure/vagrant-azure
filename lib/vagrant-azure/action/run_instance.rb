@@ -131,11 +131,11 @@ module VagrantPlugins
 
           deployment_params = build_deployment_params(template_params, deployment_params.reject{|_,v| v.nil?})
 
-          env[:ui].info('Starting deployment')
+          env[:ui].info(' -- Starting deployment')
           env[:metrics]['deployment_time'] = Util::Timer.time do
             put_deployment(azure, resource_group_name, deployment_params)
           end
-          env[:ui].info('Finished deploying')
+          env[:ui].info(' -- Finished deploying')
 
           # Immediately save the ID since it is created at this point.
           env[:machine].id = serialize_machine_id(resource_group_name, vm_name, location)
@@ -176,20 +176,21 @@ module VagrantPlugins
         end
 
         def get_image_os(image_details)
-          image_details.properties.os_disk_image.operating_system
+          image_details.os_disk_image.operating_system
         end
 
         def get_image_details(azure, location, publisher, offer, sku, version)
           if version == 'latest'
-            latest = azure.compute.virtual_machine_images.list(location, publisher, offer, sku).value!.body.last
-            azure.compute.virtual_machine_images.get(location, publisher, offer, sku, latest.name).value!.body
+            images = azure.compute.virtual_machine_images.list(location, publisher, offer, sku)
+            latest = images.sort_by(&:name).last
+            azure.compute.virtual_machine_images.get(location, publisher, offer, sku, latest.name)
           else
-            azure.compute.virtual_machine_images.get(location, publisher, offer, sku, version).value!.body
+            azure.compute.virtual_machine_images.get(location, publisher, offer, sku, version)
           end
         end
 
         def put_deployment(azure, rg_name, params)
-          azure.resources.deployments.create_or_update(rg_name, 'vagrant', params).value!.body
+          azure.resources.deployments.create_or_update(rg_name, 'vagrant', params)
         end
 
         def put_resource_group(azure, name, location)
@@ -197,11 +198,12 @@ module VagrantPlugins
             rg.location = location
           end
 
-          azure.resources.resource_groups.create_or_update(name, params).value!.body
+          azure.resources.resource_groups.create_or_update(name, params)
         end
 
         # This method generates the deployment template
         def render_deployment_template(options)
+          self_signed_cert_resource = nil
           if options[:operating_system] == 'Windows' && options[:winrm_install_self_signed_cert]
             setup_winrm_powershell = Vagrant::Util::TemplateRenderer.render('arm/setup-winrm.ps1', options.merge({template_root: template_root}))
             encoded_setup_winrm_powershell = setup_winrm_powershell.
@@ -216,7 +218,7 @@ module VagrantPlugins
         def build_deployment_params(template_params, deployment_params)
           params = ::Azure::ARM::Resources::Models::Deployment.new
           params.properties = ::Azure::ARM::Resources::Models::DeploymentProperties.new
-          if (template_params[:deployment_template].nil?)
+          if template_params[:deployment_template].nil?
             params.properties.template = JSON.parse(render_deployment_template(template_params))
           else
             params.properties.template = JSON.parse(template_params[:deployment_template])
