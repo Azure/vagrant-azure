@@ -12,7 +12,7 @@ provider to Vagrant, allowing Vagrant to control and provision machines in Micro
 Install the vagrant-azure plugin using the standard Vagrant 1.1+ installation methods. After installing the plugin, you can ```vagrant up``` and use ```azure``` provider. For example:
 
 ```
-vagrant plugin install vagrant-azure --plugin-version '2.0.0.pre1' --plugin-prerelease
+vagrant plugin install vagrant-azure --plugin-version '2.0.0.pre2'
 ...
 vagrant up --provider=azure
 ...
