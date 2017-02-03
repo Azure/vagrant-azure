@@ -131,3 +131,4 @@ For instructions on how to setup an Azure Active Directory Application see: <htt
 * `admin_password`: (Optional, Windows only) The password to set for the windows administrator user
 * `winrm_install_self_signed_cert`: (Optional, Windows only) Whether to install a self-signed cert automatically to enable WinRM to communicate over HTTPS (5986). Only available when a custom `deployment_template` is not supplied. Default 'true'.
 * `deployment_template`: (Optional) A custom ARM template to use instead of the default template
+* `wait_for_destroy`: (Optional) Wait for all resources to be deleted prior to completing Vagrant destroy -- default false.
