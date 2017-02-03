@@ -90,6 +90,7 @@ module VagrantPlugins
           operating_system = get_image_os(image_details)
 
           template_params = {
+            availability_set_name:          availability_set_name,
             operating_system:               operating_system,
             winrm_install_self_signed_cert: winrm_install_self_signed_cert,
             winrm_port:                     winrm_port,
