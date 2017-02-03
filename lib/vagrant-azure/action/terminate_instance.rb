@@ -10,7 +10,7 @@ module VagrantPlugins
       class TerminateInstance
         include VagrantPlugins::Azure::Util::MachineIdHelper
 
-        def initialize(app, env)
+        def initialize(app, _)
           @app = app
           @logger = Log4r::Logger.new('vagrant_azure::action::terminate_instance')
         end
@@ -23,7 +23,12 @@ module VagrantPlugins
             env[:ui].info('Deleting resource group')
 
             # Call the begin_xxx_async version to kick off the delete, but don't wait for the resource group to be cleaned up
-            env[:azure_arm_service].resources.resource_groups.begin_delete_async(parsed[:group]).value!
+            if env[:machine].provider_config.wait_for_destroy
+              env[:azure_arm_service].resources.resource_groups.delete(parsed[:group])
+            else
+              env[:azure_arm_service].resources.resource_groups.begin_delete_async(parsed[:group]).value!
+            end
+
             env[:ui].info('Resource group is deleting... Moving on.')
           rescue MsRestAzure::AzureOperationError => ex
             unless ex.response.status == 404
