@@ -36,7 +36,7 @@ module VagrantPlugins
               env[:ui].info(I18n.t('vagrant_azure.waiting_for_stop'))
 
               task = await_true(env) do |vm|
-                stopped?(vm.properties.instance_view.statuses)
+                stopped?(vm.instance_view.statuses)
               end
 
               if task.value

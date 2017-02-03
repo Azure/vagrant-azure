@@ -37,6 +37,11 @@ module VagrantPlugins
         Provider
       end
 
+      provider_capability(:azure, :winrm_info) do
+        require_relative 'capabilities/winrm'
+        VagrantPlugins::Azure::Cap::WinRM
+      end
+
       def self.setup_i18n
         I18n.load_path << File.expand_path(
           'locales/en.yml',

@@ -75,6 +75,16 @@ module VagrantPlugins
         end
       end
 
+      # This action is called to read the WinRM info of the machine. The
+      # resulting state is expected to be put into the `:machine_winrm_info` key.
+      def self.action_read_winrm_info
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use ConfigValidate
+          b.use ConnectAzure
+          b.use ReadWinrmInfo
+        end
+      end
+
       # This action is called to read the state of the machine. The
       # resulting state is expected to be put into the `:machine_state_id`
       # key.
@@ -178,6 +188,7 @@ module VagrantPlugins
       autoload :MessageNotCreated, action_root.join('message_not_created')
       autoload :MessageWillNotDestroy, action_root.join('message_will_not_destroy')
       autoload :ReadSSHInfo, action_root.join('read_ssh_info')
+      autoload :ReadWinrmInfo, action_root.join('read_winrm_info')
       autoload :ReadState, action_root.join('read_state')
       autoload :RestartVM, action_root.join('restart_vm')
       autoload :RunInstance, action_root.join('run_instance')

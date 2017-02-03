@@ -18,7 +18,7 @@ module VagrantPlugins
             end
 
             count += 1
-            vm = azure.compute.virtual_machines.get(parsed[:group], parsed[:name], 'instanceView').value!.body
+            vm = azure.compute.virtual_machines.get(parsed[:group], parsed[:name], 'instanceView')
             if yield(vm)
               task.shutdown
               true

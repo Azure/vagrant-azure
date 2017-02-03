@@ -36,7 +36,7 @@ module VagrantPlugins
             env[:ui].info(I18n.t('vagrant_azure.waiting_for_ready'))
 
             task = await_true(env) do |vm|
-              running?(vm.properties.instance_view.statuses)
+              running?(vm.instance_view.statuses)
             end
 
             if task.value
