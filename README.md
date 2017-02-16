@@ -124,6 +124,7 @@ For instructions on how to setup an Azure Active Directory Application see: <htt
 * `vm_image_urn`: (Optional) Name of the virtual machine image urn to use -- defaults to 'canonical:ubuntuserver:16.04-LTS:latest'. See documentation for [*nix](https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-cli-ps-findimage/), [Windows](https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-cli-ps-findimage).
 * `virtual_network_name`: (Optional) Name of the virtual network resource
 * `subnet_name`: (Optional) Name of the virtual network subnet resource
+* `tcp_endpoints`: (Optional) The custom inbound security rules part of network security group (a.k.a. opened tcp endpoints). Allows specifying one or more intervals in the form '8000-9000, 9100-9200'.
 * `instance_ready_timeout`: (Optional) The timeout to wait for an instance to become ready -- default 120 seconds.
 * `instance_check_interval`: (Optional) The interval to wait for checking an instance's state -- default 2 seconds.
 * `endpoint`: (Optional) The Azure Management API endpoint -- default `ENV['AZURE_MANAGEMENT_ENDPOINT']` if exists, falls back to <https://management.azure.com>.

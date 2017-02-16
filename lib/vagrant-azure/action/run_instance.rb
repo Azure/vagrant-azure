@@ -124,6 +124,13 @@ module VagrantPlugins
             deployment_params.merge!(windows_params)
           end
 
+          unless tcp_endpoints.nil? || tcp_endpoints.empty?
+            endpoints = tcp_endpoints.split(',')
+          else 
+            endpoints = {}
+          end
+          template_params.merge!(endpoints: endpoints)
+
           env[:ui].info(" -- Create or Update of Resource Group: #{resource_group_name}")
           env[:metrics]['put_resource_group'] = Util::Timer.time do
             put_resource_group(azure, resource_group_name, location)

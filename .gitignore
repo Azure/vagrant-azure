@@ -18,3 +18,5 @@ modules/
 .ruby-version
 *.ps1
 .env
+.bundle
+

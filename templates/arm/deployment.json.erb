@@ -173,7 +173,24 @@
               "direction": "Inbound"
             }
           }
-          <% end %>
+        <% end %>
+        <% endpoints.each_with_index do |ports, index| %>
+          ,
+          {
+            "name": "custom_rule_<%= index %>",
+            "properties": {
+              "description": "Custom opened ports.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "<%= ports %>",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": <%= 133 + index %>,
+              "direction": "Inbound"
+            }
+          }
+        <% end %>
         ]
       }
     },
