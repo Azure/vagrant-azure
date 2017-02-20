@@ -124,10 +124,21 @@ module VagrantPlugins
             deployment_params.merge!(windows_params)
           end
 
-          unless tcp_endpoints.nil? || tcp_endpoints.empty?
-            endpoints = tcp_endpoints.split(',')
+          unless tcp_endpoints.nil?
+
+            if tcp_endpoints.is_a?(Array)
+              # https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-nsg#Nsg-rules
+              if tcp_endpoints.length + 133 > 4096
+                raise I18n.t('vagrant_azure.too_many_tcp_endpoints', count: tcp_endpoints.length)
+              end 
+              endpoints = tcp_endpoints
+            elsif tcp_endpoints.is_a?(String) || (tcp_endpoints.is_a?(Integer) && tcp_endpoints > 0)
+              endpoints = [tcp_endpoints]
+            else
+              raise I18n.t('vagrant_azure.unknown_type_as_tcp_endpoints', input: tcp_endpoints)
+            end
           else 
-            endpoints = {}
+            endpoints = []
           end
           template_params.merge!(endpoints: endpoints)
 
