@@ -104,6 +104,12 @@ en:
       Please specify a secure key to use with config.ssh.private_key_path
       (see: https://www.vagrantup.com/docs/vagrantfile/ssh_settings.html).
       If not, you publicly accessible Azure VM will be extremely insecure.
+    too_many_tcp_endpoints: |-
+      There are '%{count}' TCP Endpoints (Inbound Security Rules) specified for the NetworkSecurityGroup, which is too many. 
+      There can be a max of 3963 (4096 - 133, where 133 is where we start as priority for custom rule #1, and so forth)
+      (see: https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-nsg#Nsg-rules)
+    unknown_type_as_tcp_endpoints: |-
+      Unrecognized setting '%{input}' as TCP Endpoints (Inbounds Security Rules), expected an array, string or positive number.
     waiting_for_ready: |-
       Waiting for instance to become "ready"...
     waiting_for_stop: |-
