@@ -209,7 +209,8 @@ module VagrantPlugins
         end
 
         def put_deployment(azure, rg_name, params)
-          azure.resources.deployments.create_or_update(rg_name, 'vagrant', params)
+          deployment_name = "vagrant_#{Time.now.getutc.strftime('%Y%m%d%H%M%S')}"
+          azure.resources.deployments.create_or_update(rg_name, deployment_name, params)
         end
 
         def put_resource_group(azure, name, location)
