@@ -12,7 +12,7 @@ module VagrantPlugins
     module Services
       class AzureResourceManager
 
-        TELEMETRY = "vagrant-azure/#{VagrantPlugins::Azure::VERSION}"
+        TELEMETRY = "vagrant-azure/#{::VagrantPlugins::Azure::VERSION}"
         TENANT_ID_NAME = 'AZURE_TENANT_ID'
         CLIENT_ID_NAME = 'AZURE_CLIENT_ID'
         CLIENT_SECRET_NAME = 'AZURE_CLIENT_SECRET'
