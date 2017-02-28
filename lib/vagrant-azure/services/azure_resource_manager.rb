@@ -6,6 +6,7 @@ require 'azure_mgmt_resources'
 require 'azure_mgmt_compute'
 require 'azure_mgmt_network'
 require 'azure_mgmt_storage'
+require 'vagrant-azure/version'
 
 module VagrantPlugins
   module Azure
