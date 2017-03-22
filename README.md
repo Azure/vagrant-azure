@@ -125,9 +125,9 @@ For instructions on how to setup an Azure Active Directory Application see: <htt
 * `virtual_network_name`: (Optional) Name of the virtual network resource
 * `subnet_name`: (Optional) Name of the virtual network subnet resource
 * `tcp_endpoints`: (Optional) The custom inbound security rules part of network security group (a.k.a. opened tcp endpoints). Allows specifying one or more intervals in the form of:
- * an array `['8000-9000', '9100-9200']`, 
- * a single interval as `'8000-9000'`,
- * a single port as `8000`.
+  * an array `['8000-9000', '9100-9200']`, 
+  * a single interval as `'8000-9000'`,
+  * a single port as `8000`.
 * `instance_ready_timeout`: (Optional) The timeout to wait for an instance to become ready -- default 120 seconds.
 * `instance_check_interval`: (Optional) The interval to wait for checking an instance's state -- default 2 seconds.
 * `endpoint`: (Optional) The Azure Management API endpoint -- default `ENV['AZURE_MANAGEMENT_ENDPOINT']` if exists, falls back to <https://management.azure.com>.
