@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'azure_mgmt_compute',    '~>0.8.0'
   s.add_runtime_dependency 'azure_mgmt_network',    '~>0.8.0'
   s.add_runtime_dependency 'azure_mgmt_storage',    '~>0.8.0'
+  s.add_runtime_dependency 'faraday',               '~>0.11.0'
   s.add_runtime_dependency 'haikunator',            '~>1.1'
   s.add_runtime_dependency 'highline',              '~>1.7'
 
