@@ -43,6 +43,16 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :vm_name
 
+      # (Optional) DNS Name prefix of the virtual machine
+      #
+      # @return [String]
+      attr_accessor :dns_name
+
+      # (Optional) Network Security Group Name prefix of the virtual machine
+      #
+      # @return [String]
+      attr_accessor :nsg_name
+
       # Password for the VM -- This is not recommended for *nix deployments
       #
       # @return [String]
@@ -131,6 +141,8 @@ module VagrantPlugins
         @vm_image_urn = UNSET_VALUE
         @virtual_network_name = UNSET_VALUE
         @subnet_name = UNSET_VALUE
+        @dsn_name = UNSET_VALUE
+        @nsg_name = UNSET_VALUE
         @tcp_endpoints = UNSET_VALUE
         @vm_size = UNSET_VALUE
         @availability_set_name = UNSET_VALUE
@@ -157,6 +169,8 @@ module VagrantPlugins
         @location = 'westus' if @location == UNSET_VALUE
         @virtual_network_name = nil if @virtual_network_name == UNSET_VALUE
         @subnet_name = nil if @subnet_name == UNSET_VALUE
+        @dns_name = nil if @dns_name == UNSET_VALUE
+        @nsg_name = nil if @nsg_name == UNSET_VALUE
         @tcp_endpoints = nil if @tcp_endpoints == UNSET_VALUE
         @vm_size = 'Standard_DS2_v2' if @vm_size == UNSET_VALUE
         @availability_set_name = nil if @availability_set_name == UNSET_VALUE

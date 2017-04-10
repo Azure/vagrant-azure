@@ -30,6 +30,12 @@
         "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
       }
     },
+    "nsgLabelPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Network Security Group Label Prefix for the Virtual Machine."
+      }
+    },
     "vmSize": {
       "type": "string",
       "defaultValue": "Standard_DS2_v2",
@@ -104,7 +110,7 @@
     "publicIPAddressName": "[concat(parameters('vmName'), '-vagrantPublicIP')]",
     "publicIPAddressType": "Dynamic",
     "storageAccountType": "Premium_LRS",
-    "networkSecurityGroupName": "[concat(parameters('vmName'), '-vagrantNSG')]",
+    "networkSecurityGroupName": "[concat(parameters('nsgLabelPrefix'), '-vagrantNSG')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetName'))]",

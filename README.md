@@ -123,6 +123,8 @@ For instructions on how to setup an Azure Active Directory Application see: <htt
 * `vm_size`: (Optional) VM size to be used -- defaults to 'Standard_DS2_v2'. See sizes for [*nix](https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-sizes/), [Windows](https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes/).
 * `vm_image_urn`: (Optional) Name of the virtual machine image urn to use -- defaults to 'canonical:ubuntuserver:16.04-LTS:latest'. See documentation for [*nix](https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-cli-ps-findimage/), [Windows](https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-cli-ps-findimage).
 * `virtual_network_name`: (Optional) Name of the virtual network resource
+* `dns_name`: (Optional) DNS Label Prefix 
+* `nsg_name`: (Optional) Network Security Group Label Prefix 
 * `subnet_name`: (Optional) Name of the virtual network subnet resource
 * `tcp_endpoints`: (Optional) The custom inbound security rules part of network security group (a.k.a. opened tcp endpoints). Allows specifying one or more intervals in the form of:
   * an array `['8000-9000', '9100-9200']`, 

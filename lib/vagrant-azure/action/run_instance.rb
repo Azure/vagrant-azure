@@ -29,6 +29,10 @@ module VagrantPlugins
 
           # Get the configs
           config                         = machine.provider_config
+
+          config.dns_name ||= Haikunator.haikunate(100)
+          config.nsg_name ||= config.vm_name
+
           endpoint                       = config.endpoint
           resource_group_name            = config.resource_group_name
           location                       = config.location
@@ -45,7 +49,8 @@ module VagrantPlugins
           admin_password                 = config.admin_password
           winrm_port                     = machine.config.winrm.port
           winrm_install_self_signed_cert = config.winrm_install_self_signed_cert
-          dns_label_prefix               = Haikunator.haikunate(100)
+          dns_label_prefix               = config.dns_name
+          nsg_label_prefix               = config.nsg_name
           deployment_template            = config.deployment_template
 
           # Launch!
@@ -76,6 +81,7 @@ module VagrantPlugins
 
           deployment_params = {
             dnsLabelPrefix:       dns_label_prefix,
+            nsgLabelPrefix:       nsg_label_prefix,
             vmSize:               vm_size,
             vmName:               vm_name,
             imagePublisher:       image_publisher,
@@ -95,6 +101,7 @@ module VagrantPlugins
             winrm_install_self_signed_cert: winrm_install_self_signed_cert,
             winrm_port:                     winrm_port,
             dns_label_prefix:               dns_label_prefix,
+            nsg_label_prefix:               nsg_label_prefix,
             location:                       location,
             deployment_template:            deployment_template
           }
