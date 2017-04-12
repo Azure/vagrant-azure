@@ -1,13 +1,13 @@
 # encoding: utf-8
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License in the project root for license information.
-require 'log4r'
-require 'json'
-require 'azure_mgmt_resources'
-require 'vagrant/util/template_renderer'
-require 'vagrant-azure/util/timer'
-require 'vagrant-azure/util/machine_id_helper'
-require 'haikunator'
+require "log4r"
+require "json"
+require "azure_mgmt_resources"
+require "vagrant/util/template_renderer"
+require "vagrant-azure/util/timer"
+require "vagrant-azure/util/machine_id_helper"
+require "haikunator"
 
 module VagrantPlugins
   module Azure
@@ -18,7 +18,7 @@ module VagrantPlugins
 
         def initialize(app, env)
           @app = app
-          @logger = Log4r::Logger.new('vagrant_azure::action::run_instance')
+          @logger = Log4r::Logger.new("vagrant_azure::action::run_instance")
         end
 
         def call(env)
@@ -38,7 +38,6 @@ module VagrantPlugins
           location                       = config.location
           ssh_user_name                  = machine.config.ssh.username
           vm_name                        = config.vm_name
-          vm_password                    = config.vm_password
           vm_size                        = config.vm_size
           vm_image_urn                   = config.vm_image_urn
           virtual_network_name           = config.virtual_network_name
@@ -70,14 +69,14 @@ module VagrantPlugins
           env[:ui].info(" -- Availability Set Name: #{availability_set_name}") if availability_set_name
           env[:ui].info(" -- DNS Label Prefix: #{dns_label_prefix}")
 
-          image_publisher, image_offer, image_sku, image_version = vm_image_urn.split(':')
+          image_publisher, image_offer, image_sku, image_version = vm_image_urn.split(":")
 
           azure = env[:azure_arm_service]
           image_details = nil
-          env[:metrics]['get_image_details'] = Util::Timer.time do
+          env[:metrics]["get_image_details"] = Util::Timer.time do
             image_details = get_image_details(azure, location, image_publisher, image_offer, image_sku, image_version)
           end
-          @logger.info("Time to fetch os image details: #{env[:metrics]['get_image_details']}")
+          @logger.info("Time to fetch os image details: #{env[:metrics]["get_image_details"]}")
 
           deployment_params = {
             dnsLabelPrefix:       dns_label_prefix,
@@ -106,23 +105,23 @@ module VagrantPlugins
             deployment_template:            deployment_template
           }
 
-          if operating_system != 'Windows'
+          if operating_system != "Windows"
             private_key_paths = machine.config.ssh.private_key_path
             if private_key_paths.nil? || private_key_paths.empty?
               raise I18n.t('vagrant_azure.private_key_not_specified')
             end
 
-            paths_to_pub = private_key_paths.map{ |k| File.expand_path( k + '.pub') }.select{ |p| File.exists?(p) }
+            paths_to_pub = private_key_paths.map { |k| File.expand_path(k + ".pub") }.select { |p| File.exists?(p) }
             raise I18n.t('vagrant_azure.public_key_path_private_key', private_key_paths.join(', ')) if paths_to_pub.empty?
             deployment_params.merge!(adminUsername:  ssh_user_name)
             deployment_params.merge!(sshKeyData: File.read(paths_to_pub.first))
-            communicator_message = 'vagrant_azure.waiting_for_ssh'
+            communicator_message = "vagrant_azure.waiting_for_ssh"
           else
             env[:machine].config.vm.communicator = :winrm
             machine.config.winrm.port = winrm_port
             machine.config.winrm.username = admin_user_name
             machine.config.winrm.password = admin_password
-            communicator_message = 'vagrant_azure.waiting_for_winrm'
+            communicator_message = "vagrant_azure.waiting_for_winrm"
             windows_params = {
               adminUsername:  admin_user_name,
               adminPassword:  admin_password,
@@ -131,44 +130,28 @@ module VagrantPlugins
             deployment_params.merge!(windows_params)
           end
 
-          unless tcp_endpoints.nil?
-
-            if tcp_endpoints.is_a?(Array)
-              # https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-nsg#Nsg-rules
-              if tcp_endpoints.length + 133 > 4096
-                raise I18n.t('vagrant_azure.too_many_tcp_endpoints', count: tcp_endpoints.length)
-              end 
-              endpoints = tcp_endpoints
-            elsif tcp_endpoints.is_a?(String) || (tcp_endpoints.is_a?(Integer) && tcp_endpoints > 0)
-              endpoints = [tcp_endpoints]
-            else
-              raise I18n.t('vagrant_azure.unknown_type_as_tcp_endpoints', input: tcp_endpoints)
-            end
-          else 
-            endpoints = []
-          end
-          template_params.merge!(endpoints: endpoints)
+          template_params.merge!(endpoints: get_endpoints(tcp_endpoints))
 
           env[:ui].info(" -- Create or Update of Resource Group: #{resource_group_name}")
-          env[:metrics]['put_resource_group'] = Util::Timer.time do
+          env[:metrics]["put_resource_group"] = Util::Timer.time do
             put_resource_group(azure, resource_group_name, location)
           end
           @logger.info("Time to create resource group: #{env[:metrics]['put_resource_group']}")
 
-          deployment_params = build_deployment_params(template_params, deployment_params.reject{|_,v| v.nil?})
+          deployment_params = build_deployment_params(template_params, deployment_params.reject { |_, v| v.nil? })
 
-          env[:ui].info(' -- Starting deployment')
-          env[:metrics]['deployment_time'] = Util::Timer.time do
+          env[:ui].info(" -- Starting deployment")
+          env[:metrics]["deployment_time"] = Util::Timer.time do
             put_deployment(azure, resource_group_name, deployment_params)
           end
-          env[:ui].info(' -- Finished deploying')
+          env[:ui].info(" -- Finished deploying")
 
           # Immediately save the ID since it is created at this point.
           env[:machine].id = serialize_machine_id(resource_group_name, vm_name, location)
 
           @logger.info("Time to deploy: #{env[:metrics]['deployment_time']}")
           unless env[:interrupted]
-            env[:metrics]['instance_ssh_time'] = Util::Timer.time do
+            env[:metrics]["instance_ssh_time"] = Util::Timer.time do
               # Wait for SSH/WinRM to be ready.
               env[:ui].info(I18n.t(communicator_message))
               network_ready_retries = 0
@@ -201,12 +184,30 @@ module VagrantPlugins
           @app.call(env)
         end
 
+        def get_endpoints(tcp_endpoints)
+          endpoints = []
+          unless tcp_endpoints.nil?
+            if tcp_endpoints.is_a?(Array)
+              # https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-nsg#Nsg-rules
+              if tcp_endpoints.length + 133 > 4096
+                raise I18n.t("vagrant_azure.too_many_tcp_endpoints", count: tcp_endpoints.length)
+              end
+              endpoints = tcp_endpoints
+            elsif tcp_endpoints.is_a?(String) || (tcp_endpoints.is_a?(Integer) && tcp_endpoints > 0)
+              endpoints = [tcp_endpoints]
+            else
+              raise I18n.t("vagrant_azure.unknown_type_as_tcp_endpoints", input: tcp_endpoints)
+            end
+          end
+          endpoints
+        end
+
         def get_image_os(image_details)
           image_details.os_disk_image.operating_system
         end
 
         def get_image_details(azure, location, publisher, offer, sku, version)
-          if version == 'latest'
+          if version == "latest"
             images = azure.compute.virtual_machine_images.list(location, publisher, offer, sku)
             latest = images.sort_by(&:name).last
             azure.compute.virtual_machine_images.get(location, publisher, offer, sku, latest.name)
@@ -231,15 +232,15 @@ module VagrantPlugins
         # This method generates the deployment template
         def render_deployment_template(options)
           self_signed_cert_resource = nil
-          if options[:operating_system] == 'Windows' && options[:winrm_install_self_signed_cert]
-            setup_winrm_powershell = Vagrant::Util::TemplateRenderer.render('arm/setup-winrm.ps1', options.merge({template_root: template_root}))
+          if options[:operating_system] == "Windows" && options[:winrm_install_self_signed_cert]
+            setup_winrm_powershell = Vagrant::Util::TemplateRenderer.render("arm/setup-winrm.ps1", options.merge({template_root: template_root}))
             encoded_setup_winrm_powershell = setup_winrm_powershell.
               gsub("'", "', variables('singleQuote'), '").
               gsub("\r\n", "\n").
               gsub("\n", "; ")
-            self_signed_cert_resource = Vagrant::Util::TemplateRenderer.render('arm/selfsignedcert.json', options.merge({template_root: template_root, setup_winrm_powershell: encoded_setup_winrm_powershell}))
+            self_signed_cert_resource = Vagrant::Util::TemplateRenderer.render("arm/selfsignedcert.json", options.merge({template_root: template_root, setup_winrm_powershell: encoded_setup_winrm_powershell}))
           end
-          Vagrant::Util::TemplateRenderer.render('arm/deployment.json', options.merge({ template_root: template_root, self_signed_cert_resource: self_signed_cert_resource}))
+          Vagrant::Util::TemplateRenderer.render("arm/deployment.json", options.merge({ template_root: template_root, self_signed_cert_resource: self_signed_cert_resource}))
         end
 
         def build_deployment_params(template_params, deployment_params)
@@ -256,12 +257,12 @@ module VagrantPlugins
         end
 
         def build_parameters(options)
-          Hash[*options.map{ |k, v| [k,  {value: v}] }.flatten]
+          Hash[*options.map { |k, v| [k, { value: v } ] }.flatten]
         end
 
         # Used to find the base location of aws-vagrant templates
         def template_root
-          Azure.source_root.join('templates')
+          Azure.source_root.join("templates")
         end
 
         def terminate(env)

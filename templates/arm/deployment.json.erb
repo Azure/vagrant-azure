@@ -163,7 +163,7 @@
               "priority": 124,
               "direction": "Inbound"
             }
-          }
+          },
           <% else %>
           {
             "name": "ssh_rule",
@@ -178,10 +178,9 @@
               "priority": 123,
               "direction": "Inbound"
             }
-          }
+          },
         <% end %>
         <% endpoints.each_with_index do |ports, index| %>
-          ,
           {
             "name": "custom_rule_<%= index %>",
             "properties": {
