@@ -29,6 +29,29 @@ $ vagrant box add azure https://github.com/azure/vagrant-azure/raw/v2.0/dummy.bo
 ...
 ```
 
+### Create an Azure Active Directory (AAD) Application
+AAD encourages the use of Applications / Service Principals for authenticating applications. An 
+application / service principal combination provides a service identity for Vagrant to manage your Azure Subscription.
+[Click here to learn about AAD applications and service principals.](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-application-objects.)
+- [Install the Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+- run `az login` to log into Azure
+- run `az ad sp create-for-rbac` to create an Azure Active Directory Application with access to Azure Resource Manager for the current Azure Subscription
+  - If you want to run this for a different Azure Subscription, run `az account set --subscription 'your subscription name'`
+- run `az account list --query "[?isDefault].id" -o tsv` to get your Azure Subscription Id.
+  
+The output of `az ad sp create-for-rbac` should look like the following:
+```json
+{
+  "appId": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",
+  "displayName": "some-display-name",
+  "name": "http://azure-cli-2017-04-03-15-30-52",
+  "password": "XXXXXXXXXXXXXXXXXXXX",
+  "tenant": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+}
+```
+The values `tenant`, `appId` and `password` map to the configuration values 
+`azure.tenant_id`, `azure.client_id` and `azure.client_secret` in your Vagrant file or environment variables.
+
 For ***nix**, edit your `Vagrantfile` as shown below and provide all the values as explained.
 
 ```ruby
@@ -38,9 +61,6 @@ Vagrant.configure('2') do |config|
   # use local ssh key to connect to remote vagrant box
   config.ssh.private_key_path = '~/.ssh/id_rsa'
   config.vm.provider :azure do |azure, override|
-
-    # use Azure Active Directory Application / Service Principal to connect to Azure
-    # see: https://azure.microsoft.com/en-us/documentation/articles/resource-group-create-service-principal-portal/
 
     # each of the below values will default to use the env vars named as below if not specified explicitly
     azure.tenant_id = ENV['AZURE_TENANT_ID']
@@ -59,9 +79,6 @@ Vagrant.configure('2') do |config|
   config.vm.box = 'azure'
 
   config.vm.provider :azure do |azure, override|
-
-    # use Azure Active Directory Application / Service Principal to connect to Azure
-    # see: https://azure.microsoft.com/en-us/documentation/articles/resource-group-create-service-principal-portal/
 
     # each of the below values will default to use the env vars named as below if not specified explicitly
     azure.tenant_id = ENV['AZURE_TENANT_ID']
@@ -103,16 +120,14 @@ Please see [Vagrant Docs](http://docs.vagrantup.com/v2/) for more details.
 
 ## Configuration
 
-The vagrant-azure provide exposes a few Azure specific configuration options:
+The vagrant-azure provide exposes Azure specific configuration options:
 
 ### Mandatory
-
-For instructions on how to setup an Azure Active Directory Application see: <https://azure.microsoft.com/en-us/documentation/articles/resource-group-create-service-principal-portal/>
-
 * `tenant_id`: Your Azure Active Directory Tenant Id.
 * `client_id`: Your Azure Active Directory application client id.
 * `client_secret`: Your Azure Active Directory application client secret.
 * `subscription_id`: The Azure subscription Id you'd like to use.
+*Note: to procure these values see: [Create an Azure Active Directory Application](#create-an-azure-active-directory-aad-application)*
 
 ### Optional
 
