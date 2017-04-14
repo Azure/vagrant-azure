@@ -90,7 +90,6 @@ Vagrant.configure('2') do |config|
     azure.instance_ready_timeout = 600
     azure.vm_password = 'TopSecretPassw0rd'
     azure.admin_username = "OctoAdmin"
-    azure.admin_password = 'TopSecretPassw0rd'
     override.winrm.transport = :ssl
     override.winrm.port = 5986
     override.winrm.ssl_peer_verification = false # must be false if using a self signed cert
@@ -149,7 +148,5 @@ The vagrant-azure provide exposes Azure specific configuration options:
 * `instance_check_interval`: (Optional) The interval to wait for checking an instance's state -- default 2 seconds.
 * `endpoint`: (Optional) The Azure Management API endpoint -- default `ENV['AZURE_MANAGEMENT_ENDPOINT']` if exists, falls back to <https://management.azure.com>.
 * `admin_username`: (Optional) The root/administrator username for the VM
-* `admin_password`: (Optional, Windows only) The password to set for the windows administrator user
 * `winrm_install_self_signed_cert`: (Optional, Windows only) Whether to install a self-signed cert automatically to enable WinRM to communicate over HTTPS (5986). Only available when a custom `deployment_template` is not supplied. Default 'true'.
-* `deployment_template`: (Optional) A custom ARM template to use instead of the default template
 * `wait_for_destroy`: (Optional) Wait for all resources to be deleted prior to completing Vagrant destroy -- default false.

@@ -50,7 +50,6 @@ module VagrantPlugins
           winrm_install_self_signed_cert = config.winrm_install_self_signed_cert
           dns_label_prefix               = config.dns_name
           nsg_label_prefix               = config.nsg_name
-          deployment_template            = config.deployment_template
 
           # Launch!
           env[:ui].info(I18n.t('vagrant_azure.launching_instance'))
@@ -83,10 +82,6 @@ module VagrantPlugins
             nsgLabelPrefix:       nsg_label_prefix,
             vmSize:               vm_size,
             vmName:               vm_name,
-            imagePublisher:       image_publisher,
-            imageOffer:           image_offer,
-            imageSku:             image_sku,
-            imageVersion:         image_version,
             subnetName:           subnet_name,
             virtualNetworkName:   virtual_network_name,
           }
@@ -102,7 +97,10 @@ module VagrantPlugins
             dns_label_prefix:               dns_label_prefix,
             nsg_label_prefix:               nsg_label_prefix,
             location:                       location,
-            deployment_template:            deployment_template
+            image_publisher:                 image_publisher,
+            image_offer:                     image_offer,
+            image_sku:                       image_sku,
+            image_version:                   image_version
           }
 
           if operating_system != "Windows"
@@ -210,6 +208,9 @@ module VagrantPlugins
           if version == "latest"
             images = azure.compute.virtual_machine_images.list(location, publisher, offer, sku)
             latest = images.sort_by(&:name).last
+            if latest.nil?
+              raise "Unrecognized location, publisher, offer, sku, version combination: #{location}, #{publisher}, #{offer}, #{sku}, latest. Run `az vm image list` to ensure the image is available."
+            end
             azure.compute.virtual_machine_images.get(location, publisher, offer, sku, latest.name)
           else
             azure.compute.virtual_machine_images.get(location, publisher, offer, sku, version)
@@ -246,12 +247,7 @@ module VagrantPlugins
         def build_deployment_params(template_params, deployment_params)
           params = ::Azure::ARM::Resources::Models::Deployment.new
           params.properties = ::Azure::ARM::Resources::Models::DeploymentProperties.new
-          if template_params[:deployment_template].nil?
-            File.open("test.json", 'w') { |file| file.write(render_deployment_template(template_params)) }
-            params.properties.template = JSON.parse(render_deployment_template(template_params))
-          else
-            params.properties.template = JSON.parse(template_params[:deployment_template])
-          end
+          params.properties.template = JSON.parse(render_deployment_template(template_params))
           params.properties.mode = ::Azure::ARM::Resources::Models::DeploymentMode::Incremental
           params.properties.parameters = build_parameters(deployment_params)
           params

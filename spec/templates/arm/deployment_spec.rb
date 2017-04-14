@@ -7,7 +7,7 @@ require "vagrant-azure/util/template_renderer"
 
 module VagrantPlugins
   module Azure
-    describe "DeploymentTemplate" do
+    describe "deployment template" do
 
       let(:options) {
         {
@@ -31,8 +31,8 @@ module VagrantPlugins
           expect(subject["contentVersion"]).to eq("1.0.0.0")
         end
 
-        it "should have 14 parameters" do
-          expect(subject["parameters"].count).to eq(14)
+        it "should have 10 parameters" do
+          expect(subject["parameters"].count).to eq(10)
         end
 
         it "should have 17 variables" do
@@ -69,8 +69,8 @@ module VagrantPlugins
 
       describe "parameters" do
         let(:base_keys) {
-          %w( storageAccountType adminUserName dnsLabelPrefix nsgLabelPrefix vmSize vmName imagePublisher imageOffer
-              imageSku imageVersion subnetName virtualNetworkName winRmPort )
+          %w( storageAccountType adminUserName dnsLabelPrefix nsgLabelPrefix vmSize vmName subnetName virtualNetworkName
+              winRmPort )
         }
 
         let(:nix_keys) {

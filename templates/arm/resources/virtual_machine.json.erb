@@ -40,10 +40,10 @@
     },
     "storageProfile": {
       "imageReference": {
-        "publisher": "[parameters('imagePublisher')]",
-        "offer": "[parameters('imageOffer')]",
-        "sku": "[parameters('imageSku')]",
-        "version": "latest"
+        "publisher": "<%= image_publisher %>",
+        "offer": "<%= image_offer %>",
+        "sku": "<%= image_sku %>",
+        "version": "<%= image_version %>"
       },
       "osDisk": {
         <% if custom_image %>
