@@ -14,7 +14,7 @@ module VagrantPlugins
             operating_system: "linux",
             location: "location",
             endpoints: [22],
-            template_root: Azure.source_root.join("templates")
+            data_disks: []
         }
       }
 
