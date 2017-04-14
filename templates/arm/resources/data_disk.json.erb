@@ -1,0 +1,15 @@
+{
+  "name": "<%= name %>",
+  "diskSizeGB": "<%= size %>",
+  "lun": <%= lun %>,
+  "vhd": {
+    "uri": "<%= vhd_uri %>"
+  },
+  <% if create_option == "fromImage" %>
+  "image": {
+    // specifies the location of the data disk vhd when creating the vm from user image
+    "uri": "<%= image_uri %>"
+  },
+  <% end %>
+  "createOption": <%= create_option %>
+}

@@ -1,0 +1,213 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "disks_osdisk_sVQ7y4vYgM_name": {
+      "defaultValue": "osdisk_sVQ7y4vYgM",
+      "type": "String"
+    },
+    "virtualMachines_test_name": {
+      "defaultValue": "test",
+      "type": "String"
+    },
+    "networkInterfaces_testVMNic_name": {
+      "defaultValue": "testVMNic",
+      "type": "String"
+    },
+    "networkSecurityGroups_testNSG_name": {
+      "defaultValue": "testNSG",
+      "type": "String"
+    },
+    "publicIPAddresses_testPublicIP_name": {
+      "defaultValue": "testPublicIP",
+      "type": "String"
+    },
+    "virtualNetworks_testVNET_name": {
+      "defaultValue": "testVNET",
+      "type": "String"
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "comments": "Generalized from resource: '/subscriptions/cbbdaed0-fea9-4693-bf0c-d446ac93c030/resourceGroups/test/providers/Microsoft.Compute/disks/osdisk_sVQ7y4vYgM'.",
+      "type": "Microsoft.Compute/disks",
+      "name": "[parameters('disks_osdisk_sVQ7y4vYgM_name')]",
+      "apiVersion": "2016-04-30-preview",
+      "location": "westus",
+      "tags": {},
+      "properties": {
+        "accountType": "Premium_LRS",
+        "osType": "Linux",
+        "creationData": {
+          "createOption": "FromImage",
+          "imageReference": {
+            "id": "/Subscriptions/cbbdaed0-fea9-4693-bf0c-d446ac93c030/Providers/Microsoft.Compute/Locations/westus/Publishers/Canonical/ArtifactTypes/VMImage/Offers/UbuntuServer/Skus/16.04-LTS/Versions/latest"
+          }
+        },
+        "diskSizeGB": 30
+      },
+      "dependsOn": []
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/cbbdaed0-fea9-4693-bf0c-d446ac93c030/resourceGroups/test/providers/Microsoft.Compute/virtualMachines/test'.",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[parameters('virtualMachines_test_name')]",
+      "apiVersion": "2016-04-30-preview",
+      "location": "westus",
+      "tags": {},
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_DS1_v2"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "16.04-LTS",
+            "version": "[concat('la', parameters('virtualMachines_test_name'))]"
+          },
+          "osDisk": {
+            "osType": "Linux",
+            "name": "osdisk_sVQ7y4vYgM",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "storageAccountType": "Premium_LRS",
+              "id": "[resourceId('Microsoft.Compute/disks', parameters('disks_osdisk_sVQ7y4vYgM_name'))]"
+            },
+            "diskSizeGB": 30
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "[parameters('virtualMachines_test_name')]",
+          "adminUsername": "deploy",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "/home/deploy/.ssh/authorized_keys",
+                  "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCw2A2zT7QekJuyUkfMWrqH8HOLMtQ7ixDtduluUhgrha9b+1J5TfI64V0teEyNLJfvTOj+oL6mO22698+e/J9BUMAjTbK/kYLdjl53m/HtWeLRs0bRyRifkU2oqiI/fQ/ZPSF6aCO49BZYI1CEsDKJVYrXo3RPX+q+rQAIT8zjlxK5Yocu2KfIQN8qDtykdsnUs3bEVlL+mvYVPxCvOOSD903U0907mrKQNlfAOsiGj7OdKBVhXNiHquGu3/1YADwH/hrsjXP9WtESlnUSZri/d1WkN8uwh8reE/lRtB1piYUxCPR4xmzj6kxnUCZ0RtkoROcH/qCyhBHczQg624qKPm+oxJPPQwWpGB4pz2PBeQEOCbD2HGbbdYISW5kbO85Kj9h93DyNxI1yiuGSDKgOwdebWEzjgtFiRNc+w6dR4c69pUVF12FtvpaghUQb9xQfWbNiVH3ljOWkoqsm7oEnwIqgZPoaqa4tjM40JQShcIuOiMZtM2R9xMmRFdlbNX4AbVSmPtjkAJ6ErEma/rWgiUTgFUnnzei/zFkt6jcSrzpVvEqMkLM8g1mCTe6iz54IS3VcVlDh4EWqTMIm2v1mehEv/cZfL+IOHw5UiNtdSPoh/V5QD4QDNMv/U5ZuosB4JGwaQi7apF1rFH4gQ0v1/LaKIgf5Bhola8BapeZL+Q== david@devigned.com\n"
+                }
+              ]
+            }
+          },
+          "secrets": []
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_testVMNic_name'))]"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/disks', parameters('disks_osdisk_sVQ7y4vYgM_name'))]",
+        "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_testVMNic_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/cbbdaed0-fea9-4693-bf0c-d446ac93c030/resourceGroups/test/providers/Microsoft.Network/networkInterfaces/testVMNic'.",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[parameters('networkInterfaces_testVMNic_name')]",
+      "apiVersion": "2016-03-30",
+      "location": "westus",
+      "tags": {},
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfigtest",
+            "properties": {
+              "privateIPAddress": "10.0.0.4",
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_testPublicIP_name'))]"
+              },
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testVNET_name')), '/subnets/testSubnet')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false,
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_testNSG_name'))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_testPublicIP_name'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testVNET_name'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_testNSG_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/cbbdaed0-fea9-4693-bf0c-d446ac93c030/resourceGroups/test/providers/Microsoft.Network/networkSecurityGroups/testNSG'.",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[parameters('networkSecurityGroups_testNSG_name')]",
+      "apiVersion": "2016-03-30",
+      "location": "westus",
+      "tags": {},
+      "properties": {
+        "securityRules": [
+          {
+            "name": "default-allow-ssh",
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "22",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 1000,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      },
+      "dependsOn": []
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/cbbdaed0-fea9-4693-bf0c-d446ac93c030/resourceGroups/test/providers/Microsoft.Network/publicIPAddresses/testPublicIP'.",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[parameters('publicIPAddresses_testPublicIP_name')]",
+      "apiVersion": "2016-03-30",
+      "location": "westus",
+      "tags": {},
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "idleTimeoutInMinutes": 4
+      },
+      "dependsOn": []
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/cbbdaed0-fea9-4693-bf0c-d446ac93c030/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/testVNET'.",
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[parameters('virtualNetworks_testVNET_name')]",
+      "apiVersion": "2016-03-30",
+      "location": "westus",
+      "tags": {},
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "10.0.0.0/16"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "testSubnet",
+            "properties": {
+              "addressPrefix": "10.0.0.0/24"
+            }
+          }
+        ]
+      },
+      "dependsOn": []
+    }
+  ]
+}

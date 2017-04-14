@@ -1,0 +1,71 @@
+{
+  "apiVersion": "2016-03-30",
+  "type": "Microsoft.Network/networkSecurityGroups",
+  "name": "[variables('networkSecurityGroupName')]",
+  "location": "[variables('location')]",
+  "properties": {
+    "securityRules": [
+      <% if operating_system == 'Windows' %>
+      {
+        "name": "rdp_rule",
+        "properties": {
+          "description": "Enable Inbound RDP",
+          "protocol": "Tcp",
+          "sourcePortRange": "*",
+          "destinationPortRange": "3389",
+          "sourceAddressPrefix": "*",
+          "destinationAddressPrefix": "*",
+          "access": "Allow",
+          "priority": 123,
+          "direction": "Inbound"
+        }
+      },
+      {
+        "name": "winrm_rule",
+        "properties": {
+          "description": "Enable Inbound WinRM",
+          "protocol": "Tcp",
+          "sourcePortRange": "*",
+          "destinationPortRange": "[parameters('winRmPort')]",
+          "sourceAddressPrefix": "*",
+          "destinationAddressPrefix": "*",
+          "access": "Allow",
+          "priority": 124,
+          "direction": "Inbound"
+        }
+      }
+      <% else %>
+      {
+        "name": "ssh_rule",
+        "properties": {
+          "description": "Locks inbound down to ssh default port 22.",
+          "protocol": "Tcp",
+          "sourcePortRange": "*",
+          "destinationPortRange": "22",
+          "sourceAddressPrefix": "*",
+          "destinationAddressPrefix": "*",
+          "access": "Allow",
+          "priority": 123,
+          "direction": "Inbound"
+        }
+      }
+      <% end %>
+      <% endpoints.each_with_index do |ports, index| %>
+      ,{
+        "name": "custom_rule_<%= index %>",
+        "properties": {
+          "description": "Custom opened ports.",
+          "protocol": "Tcp",
+          "sourcePortRange": "*",
+          "destinationPortRange": "<%= ports %>",
+          "sourceAddressPrefix": "*",
+          "destinationAddressPrefix": "*",
+          "access": "Allow",
+          "priority": <%= 133 + index %>,
+          "direction": "Inbound"
+        }
+      }
+      <% end %>
+    ]
+  }
+}

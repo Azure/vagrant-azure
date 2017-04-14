@@ -4,9 +4,9 @@
 require "log4r"
 require "json"
 require "azure_mgmt_resources"
-require "vagrant/util/template_renderer"
-require "vagrant-azure/util/timer"
 require "vagrant-azure/util/machine_id_helper"
+require "vagrant-azure/util/template_renderer"
+require "vagrant-azure/util/timer"
 require "haikunator"
 
 module VagrantPlugins
@@ -233,20 +233,21 @@ module VagrantPlugins
         def render_deployment_template(options)
           self_signed_cert_resource = nil
           if options[:operating_system] == "Windows" && options[:winrm_install_self_signed_cert]
-            setup_winrm_powershell = Vagrant::Util::TemplateRenderer.render("arm/setup-winrm.ps1", options.merge({template_root: template_root}))
+            setup_winrm_powershell = VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/setup-winrm.ps1", options.merge({template_root: template_root}))
             encoded_setup_winrm_powershell = setup_winrm_powershell.
               gsub("'", "', variables('singleQuote'), '").
               gsub("\r\n", "\n").
               gsub("\n", "; ")
-            self_signed_cert_resource = Vagrant::Util::TemplateRenderer.render("arm/selfsignedcert.json", options.merge({template_root: template_root, setup_winrm_powershell: encoded_setup_winrm_powershell}))
+            self_signed_cert_resource = VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/selfsignedcert.json", options.merge({template_root: template_root, setup_winrm_powershell: encoded_setup_winrm_powershell}))
           end
-          Vagrant::Util::TemplateRenderer.render("arm/deployment.json", options.merge({ template_root: template_root, self_signed_cert_resource: self_signed_cert_resource}))
+          VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/deployment.json", options.merge({ template_root: template_root, self_signed_cert_resource: self_signed_cert_resource}))
         end
 
         def build_deployment_params(template_params, deployment_params)
           params = ::Azure::ARM::Resources::Models::Deployment.new
           params.properties = ::Azure::ARM::Resources::Models::DeploymentProperties.new
           if template_params[:deployment_template].nil?
+            File.open("test.json", 'w') { |file| file.write(render_deployment_template(template_params)) }
             params.properties.template = JSON.parse(render_deployment_template(template_params))
           else
             params.properties.template = JSON.parse(template_params[:deployment_template])

@@ -1,0 +1,72 @@
+{
+  "apiVersion": "2016-04-30-preview",
+  "type": "Microsoft.Compute/virtualMachines",
+  "name": "[parameters('vmName')]",
+  "location": "[variables('location')]",
+  "dependsOn": [
+    <% if custom_image %>
+    "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
+    <% end %>
+    "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
+    <% if availability_set_name %>,
+    "[resourceId('Microsoft.Compute/availabilitySets', '<%= availability_set_name %>')]"
+    <% end %>
+  ],
+  <% if operating_system == 'Windows' %>
+  <%= self_signed_cert_resource %>
+  <% end %>
+  "properties": {
+    "hardwareProfile": {
+      "vmSize": "[parameters('vmSize')]"
+    },
+    "osProfile": {
+      "computerName": "[parameters('vmName')]",
+      "adminUsername": "[parameters('adminUsername')]",
+      <% if operating_system == 'Windows' %>
+      "adminPassword": "[parameters('adminPassword')]"
+      <% else %>
+      "linuxConfiguration": {
+        "disablePasswordAuthentication": "true",
+        "ssh": {
+          "publicKeys": [
+            {
+              "path": "[variables('sshKeyPath')]",
+              "keyData": "[parameters('sshKeyData')]"
+            }
+          ]
+        }
+      }
+      <% end %>
+    },
+    "storageProfile": {
+      "imageReference": {
+        "publisher": "[parameters('imagePublisher')]",
+        "offer": "[parameters('imageOffer')]",
+        "sku": "[parameters('imageSku')]",
+        "version": "latest"
+      },
+      "osDisk": {
+        <% if custom_image %>
+        "name": "osdisk",
+        "vhd": {
+          "uri": "[concat('http://',variables('storageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/', variables('osDiskName'),'.vhd')]"
+        },
+        "caching": "ReadWrite",
+        <% end %>
+        "createOption": "FromImage"
+      }
+    },
+    "networkProfile": {
+      "networkInterfaces": [
+        {
+          "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
+        }
+      ]
+    }
+    <% if availability_set_name %>,
+    "availabilitySet": {
+      "id": "[resourceId('Microsoft.Compute/availabilitySets', '<%= availability_set_name %>')]"
+    }
+    <% end %>
+  }
+}

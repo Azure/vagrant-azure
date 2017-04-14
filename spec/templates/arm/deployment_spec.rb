@@ -3,7 +3,7 @@
 # Licensed under the MIT License. See License in the project root for license information.
 
 require "spec_helper"
-require "vagrant/util/template_renderer"
+require "vagrant-azure/util/template_renderer"
 
 module VagrantPlugins
   module Azure
@@ -31,16 +31,16 @@ module VagrantPlugins
           expect(subject["contentVersion"]).to eq("1.0.0.0")
         end
 
-        it "should have 13 parameters" do
-          expect(subject["parameters"].count).to eq(13)
+        it "should have 14 parameters" do
+          expect(subject["parameters"].count).to eq(14)
         end
 
         it "should have 17 variables" do
           expect(subject["variables"].count).to eq(17)
         end
 
-        it "should have 7 resources" do
-          expect(subject["resources"].count).to eq(6)
+        it "should have 5 resources" do
+          expect(subject["resources"].count).to eq(5)
         end
       end
 
@@ -50,8 +50,8 @@ module VagrantPlugins
             render(options)["resources"].detect { |vm| vm["type"] == "Microsoft.Compute/virtualMachines" }
           }
 
-          it "should depend on 2 resources without an AV Set" do
-            expect(subject["dependsOn"].count).to eq(2)
+          it "should depend on 1 resources without an AV Set" do
+            expect(subject["dependsOn"].count).to eq(1)
           end
 
           describe "with AV Set" do
@@ -60,8 +60,8 @@ module VagrantPlugins
               template["resources"].detect { |vm| vm["type"] == "Microsoft.Compute/virtualMachines" }
             }
 
-            it "should depend on 3 resources with an AV Set" do
-              expect(subject["dependsOn"].count).to eq(3)
+            it "should depend on 2 resources with an AV Set" do
+              expect(subject["dependsOn"].count).to eq(2)
             end
           end
         end
@@ -69,7 +69,8 @@ module VagrantPlugins
 
       describe "parameters" do
         let(:base_keys) {
-          %w( adminUserName dnsLabelPrefix nsgLabelPrefix vmSize vmName imagePublisher imageOffer imageSku imageVersion subnetName virtualNetworkName winRmPort )
+          %w( storageAccountType adminUserName dnsLabelPrefix nsgLabelPrefix vmSize vmName imagePublisher imageOffer
+              imageSku imageVersion subnetName virtualNetworkName winRmPort )
         }
 
         let(:nix_keys) {
@@ -102,8 +103,8 @@ module VagrantPlugins
       describe "variables" do
         let(:keys) {
           %w(storageAccountName location osDiskName addressPrefix subnetPrefix vmStorageAccountContainerName nicName
-              publicIPAddressName publicIPAddressType storageAccountType networkSecurityGroupName sshKeyPath vnetID
-              subnetRef apiVersion singleQuote doubleQuote)
+              publicIPAddressName publicIPAddressType networkSecurityGroupName sshKeyPath vnetID subnetRef apiVersion
+              singleQuote doubleQuote managedOSDiskName)
         }
 
         let(:subject) {
@@ -117,7 +118,7 @@ module VagrantPlugins
 
 
       def render(options)
-        JSON.parse(Vagrant::Util::TemplateRenderer.render("arm/deployment.json", options))
+        JSON.parse(VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/deployment.json", options))
       end
     end
   end
