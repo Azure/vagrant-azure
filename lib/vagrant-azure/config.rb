@@ -68,6 +68,40 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :vm_image_urn
 
+      # (Optional) Custom OS Image URI (like: http://mystorage1.blob.core.windows.net/vhds/myosdisk1.vhd) -- default nil.
+      #
+      # @return [String]
+      attr_accessor :vm_custom_image
+
+      # (Optional unless using custom image) OS of the custom image
+      #
+      # @return [String] "Linux" or "Windows"
+      attr_accessor :vm_operating_system
+
+      # (Optional) Array of data disks to attach to the VM
+      #
+      # sample of creating empty data disk
+      #     {
+      #         name: "mydatadisk1",
+      #         size_gb: 30
+      #     }
+      #
+      # sample of attaching an existing VHD as a data disk
+      #     {
+      #         name: "mydatadisk2",
+      #         vhd_uri: "http://mystorage.blob.core.windows.net/vhds/mydatadisk2.vhd"
+      #     },
+      #
+      # sample of attaching a data disk from image
+      #     {
+      #         name: "mydatadisk3",
+      #         vhd_uri: "http://mystorage.blob.core.windows.net/vhds/mydatadisk3.vhd",
+      #         image: "http: //storagename.blob.core.windows.net/vhds/VMImageName-datadisk.vhd"
+      #     }
+      #
+      # @return [Array]
+      attr_accessor :data_disks
+
       # (Optional) Name of the virtual network resource
       #
       # @return [String]
@@ -128,6 +162,7 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :wait_for_destroy
 
+
       def initialize
         @tenant_id = UNSET_VALUE
         @client_id = UNSET_VALUE
@@ -139,6 +174,9 @@ module VagrantPlugins
         @vm_name = UNSET_VALUE
         @vm_password = UNSET_VALUE
         @vm_image_urn = UNSET_VALUE
+        @vm_custom_image = UNSET_VALUE
+        @vm_operating_system = UNSET_VALUE
+        @data_disks = UNSET_VALUE
         @virtual_network_name = UNSET_VALUE
         @subnet_name = UNSET_VALUE
         @dsn_name = UNSET_VALUE
@@ -166,6 +204,9 @@ module VagrantPlugins
         @resource_group_name = Haikunator.haikunate(100) if @resource_group_name == UNSET_VALUE
         @vm_password = nil if @vm_password == UNSET_VALUE
         @vm_image_urn = 'canonical:ubuntuserver:16.04.0-LTS:latest' if @vm_image_urn == UNSET_VALUE
+        @vm_custom_image = nil if @vm_custom_image == UNSET_VALUE
+        @vm_operating_system = nil if @vm_operating_system == UNSET_VALUE
+
         @location = 'westus' if @location == UNSET_VALUE
         @virtual_network_name = nil if @virtual_network_name == UNSET_VALUE
         @subnet_name = nil if @subnet_name == UNSET_VALUE
@@ -183,10 +224,13 @@ module VagrantPlugins
         @winrm_install_self_signed_cert = true if @winrm_install_self_signed_cert == UNSET_VALUE
         @deployment_template = nil if @deployment_template == UNSET_VALUE
         @wait_for_destroy = false if @wait_for_destroy == UNSET_VALUE
+        @data_disks = [] if @data_disks == UNSET_VALUE
       end
 
       def validate(machine)
         errors = _detected_errors
+
+        errors << t("vagrant_azure.custom_image_os_error") if !@vm_custom_image.nil? && @vm_operating_system.nil?
 
         # Azure connection properties related validation.
         errors << I18n.t('vagrant_azure.subscription_id.required') if @subscription_id.nil?

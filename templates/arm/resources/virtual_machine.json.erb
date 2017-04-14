@@ -54,7 +54,15 @@
         "caching": "ReadWrite",
         <% end %>
         "createOption": "FromImage"
-      }
+      },
+      "dataDisks" : [
+        <% data_disks.each_with_index do |disk, idx| %>
+        <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/data_disk.json", {lun: idx + 2}.merge(disk))%>
+        <% if data_disks.count < idx + 1 %>
+        ,
+        <% end %>
+        <% end %>
+      ]
     },
     "networkProfile": {
       "networkInterfaces": [

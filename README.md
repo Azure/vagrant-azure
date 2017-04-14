@@ -128,6 +128,33 @@ The vagrant-azure provide exposes Azure specific configuration options:
 * `subscription_id`: The Azure subscription Id you'd like to use.
 *Note: to procure these values see: [Create an Azure Active Directory Application](#create-an-azure-active-directory-aad-application)*
 
+### Optional Image Parameters
+* `vm_image_urn`: (Optional) Name of the virtual machine image urn to use -- defaults to 'canonical:ubuntuserver:16.04-LTS:latest'. See documentation for [*nix](https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-cli-ps-findimage/), [Windows](https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-cli-ps-findimage).
+* `vm_custom_image`: (Optional) URI to the custom VHD. If the VHD is not publicly accessible, provide a SAS token in the URI.
+    * `vm_operating_system`: (Mandatory) Must provide the OS if using a custom image ("Linux" or "Windows")
+
+### Optional Data Disk Parameters
+* `data_disks`: (Optional) Array of Data Disks to attach to the VM. For information on attaching the drive, see: https://docs.microsoft.com/en-us/azure/virtual-machines/linux/classic/attach-disk.
+```ruby
+override.data_disks = [
+    # sample of creating empty data disk
+    {
+      name: "mydatadisk1", 
+      size_gb: 30
+    }, 
+    # sample of attaching an existing VHD as a data disk
+    {
+      name: "mydatadisk2", 
+      vhd_uri: "http://mystorage.blob.core.windows.net/vhds/mydatadisk2.vhd"
+    },
+    # sample of attaching a data disk from image
+    {
+      name: "mydatadisk3", 
+      vhd_uri: "http://mystorage.blob.core.windows.net/vhds/mydatadisk3.vhd", 
+      image: "http: //storagename.blob.core.windows.net/vhds/VMImageName-datadisk.vhd"
+    }]
+```
+
 ### Optional
 
 * `resource_group_name`: (Optional) Name of the resource group to use.
@@ -135,7 +162,6 @@ The vagrant-azure provide exposes Azure specific configuration options:
 * `vm_name`: (Optional) Name of the virtual machine
 * `vm_password`: (Optional for *nix) Password for the VM -- This is not recommended for *nix deployments
 * `vm_size`: (Optional) VM size to be used -- defaults to 'Standard_DS2_v2'. See sizes for [*nix](https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-sizes/), [Windows](https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes/).
-* `vm_image_urn`: (Optional) Name of the virtual machine image urn to use -- defaults to 'canonical:ubuntuserver:16.04-LTS:latest'. See documentation for [*nix](https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-cli-ps-findimage/), [Windows](https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-cli-ps-findimage).
 * `virtual_network_name`: (Optional) Name of the virtual network resource
 * `dns_name`: (Optional) DNS Label Prefix 
 * `nsg_name`: (Optional) Network Security Group Label Prefix 

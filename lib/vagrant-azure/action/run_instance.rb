@@ -30,7 +30,7 @@ module VagrantPlugins
           # Get the configs
           config                         = machine.provider_config
 
-          config.dns_name ||= Haikunator.haikunate(100)
+          config.dns_name ||= config.vm_name
           config.nsg_name ||= config.vm_name
 
           endpoint                       = config.endpoint
@@ -40,6 +40,8 @@ module VagrantPlugins
           vm_name                        = config.vm_name
           vm_size                        = config.vm_size
           vm_image_urn                   = config.vm_image_urn
+          vm_custom_image                = config.vm_custom_image
+          vm_operating_system            = config.vm_operating_system
           virtual_network_name           = config.virtual_network_name
           subnet_name                    = config.subnet_name
           tcp_endpoints                  = config.tcp_endpoints
@@ -87,7 +89,12 @@ module VagrantPlugins
           }
 
           # we need to pass different parameters depending upon the OS
-          operating_system = get_image_os(image_details)
+          # if custom image, then require vm_operating_system
+          operating_system = if vm_custom_image
+                               vm_operating_system
+                             else
+                               get_image_os(image_details)
+                             end
 
           template_params = {
             availability_set_name:          availability_set_name,
@@ -97,10 +104,12 @@ module VagrantPlugins
             dns_label_prefix:               dns_label_prefix,
             nsg_label_prefix:               nsg_label_prefix,
             location:                       location,
-            image_publisher:                 image_publisher,
-            image_offer:                     image_offer,
-            image_sku:                       image_sku,
-            image_version:                   image_version
+            image_publisher:                image_publisher,
+            image_offer:                    image_offer,
+            image_sku:                      image_sku,
+            image_version:                  image_version,
+            custom_image:                   vm_custom_image,
+            data_disks:                     config.data_disks
           }
 
           if operating_system != "Windows"
