@@ -24,7 +24,7 @@ module VagrantPlugins
         }
 
         it "should specify schema" do
-          expect(subject["$schema"]).to eq("http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json")
+          expect(subject["$schema"]).to eq("http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json")
         end
 
         it "should specify content version" do
