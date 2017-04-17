@@ -121,20 +121,30 @@ Please see [Vagrant Docs](http://docs.vagrantup.com/v2/) for more details.
 
 The vagrant-azure provide exposes Azure specific configuration options:
 
-### Mandatory
+### Mandatory Parameters
 * `tenant_id`: Your Azure Active Directory Tenant Id.
 * `client_id`: Your Azure Active Directory application client id.
 * `client_secret`: Your Azure Active Directory application client secret.
 * `subscription_id`: The Azure subscription Id you'd like to use.
 *Note: to procure these values see: [Create an Azure Active Directory Application](#create-an-azure-active-directory-aad-application)*
 
-### Optional Image Parameters
-* `vm_image_urn`: (Optional) Name of the virtual machine image urn to use -- defaults to 'canonical:ubuntuserver:16.04-LTS:latest'. See documentation for [*nix](https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-cli-ps-findimage/), [Windows](https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-cli-ps-findimage).
-* `vm_custom_image`: (Optional) URI to the custom VHD. If the VHD is not publicly accessible, provide a SAS token in the URI.
-    * `vm_operating_system`: (Mandatory) Must provide the OS if using a custom image ("Linux" or "Windows")
+### Optional VM Parameters
+* `vm_name`: Name of the virtual machine
+* `vm_password`: (Optional for *nix) Password for the VM -- This is not recommended for *nix deployments
+* `vm_size`: VM size to be used -- defaults to 'Standard_DS2_v2'. See sizes for [*nix](https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-sizes/), [Windows](https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes/).
+* `admin_username`: The root/administrator username for the VM
 
-### Optional Data Disk Parameters
-* `data_disks`: (Optional) Array of Data Disks to attach to the VM. For information on attaching the drive, see: https://docs.microsoft.com/en-us/azure/virtual-machines/linux/classic/attach-disk.
+### Optional VM Image Parameters
+`vm_image_urn`, `vm_vhd_uri`, and `vm_managed_image_id` are mutually exclusive. They should not be used in combination.
+* `vm_image_urn`: Name of the virtual machine image urn to use -- defaults to 'canonical:ubuntuserver:16.04-LTS:latest'. See documentation for [*nix](https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-cli-ps-findimage/), [Windows](https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-cli-ps-findimage).
+* `vm_vhd_uri`: URI to the custom VHD. If the VHD is not publicly accessible, provide a SAS token in the URI.
+    * `vm_operating_system`: (Mandatory) Must provide the OS if using a custom image ("Linux" or "Windows")
+    * `vm_vhd_storage_account_id`: (Manditory) The Storage Account Azure Resource Manager Id where the OS Image is stored
+        (like: /subscriptions/{subscription id}/resourceGroups/{resource group}/providers/Microsoft.Storage/storageAccounts/{account name}).
+* `vm_managed_image_id`: Create a VM from a generalized VM that is stored as either a managed or unmanaged disk. See: https://docs.microsoft.com/en-us/azure/virtual-machines/windows/capture-image-resource
+
+### Optional VM Data Disk Parameters
+* `data_disks`: (Optional) Array of Data Disks to attach to the VM. For information on attaching the drive, See: https://docs.microsoft.com/en-us/azure/virtual-machines/linux/classic/attach-disk.
 ```ruby
 override.data_disks = [
     # sample of creating empty data disk
@@ -155,13 +165,7 @@ override.data_disks = [
     }]
 ```
 
-### Optional
-
-* `resource_group_name`: (Optional) Name of the resource group to use.
-* `location`: (Optional) Azure location to build the VM -- defaults to `westus`
-* `vm_name`: (Optional) Name of the virtual machine
-* `vm_password`: (Optional for *nix) Password for the VM -- This is not recommended for *nix deployments
-* `vm_size`: (Optional) VM size to be used -- defaults to 'Standard_DS2_v2'. See sizes for [*nix](https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-sizes/), [Windows](https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-windows-sizes/).
+### Optional Networking Parameters
 * `virtual_network_name`: (Optional) Name of the virtual network resource
 * `dns_name`: (Optional) DNS Label Prefix 
 * `nsg_name`: (Optional) Network Security Group Label Prefix 
@@ -170,9 +174,17 @@ override.data_disks = [
   * an array `['8000-9000', '9100-9200']`, 
   * a single interval as `'8000-9000'`,
   * a single port as `8000`.
+
+### Optional Windows Parameters
+* `winrm_install_self_signed_cert`: (Optional, Windows only) Whether to install a self-signed cert automatically to enable WinRM to communicate over HTTPS (5986). Only available when a custom `deployment_template` is not supplied. Default 'true'.
+
+### Optional Provisioning Parameters
 * `instance_ready_timeout`: (Optional) The timeout to wait for an instance to become ready -- default 120 seconds.
 * `instance_check_interval`: (Optional) The interval to wait for checking an instance's state -- default 2 seconds.
-* `endpoint`: (Optional) The Azure Management API endpoint -- default `ENV['AZURE_MANAGEMENT_ENDPOINT']` if exists, falls back to <https://management.azure.com>.
-* `admin_username`: (Optional) The root/administrator username for the VM
-* `winrm_install_self_signed_cert`: (Optional, Windows only) Whether to install a self-signed cert automatically to enable WinRM to communicate over HTTPS (5986). Only available when a custom `deployment_template` is not supplied. Default 'true'.
 * `wait_for_destroy`: (Optional) Wait for all resources to be deleted prior to completing Vagrant destroy -- default false.
+
+### Optional Azure Parameters
+* `endpoint`: (Optional) The Azure Management API endpoint -- default `ENV['AZURE_MANAGEMENT_ENDPOINT']` if exists, falls back to <https://management.azure.com>.
+* `resource_group_name`: (Optional) Name of the resource group to use.
+* `location`: (Optional) Azure location to build the VM -- defaults to `westus`
+

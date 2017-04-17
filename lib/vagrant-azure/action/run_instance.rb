@@ -6,6 +6,7 @@ require "json"
 require "azure_mgmt_resources"
 require "vagrant-azure/util/machine_id_helper"
 require "vagrant-azure/util/template_renderer"
+require "vagrant-azure/util/managed_image_helper"
 require "vagrant-azure/util/timer"
 require "haikunator"
 
@@ -15,6 +16,7 @@ module VagrantPlugins
       class RunInstance
         include Vagrant::Util::Retryable
         include VagrantPlugins::Azure::Util::MachineIdHelper
+        include VagrantPlugins::Azure::Util::ManagedImagedHelper
 
         def initialize(app, env)
           @app = app
@@ -40,8 +42,10 @@ module VagrantPlugins
           vm_name                        = config.vm_name
           vm_size                        = config.vm_size
           vm_image_urn                   = config.vm_image_urn
-          vm_custom_image                = config.vm_custom_image
+          vm_vhd_uri                     = config.vm_vhd_uri
+          vm_vhd_stor_acct_id            = config.vm_vhd_storage_account_id
           vm_operating_system            = config.vm_operating_system
+          vm_managed_image_id            = config.vm_managed_image_id
           virtual_network_name           = config.virtual_network_name
           subnet_name                    = config.subnet_name
           tcp_endpoints                  = config.tcp_endpoints
@@ -63,7 +67,17 @@ module VagrantPlugins
           env[:ui].info(" -- Admin Username: #{admin_user_name}") if admin_user_name
           env[:ui].info(" -- VM Name: #{vm_name}")
           env[:ui].info(" -- VM Size: #{vm_size}")
-          env[:ui].info(" -- Image URN: #{vm_image_urn}")
+
+          if !vm_vhd_uri.nil?
+            env[:ui].info(" -- Custom VHD URI: #{vm_vhd_uri}")
+            env[:ui].info(" -- Custom OS: #{vm_operating_system}")
+            env[:ui].info(" -- Custom VHD Storage Account Id: #{vm_vhd_stor_acct_id}")
+          elsif !vm_managed_image_id.nil?
+            env[:ui].info(" -- Managed Image Id: #{vm_managed_image_id}")
+          else
+            env[:ui].info(" -- Image URN: #{vm_image_urn}")
+          end
+
           env[:ui].info(" -- Virtual Network Name: #{virtual_network_name}") if virtual_network_name
           env[:ui].info(" -- Subnet Name: #{subnet_name}") if subnet_name
           env[:ui].info(" -- TCP Endpoints: #{tcp_endpoints}") if tcp_endpoints
@@ -73,10 +87,6 @@ module VagrantPlugins
           image_publisher, image_offer, image_sku, image_version = vm_image_urn.split(":")
 
           azure = env[:azure_arm_service]
-          image_details = nil
-          env[:metrics]["get_image_details"] = Util::Timer.time do
-            image_details = get_image_details(azure, location, image_publisher, image_offer, image_sku, image_version)
-          end
           @logger.info("Time to fetch os image details: #{env[:metrics]["get_image_details"]}")
 
           deployment_params = {
@@ -90,15 +100,16 @@ module VagrantPlugins
 
           # we need to pass different parameters depending upon the OS
           # if custom image, then require vm_operating_system
-          operating_system = if vm_custom_image
+          operating_system = if vm_vhd_uri
                                vm_operating_system
+                             elsif vm_managed_image_id
+                               get_managed_image_os(azure, vm_managed_image_id)
                              else
-                               get_image_os(image_details)
+                               get_image_os(azure, location, image_publisher, image_offer, image_sku, image_version)
                              end
 
           template_params = {
             availability_set_name:          availability_set_name,
-            operating_system:               operating_system,
             winrm_install_self_signed_cert: winrm_install_self_signed_cert,
             winrm_port:                     winrm_port,
             dns_label_prefix:               dns_label_prefix,
@@ -108,7 +119,9 @@ module VagrantPlugins
             image_offer:                    image_offer,
             image_sku:                      image_sku,
             image_version:                  image_version,
-            custom_image:                   vm_custom_image,
+            vhd_uri:                        vm_vhd_uri,
+            vhd_stor_acct_id:               vm_vhd_stor_acct_id,
+            operating_system:               operating_system,
             data_disks:                     config.data_disks
           }
 
@@ -209,8 +222,15 @@ module VagrantPlugins
           endpoints
         end
 
-        def get_image_os(image_details)
+        def get_image_os(azure, location, publisher, offer, sku, version)
+          image_details = get_image_details(azure, location, publisher, offer, sku, version)
           image_details.os_disk_image.operating_system
+        end
+
+        def get_managed_image_os(azure, image_id)
+          _, group, name = image_id_captures(image_id)
+          image_details = azure.compute.images.get(group, name)
+          image_details.storage_profile.os_disk.os_type
         end
 
         def get_image_details(azure, location, publisher, offer, sku, version)
@@ -243,14 +263,14 @@ module VagrantPlugins
         def render_deployment_template(options)
           self_signed_cert_resource = nil
           if options[:operating_system] == "Windows" && options[:winrm_install_self_signed_cert]
-            setup_winrm_powershell = VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/setup-winrm.ps1", options.merge({template_root: template_root}))
+            setup_winrm_powershell = VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/setup-winrm.ps1", options)
             encoded_setup_winrm_powershell = setup_winrm_powershell.
               gsub("'", "', variables('singleQuote'), '").
               gsub("\r\n", "\n").
               gsub("\n", "; ")
-            self_signed_cert_resource = VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/selfsignedcert.json", options.merge({template_root: template_root, setup_winrm_powershell: encoded_setup_winrm_powershell}))
+            self_signed_cert_resource = VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/selfsignedcert.json", options.merge({setup_winrm_powershell: encoded_setup_winrm_powershell}))
           end
-          VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/deployment.json", options.merge({ template_root: template_root, self_signed_cert_resource: self_signed_cert_resource}))
+          VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/deployment.json", options.merge({self_signed_cert_resource: self_signed_cert_resource}))
         end
 
         def build_deployment_params(template_params, deployment_params)
@@ -264,11 +284,6 @@ module VagrantPlugins
 
         def build_parameters(options)
           Hash[*options.map { |k, v| [k, { value: v } ] }.flatten]
-        end
-
-        # Used to find the base location of aws-vagrant templates
-        def template_root
-          Azure.source_root.join("templates")
         end
 
         def terminate(env)

@@ -114,4 +114,9 @@ en:
       Waiting for instance to become "ready"...
     waiting_for_stop: |-
       Waiting for instance to become "stopped"...
-    custom_image_os_error: "If you provide a custom image, you must provide the operating system for the image (vm_operating_system)."
+    custom_image_os_error:
+      If you provide a custom image, you must provide the operating system for the image (vm_operating_system) and the Storage Account Azure Resource Provider Id (vm_custom_image_storage_account_id).
+    vhd_and_managed_image_error:
+      Specifying both vm_vhd_uri and vm_managed_image_id is not supported. Please specify one or the other.
+    manage_image_id_format_error:
+      The vm_managed_image_id doesn't fit the expected format, plese verify it looks like '/subscriptions/{sub_id}/resourceGroups/{group_name}/providers/Microsoft.Compute/images/{image_name}'

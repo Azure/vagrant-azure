@@ -2,7 +2,7 @@ id
 .DS_Store
 Gemfile.lock
 azure.box
-Vagrantfile
+/Vagrantfile
 !example_box/Vagrantfile
 !example_box/README.md
 babu

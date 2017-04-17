@@ -79,12 +79,9 @@
     }
   },
   "variables": {
-    "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'vagrant')]",
     "location": "[resourceGroup().location]",
-    "osDiskName": "[concat(parameters('vmName'), 'OSDisk1')]",
     "managedOSDiskName": "[concat(parameters('vmName'), 'ManagedOSDisk')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
-    "vmStorageAccountContainerName": "vagrant-vhds",
     "nicName": "[concat(parameters('vmName'), '-vagrantNIC')]",
     "publicIPAddressName": "[concat(parameters('vmName'), '-vagrantPublicIP')]",
     "publicIPAddressType": "Dynamic",
@@ -98,8 +95,14 @@
     "doubleQuote": "\""
   },
   "resources": [
-    <% if custom_image %>
-    <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/storage_account.json", self) + "," %>
+    <% if vhd_uri %>
+    <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/import_disk.json", {
+      name: "[variables('managedOSDiskName')]",
+      account_type: "[parameters('storageAccountType')]",
+      os_type: "#{operating_system}",
+      source_uri: "#{vhd_uri}",
+      account_id: "#{vhd_stor_acct_id}"
+    }) + "," %>
     <% end %>
     <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/network_security_group.json", self) + "," %>
     <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/public_ip_address.json", self) + "," %>
@@ -108,6 +111,32 @@
     <% if availability_set_name %>
       <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/availability_set.json", availability_set_name: availability_set_name) + "," %>
     <% end %>
-    <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/virtual_machine.json", self) %>
+
+    <% if custom_image && operating_system == "Linux" %>
+    <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/linux_reset_root_ext.json",
+                                                            {
+                                                              name: "[concat(parameters('vmName'), '/linuxResetUserExt')]",
+                                                              depends_on: ["[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"],
+                                                              ssh_key: "[parameters('sshKeyData')]",
+                                                              username: "[parameters('adminUserName')]"
+                                                            }) + ", "
+                                                            %>
+    <% end %>
+
+    <%
+      vm_dependencies = ["[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"]
+      if availability_set_name
+        vm_dependencies.push("[resourceId('Microsoft.Compute/availabilitySets', '#{availability_set_name}')")
+      end
+      if custom_image
+        vm_dependencies.push("[resourceId('Microsoft.Compute/disks', variables('managedOSDiskName'))]")
+      end
+    %>
+    <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/virtual_machine.json",
+                                                              {
+                                                                depends_on: vm_dependencies,
+                                                                storage_account_type: "[parameters('storageAccountType')]"
+                                                              }.merge(self.to_h))
+    %>
   ]
 }

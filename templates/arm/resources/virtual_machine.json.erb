@@ -4,13 +4,7 @@
   "name": "[parameters('vmName')]",
   "location": "[variables('location')]",
   "dependsOn": [
-    <% if custom_image %>
-    "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
-    <% end %>
-    "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
-    <% if availability_set_name %>,
-    "[resourceId('Microsoft.Compute/availabilitySets', '<%= availability_set_name %>')]"
-    <% end %>
+    <%= (depends_on || []).map{ |resource| "\"#{resource}\"" }.join(", ") %>
   ],
   <% if operating_system == 'Windows' %>
   <%= self_signed_cert_resource %>
@@ -19,6 +13,7 @@
     "hardwareProfile": {
       "vmSize": "[parameters('vmSize')]"
     },
+    <% if vhd_uri.nil? && vm_managed_image_id.nil? %>
     "osProfile": {
       "computerName": "[parameters('vmName')]",
       "adminUsername": "[parameters('adminUsername')]",
@@ -38,30 +33,44 @@
       }
       <% end %>
     },
+    <% end %>
     "storageProfile": {
+      <% if vhd_uri.nil? && vm_managed_image_id.nil? %>
       "imageReference": {
         "publisher": "<%= image_publisher %>",
         "offer": "<%= image_offer %>",
         "sku": "<%= image_sku %>",
         "version": "<%= image_version %>"
       },
+      <% elsif vm_managed_image_id %>
+      "imageReference": {
+        "id": "<%= vm_managed_image_id %>"
+      },
+      <% end %>
       "osDisk": {
-        <% if custom_image %>
-        "name": "osdisk",
-        "vhd": {
-          "uri": "[concat('http://',variables('storageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/', variables('osDiskName'),'.vhd')]"
+        <% if vhd_uri %>
+        "osType": "<%= operating_system %>",
+        "managedDisk": {
+          "storageAccountType": "<%= storage_account_type %>",
+          "id": "[resourceId('Microsoft.Compute/disks', variables('managedOSDiskName'))]"
         },
-        "caching": "ReadWrite",
+        "createOption": "attach",
+        <% elsif vm_managed_image_id %>
+        "osType": "<%= operating_system %>",
+        "managedDisk": {
+          "storageAccountType": "<%= storage_account_type %>",
+        },
+        "createOption": "fromImage",
+        <% else %>
+        "createOption": "fromImage",
         <% end %>
-        "createOption": "FromImage"
+        "caching": "ReadWrite"
       },
       "dataDisks" : [
-        <% data_disks.each_with_index do |disk, idx| %>
-        <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/data_disk.json", {lun: idx + 2}.merge(disk))%>
-        <% if data_disks.count < idx + 1 %>
-        ,
-        <% end %>
-        <% end %>
+        <%= data_disks.each_with_index.map { |disk, idx|
+            VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/data_disk.json", {lun: idx + 2}.merge(disk))
+          }.join(", ")
+        %>
       ]
     },
     "networkProfile": {

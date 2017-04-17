@@ -1,0 +1,19 @@
+{
+  "type": "Microsoft.Compute/disks",
+  "name": "<%= name %>",
+  "apiVersion": "2016-04-30-preview",
+  "location": "[variables('location')]",
+  "tags": {},
+  "properties": {
+    "accountType": "<%= account_type %>",
+    "osType": "<%= operating_system %>",
+    "creationData": {
+      "createOption": "Import",
+      "sourceURI": "<%= source_uri %>",
+      "storageAccountId": "<%= account_id %>"
+    }
+  },
+  "dependsOn": [
+    <%= (depends_on || []).map{ |resource| "\"#{resource}\"" }.join(", ") %>
+  ]
+}
