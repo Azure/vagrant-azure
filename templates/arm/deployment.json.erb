@@ -112,7 +112,7 @@
       <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/availability_set.json", availability_set_name: availability_set_name) + "," %>
     <% end %>
 
-    <% if custom_image && operating_system == "Linux" %>
+    <% if vhd_uri && operating_system == "Linux" %>
     <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/linux_reset_root_ext.json",
                                                             {
                                                               name: "[concat(parameters('vmName'), '/linuxResetUserExt')]",
@@ -123,12 +123,23 @@
                                                             %>
     <% end %>
 
+    <% if vhd_uri && operating_system == "Windows" %>
+    <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/windows_reset_access_ext.json",
+                                                            {
+                                                              name: "[concat(parameters('vmName'), '/windowsResetUserExt')]",
+                                                              depends_on: ["[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"],
+                                                              password: "[parameters('adminPassword')]",
+                                                              username: "[parameters('adminUserName')]"
+                                                            }) + ", "
+                                                            %>
+    <% end %>
+
     <%
       vm_dependencies = ["[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"]
       if availability_set_name
         vm_dependencies.push("[resourceId('Microsoft.Compute/availabilitySets', '#{availability_set_name}')")
       end
-      if custom_image
+      if vhd_uri
         vm_dependencies.push("[resourceId('Microsoft.Compute/disks', variables('managedOSDiskName'))]")
       end
     %>
