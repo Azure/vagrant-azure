@@ -252,7 +252,7 @@ module VagrantPlugins
         errors = _detected_errors
 
         errors << I18n.t("vagrant_azure.custom_image_os_error") if !@vm_vhd_uri.nil? && (@vm_operating_system.nil? || @vm_vhd_storage_account_id.nil?)
-        errors << I18n.t("vagrant_azure.vhd_and_managed_image_error") if !@vm_vhd_uri.nil? && !@vm_managed
+        errors << I18n.t("vagrant_azure.vhd_and_managed_image_error") if !@vm_vhd_uri.nil? && !@vm_managed_image_id.nil?
         errors << I18n.t("vagrant_azure.manage_image_id_format_error") if !@vm_managed_image_id.nil? && !valid_image_id?(@vm_managed_image_id)
         # Azure connection properties related validation.
         errors << I18n.t('vagrant_azure.subscription_id.required') if @subscription_id.nil?

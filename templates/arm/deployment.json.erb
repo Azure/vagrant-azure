@@ -96,13 +96,13 @@
   },
   "resources": [
     <% if vhd_uri %>
-    <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/import_disk.json", {
-      name: "[variables('managedOSDiskName')]",
-      account_type: "[parameters('storageAccountType')]",
-      os_type: "#{operating_system}",
-      source_uri: "#{vhd_uri}",
-      account_id: "#{vhd_stor_acct_id}"
-    }) + "," %>
+      <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/import_disk.json", {
+        name: "[variables('managedOSDiskName')]",
+        account_type: "[parameters('storageAccountType')]",
+        os_type: "#{operating_system}",
+        source_uri: "#{vhd_uri}",
+        account_id: "#{vhd_stor_acct_id}"
+      }) + "," %>
     <% end %>
     <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/network_security_group.json", self) + "," %>
     <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/public_ip_address.json", self) + "," %>
@@ -113,25 +113,25 @@
     <% end %>
 
     <% if vhd_uri && operating_system == "Linux" %>
-    <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/linux_reset_root_ext.json",
-                                                            {
-                                                              name: "[concat(parameters('vmName'), '/linuxResetUserExt')]",
-                                                              depends_on: ["[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"],
-                                                              ssh_key: "[parameters('sshKeyData')]",
-                                                              username: "[parameters('adminUserName')]"
-                                                            }) + ", "
-                                                            %>
+      <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/linux_reset_root_ext.json",
+                                                              {
+                                                                name: "[concat(parameters('vmName'), '/linuxResetUserExt')]",
+                                                                depends_on: ["[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"],
+                                                                ssh_key: "[parameters('sshKeyData')]",
+                                                                username: "[parameters('adminUserName')]"
+                                                              }) + ", "
+                                                              %>
     <% end %>
 
     <% if vhd_uri && operating_system == "Windows" %>
-    <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/windows_reset_access_ext.json",
-                                                            {
-                                                              name: "[concat(parameters('vmName'), '/windowsResetUserExt')]",
-                                                              depends_on: ["[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"],
-                                                              password: "[parameters('adminPassword')]",
-                                                              username: "[parameters('adminUserName')]"
-                                                            }) + ", "
-                                                            %>
+      <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/windows_reset_access_ext.json",
+                                                              {
+                                                                name: "[concat(parameters('vmName'), '/windowsResetUserExt')]",
+                                                                depends_on: ["[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"],
+                                                                password: "[parameters('adminPassword')]",
+                                                                username: "[parameters('adminUserName')]"
+                                                              }) + ", "
+                                                              %>
     <% end %>
 
     <%
@@ -139,6 +139,7 @@
       if availability_set_name
         vm_dependencies.push("[resourceId('Microsoft.Compute/availabilitySets', '#{availability_set_name}')")
       end
+
       if vhd_uri
         vm_dependencies.push("[resourceId('Microsoft.Compute/disks', variables('managedOSDiskName'))]")
       end
