@@ -38,7 +38,7 @@
       {
         "name": "ssh_rule",
         "properties": {
-          "description": "Locks inbound down to ssh default port 22.",
+          "description": "Enable inbound down to ssh default port 22.",
           "protocol": "Tcp",
           "sourcePortRange": "*",
           "destinationPortRange": "22",
@@ -54,7 +54,7 @@
         ,{
           "name": "custom_rule_inbound_<%= index %>",
           "properties": {
-            "description": "Custom opened ports.",
+            "description": "Enable inbound custom ports.",
             "protocol": "*",
             "sourcePortRange": "<%= ports %>",
             "destinationPortRange": "<%= ports %>",
@@ -68,7 +68,7 @@
         {
           "name": "custom_rule_outbound_<%= index %>",
           "properties": {
-            "description": "Custom opened ports.",
+            "description": "Enabled outbound custom ports.",
             "protocol": "*",
             "sourcePortRange": "<%= ports %>",
             "destinationPortRange": "<%= ports %>",
@@ -80,34 +80,6 @@
           }
         }
       <% end %>
-      ,{
-        "name": "all_in",
-        "properties": {
-          "description": "Enable Inbound RDP",
-          "protocol": "*",
-          "sourcePortRange": "*",
-          "destinationPortRange": "*",
-          "sourceAddressPrefix": "*",
-          "destinationAddressPrefix": "*",
-          "access": "Allow",
-          "priority": 100,
-          "direction": "Inbound"
-        }
-      },
-      {
-        "name": "all_out",
-        "properties": {
-          "description": "Enable Inbound RDP",
-          "protocol": "*",
-          "sourcePortRange": "*",
-          "destinationPortRange": "*",
-          "sourceAddressPrefix": "*",
-          "destinationAddressPrefix": "*",
-          "access": "Allow",
-          "priority": 101,
-          "direction": "Outbound"
-        }
-      }
     ]
   }
 }

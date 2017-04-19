@@ -35,8 +35,8 @@ module VagrantPlugins
           expect(subject["parameters"].count).to eq(10)
         end
 
-        it "should have 17 variables" do
-          expect(subject["variables"].count).to eq(17)
+        it "should have 14 variables" do
+          expect(subject["variables"].count).to eq(14)
         end
 
         it "should have 5 resources" do
@@ -45,9 +45,9 @@ module VagrantPlugins
       end
 
       describe "resources" do
-        describe "the virtual machine" do
+        describe "virtual machine" do
           let(:subject) {
-            render(options)["resources"].detect { |vm| vm["type"] == "Microsoft.Compute/virtualMachines" }
+            render(options)["resources"].detect {|vm| vm["type"] == "Microsoft.Compute/virtualMachines"}
           }
 
           it "should depend on 1 resources without an AV Set" do
@@ -57,12 +57,56 @@ module VagrantPlugins
           describe "with AV Set" do
             let(:subject) {
               template = render(options.merge(availability_set_name: "avSet"))
-              template["resources"].detect { |vm| vm["type"] == "Microsoft.Compute/virtualMachines" }
+              template["resources"].detect {|vm| vm["type"] == "Microsoft.Compute/virtualMachines"}
             }
 
             it "should depend on 2 resources with an AV Set" do
               expect(subject["dependsOn"].count).to eq(2)
             end
+          end
+
+          describe "with managed disk reference" do
+            let(:subject) {
+              template = render(options.merge(vm_managed_image_id: "image_id"))
+              template["resources"].detect {|vm| vm["type"] == "Microsoft.Compute/virtualMachines"}
+            }
+
+            it "should have an image reference id set to image_id" do
+              expect(subject["properties"]["storageProfile"]["imageReference"]["id"]).to eq("image_id")
+            end
+          end
+        end
+
+        describe "managed image" do
+          let(:subject) {
+            render(options)["resources"].detect {|vm| vm["type"] == "Microsoft.Compute/images"}
+          }
+          describe "with custom vhd" do
+            let(:vhd_uri_options) {
+              options.merge(
+                  vhd_uri: "https://my_image.vhd",
+                  operating_system: "Foo"
+              )
+            }
+            let(:subject) {
+              render(vhd_uri_options)["resources"].detect {|vm| vm["type"] == "Microsoft.Compute/images"}
+            }
+
+            it "should exist" do
+              expect(subject).not_to be_nil
+            end
+
+            it "should set the blob_uri" do
+              expect(subject["properties"]["storageProfile"]["osDisk"]["blobUri"]).to eq(vhd_uri_options[:vhd_uri])
+            end
+
+            it "should set the osType" do
+              expect(subject["properties"]["storageProfile"]["osDisk"]["osType"]).to eq(vhd_uri_options[:operating_system])
+            end
+          end
+
+          it "should not exist" do
+            expect(subject).to be_nil
           end
         end
       end
@@ -102,9 +146,9 @@ module VagrantPlugins
 
       describe "variables" do
         let(:keys) {
-          %w(storageAccountName location osDiskName addressPrefix subnetPrefix vmStorageAccountContainerName nicName
-              publicIPAddressName publicIPAddressType networkSecurityGroupName sshKeyPath vnetID subnetRef apiVersion
-              singleQuote doubleQuote managedOSDiskName)
+          %w(location addressPrefix subnetPrefix nicName publicIPAddressName publicIPAddressType
+              networkSecurityGroupName sshKeyPath vnetID subnetRef apiVersion
+              singleQuote doubleQuote managedImageName)
         }
 
         let(:subject) {
