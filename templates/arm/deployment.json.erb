@@ -80,7 +80,7 @@
   },
   "variables": {
     "location": "[resourceGroup().location]",
-    "managedOSDiskName": "[concat(parameters('vmName'), 'ManagedOSDisk')]",
+    "managedImageName": "[concat(parameters('vmName'), '-vagrantanagedImage')]",
     "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
     "nicName": "[concat(parameters('vmName'), '-vagrantNIC')]",
     "publicIPAddressName": "[concat(parameters('vmName'), '-vagrantPublicIP')]",
@@ -96,12 +96,11 @@
   },
   "resources": [
     <% if vhd_uri %>
-      <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/import_disk.json", {
-        name: "[variables('managedOSDiskName')]",
+      <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/import_vhd_image.json", {
+        name: "[variables('managedImageName')]",
         account_type: "[parameters('storageAccountType')]",
         os_type: "#{operating_system}",
-        source_uri: "#{vhd_uri}",
-        account_id: "#{vhd_stor_acct_id}"
+        source_uri: "#{vhd_uri}"
       }) + "," %>
     <% end %>
     <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/network_security_group.json", self) + "," %>
@@ -112,28 +111,6 @@
       <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/availability_set.json", availability_set_name: availability_set_name) + "," %>
     <% end %>
 
-    <% if vhd_uri && operating_system == "Linux" %>
-      <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/linux_reset_root_ext.json",
-                                                              {
-                                                                name: "[concat(parameters('vmName'), '/linuxResetUserExt')]",
-                                                                depends_on: ["[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"],
-                                                                ssh_key: "[parameters('sshKeyData')]",
-                                                                username: "[parameters('adminUserName')]"
-                                                              }) + ", "
-                                                              %>
-    <% end %>
-
-    <% if vhd_uri && operating_system == "Windows" %>
-      <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/windows_reset_access_ext.json",
-                                                              {
-                                                                name: "[concat(parameters('vmName'), '/windowsResetUserExt')]",
-                                                                depends_on: ["[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"],
-                                                                password: "[parameters('adminPassword')]",
-                                                                username: "[parameters('adminUserName')]"
-                                                              }) + ", "
-                                                              %>
-    <% end %>
-
     <%
       vm_dependencies = ["[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"]
       if availability_set_name
@@ -141,7 +118,7 @@
       end
 
       if vhd_uri
-        vm_dependencies.push("[resourceId('Microsoft.Compute/disks', variables('managedOSDiskName'))]")
+        vm_dependencies.push("[resourceId('Microsoft.Compute/images', variables('managedImageName'))]")
       end
     %>
     <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/virtual_machine.json",

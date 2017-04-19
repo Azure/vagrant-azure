@@ -13,7 +13,6 @@
     "hardwareProfile": {
       "vmSize": "[parameters('vmSize')]"
     },
-    <% if vhd_uri.nil? && vm_managed_image_id.nil? %>
     "osProfile": {
       "computerName": "[parameters('vmName')]",
       "adminUsername": "[parameters('adminUsername')]",
@@ -33,7 +32,6 @@
       }
       <% end %>
     },
-    <% end %>
     "storageProfile": {
       <% if vhd_uri.nil? && vm_managed_image_id.nil? %>
       "imageReference": {
@@ -46,24 +44,19 @@
       "imageReference": {
         "id": "<%= vm_managed_image_id %>"
       },
+      <% else %>
+      "imageReference": {
+        "id": "[resourceId('Microsoft.Compute/images', variables('managedImageName'))]"
+      },
       <% end %>
       "osDisk": {
-        <% if vhd_uri %>
+        <% if vhd_uri || vm_managed_image_id %>
         "osType": "<%= operating_system %>",
         "managedDisk": {
-          "storageAccountType": "<%= storage_account_type %>",
-          "id": "[resourceId('Microsoft.Compute/disks', variables('managedOSDiskName'))]"
+          "storageAccountType": "<%= storage_account_type %>"
         },
-        "createOption": "attach",
-        <% elsif vm_managed_image_id %>
-        "osType": "<%= operating_system %>",
-        "managedDisk": {
-          "storageAccountType": "<%= storage_account_type %>",
-        },
-        "createOption": "fromImage",
-        <% else %>
-        "createOption": "fromImage",
         <% end %>
+        "createOption": "fromImage",
         "caching": "ReadWrite"
       },
       "dataDisks" : [

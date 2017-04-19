@@ -75,14 +75,6 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :vm_vhd_uri
 
-      # (Optional) The Storage Account Azure Resource Manager Id where the OS Image is stored
-      # (like: /subscriptions/{subscription id}/resourceGroups/{resource group}/providers/Microsoft.Storage/storageAccounts/{account name}) -- default nil.
-      #
-      # This is required when using a vm_vhd_uri.
-      #
-      # @return [String]
-      attr_accessor :vm_vhd_storage_account_id
-
       # (Optional) The Managed Image Id which will be used to build the VM
       # (like: /subscriptions/{sub_id}/resourceGroups/{group_name}/providers/Microsoft.Compute/images/{image_name}) -- default nil.
       #
@@ -191,7 +183,6 @@ module VagrantPlugins
         @vm_password = UNSET_VALUE
         @vm_image_urn = UNSET_VALUE
         @vm_vhd_uri = UNSET_VALUE
-        @vm_vhd_storage_account_id = UNSET_VALUE
         @vm_image_reference_id = UNSET_VALUE
         @vm_operating_system = UNSET_VALUE
         @vm_managed_image_id = UNSET_VALUE
@@ -251,7 +242,7 @@ module VagrantPlugins
       def validate(machine)
         errors = _detected_errors
 
-        errors << I18n.t("vagrant_azure.custom_image_os_error") if !@vm_vhd_uri.nil? && (@vm_operating_system.nil? || @vm_vhd_storage_account_id.nil?)
+        errors << I18n.t("vagrant_azure.custom_image_os_error") if !@vm_vhd_uri.nil? && @vm_operating_system.nil?
         errors << I18n.t("vagrant_azure.vhd_and_managed_image_error") if !@vm_vhd_uri.nil? && !@vm_managed_image_id.nil?
         errors << I18n.t("vagrant_azure.manage_image_id_format_error") if !@vm_managed_image_id.nil? && !valid_image_id?(@vm_managed_image_id)
         # Azure connection properties related validation.

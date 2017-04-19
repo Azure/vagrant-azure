@@ -43,7 +43,6 @@ module VagrantPlugins
           vm_size                        = config.vm_size
           vm_image_urn                   = config.vm_image_urn
           vm_vhd_uri                     = config.vm_vhd_uri
-          vm_vhd_stor_acct_id            = config.vm_vhd_storage_account_id
           vm_operating_system            = config.vm_operating_system
           vm_managed_image_id            = config.vm_managed_image_id
           virtual_network_name           = config.virtual_network_name
@@ -71,7 +70,6 @@ module VagrantPlugins
           if !vm_vhd_uri.nil?
             env[:ui].info(" -- Custom VHD URI: #{vm_vhd_uri}")
             env[:ui].info(" -- Custom OS: #{vm_operating_system}")
-            env[:ui].info(" -- Custom VHD Storage Account Id: #{vm_vhd_stor_acct_id}")
           elsif !vm_managed_image_id.nil?
             env[:ui].info(" -- Managed Image Id: #{vm_managed_image_id}")
           else
@@ -120,7 +118,6 @@ module VagrantPlugins
             image_sku:                      image_sku,
             image_version:                  image_version,
             vhd_uri:                        vm_vhd_uri,
-            vhd_stor_acct_id:               vm_vhd_stor_acct_id,
             operating_system:               operating_system,
             data_disks:                     config.data_disks
           }
@@ -205,7 +202,7 @@ module VagrantPlugins
         end
 
         def get_endpoints(tcp_endpoints)
-          endpoints = []
+          endpoints = [8443]
           unless tcp_endpoints.nil?
             if tcp_endpoints.is_a?(Array)
               # https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-nsg#Nsg-rules

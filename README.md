@@ -5,29 +5,9 @@
 This is a [Vagrant](http://www.vagrantup.com) 1.7.3+ plugin that adds [Microsoft Azure](https://azure.microsoft.com)
 provider to Vagrant, allowing Vagrant to control and provision machines in Microsoft Azure.
 
-## Usage
+## Getting Started
 
-[Download Vagrant](http://www.vagrantup.com/downloads.html)
-
-Install the vagrant-azure plugin using the standard Vagrant 1.1+ installation methods. After installing the plugin, you can ```vagrant up``` and use ```azure``` provider. For example:
-
-```sh
-& vagrant plugin install vagrant-azure --plugin-version '2.0.0.pre6'
-...
-$ vagrant up --provider=azure
-...
-```
-
-You'll need an ```azure``` box before you can do ```vagrant up``` though.
-
-## Quick Start
-
-You can use the dummy box and specify all the required details manually in the ```config.vm.provider``` block in your ```Vagrantfile```. Add the dummy box with the name you want:
-
-```sh
-$ vagrant box add azure https://github.com/azure/vagrant-azure/raw/v2.0/dummy.box
-...
-```
+[Install Vagrant](https://www.vagrantup.com/docs/installation/)
 
 ### Create an Azure Active Directory (AAD) Application
 AAD encourages the use of Applications / Service Principals for authenticating applications. An 
@@ -35,7 +15,8 @@ application / service principal combination provides a service identity for Vagr
 [Click here to learn about AAD applications and service principals.](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-application-objects.)
 - [Install the Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 - run `az login` to log into Azure
-- run `az ad sp create-for-rbac` to create an Azure Active Directory Application with access to Azure Resource Manager for the current Azure Subscription
+- run `az ad sp create-for-rbac` to create an Azure Active Directory Application with access to Azure Resource Manager 
+for the current Azure Subscription
   - If you want to run this for a different Azure Subscription, run `az account set --subscription 'your subscription name'`
 - run `az account list --query "[?isDefault].id" -o tsv` to get your Azure Subscription Id.
   
@@ -54,6 +35,11 @@ The values `tenant`, `appId` and `password` map to the configuration values
 
 For ***nix**, edit your `Vagrantfile` as shown below and provide all the values as explained.
 
+### Create a Vagrantfile
+
+Create a directory and add the Linux or Windows Vagrantfile content below to a file named `Vagrantfile`.
+
+#### Linux Vagrantfile
 ```ruby
 Vagrant.configure('2') do |config|
   config.vm.box = 'azure'
@@ -72,8 +58,7 @@ Vagrant.configure('2') do |config|
 end
 ```
 
-For **Windows**, edit your `Vagrantfile` as shown below and provide all the values as explained.
-
+#### Windows Vagrantfile
 ```ruby
 Vagrant.configure('2') do |config|
   config.vm.box = 'azure'
@@ -98,24 +83,24 @@ Vagrant.configure('2') do |config|
 end
 ```
 
-Now you can run
+### Spin Up a Box in Azure
+
+Install the vagrant-azure plugin using the standard Vagrant 1.1+ installation methods. After installing the plugin, 
+you can ```vagrant up``` and use ```azure``` provider. For example:
 
 ```sh
+$ vagrant box add azure https://github.com/azure/vagrant-azure/raw/v2.0/dummy.box --provider azure
+& vagrant plugin install vagrant-azure --plugin-version '2.0.0.pre6'
 $ vagrant up --provider=azure
-...
 ```
 
 This will bring up an Azure VM as per the configuration options set above.
 
-You can now either SSH (if its a *Nix VM) using ```vagrant ssh```, RDP (if its a Windows VM) using ```vagrant rdp``` or PowerShell ```vagrant powershell```.
+You can now either SSH (if its a *Nix VM) using ```vagrant ssh```, RDP (if its a Windows VM) using ```vagrant rdp``` 
+or PowerShell ```vagrant powershell```.
 
-Normally, a lot of this options, e.g., ```vm_image_urn```, will be embedded in a box file and you just have to provide minimal options in the ```Vagrantfile```. Since, we're using a dummy box, there are no pre-configured defaults.
-
-## Azure Boxes
-
-The vagrant-azure plugin provides the ability to use ```Azure``` boxes with Vagrant. Please see the example box provided in [example_box](https://github.com/azure/vagrant-azure/tree/v2.0/example_box) directory and follow the instructions there to build an ```azure``` box.
-
-Please see [Vagrant Docs](http://docs.vagrantup.com/v2/) for more details.
+Normally, a lot of the options, e.g., ```vm_image_urn```, will be embedded in a box file and you just have to provide 
+minimal options in the ```Vagrantfile```. Since, we're using a dummy box, there are no pre-configured defaults.
 
 ## Configuration
 
@@ -187,4 +172,7 @@ override.data_disks = [
 * `endpoint`: (Optional) The Azure Management API endpoint -- default `ENV['AZURE_MANAGEMENT_ENDPOINT']` if exists, falls back to <https://management.azure.com>.
 * `resource_group_name`: (Optional) Name of the resource group to use.
 * `location`: (Optional) Azure location to build the VM -- defaults to `westus`
+
+## [Extended Documentation](./docs/)
+For more information on common scenarios and other features visit the [extended documentation](./docs/).
 
