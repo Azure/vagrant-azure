@@ -5,6 +5,6 @@ rvm:
 deploy:
   provider: rubygems
   api_key:
-    secure: secure: "ThMTLeJ1E2dLLAK1AIokfE+0GyfCKwaAstxETI/qFkOwL21REi6dgTfPIrBpgmrYATb/YgkgIf6Zl46R7vx9/dtgIGBmX7AXT3zsR38P3zfOGy5PzHGGK72ZmkC5UFSBsnQl5J0qQsUEMQfEy2g7dwn1d9aFLKhvnFblNHt4x5c="
+    secure: "ThMTLeJ1E2dLLAK1AIokfE+0GyfCKwaAstxETI/qFkOwL21REi6dgTfPIrBpgmrYATb/YgkgIf6Zl46R7vx9/dtgIGBmX7AXT3zsR38P3zfOGy5PzHGGK72ZmkC5UFSBsnQl5J0qQsUEMQfEy2g7dwn1d9aFLKhvnFblNHt4x5c="
   on:
     tags: true
