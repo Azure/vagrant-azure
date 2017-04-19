@@ -90,7 +90,7 @@ you can ```vagrant up``` and use ```azure``` provider. For example:
 
 ```sh
 $ vagrant box add azure https://github.com/azure/vagrant-azure/raw/v2.0/dummy.box --provider azure
-& vagrant plugin install vagrant-azure --plugin-version '2.0.0.pre6'
+& vagrant plugin install vagrant-azure --plugin-version '2.0.0.pre8'
 $ vagrant up --provider=azure
 ```
 
