@@ -1,0 +1,20 @@
+{
+  "type": "Microsoft.Compute/virtualMachines/extensions",
+  "name": "<%= name %>",
+  "apiVersion": "2015-06-15",
+  "location": "[resourceGroup().location]",
+  "dependsOn": [
+    <%= (depends_on || []).map{ |resource| "\"#{resource}\"" }.join(", ") %>
+  ],
+  "properties": {
+    "publisher": "Microsoft.OSTCExtensions",
+    "type": "VMAccessForLinux",
+    "typeHandlerVersion": "1.4",
+    "autoUpgradeMinorVersion": true,
+    "protectedSettings": {
+      "ssh_key": "<%= ssh_key %>",
+      "username": "<%= username %>",
+      "reset_ssh": "True"
+    }
+  }
+}

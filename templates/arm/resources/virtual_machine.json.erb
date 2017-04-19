@@ -1,0 +1,82 @@
+{
+  "apiVersion": "2016-04-30-preview",
+  "type": "Microsoft.Compute/virtualMachines",
+  "name": "[parameters('vmName')]",
+  "location": "[variables('location')]",
+  "dependsOn": [
+    <%= (depends_on || []).map{ |resource| "\"#{resource}\"" }.join(", ") %>
+  ],
+  <% if operating_system == 'Windows' %>
+  <%= self_signed_cert_resource %>
+  <% end %>
+  "properties": {
+    "hardwareProfile": {
+      "vmSize": "[parameters('vmSize')]"
+    },
+    "osProfile": {
+      "computerName": "[parameters('vmName')]",
+      "adminUsername": "[parameters('adminUsername')]",
+      <% if operating_system == 'Windows' %>
+      "adminPassword": "[parameters('adminPassword')]"
+      <% else %>
+      "linuxConfiguration": {
+        "disablePasswordAuthentication": "true",
+        "ssh": {
+          "publicKeys": [
+            {
+              "path": "[variables('sshKeyPath')]",
+              "keyData": "[parameters('sshKeyData')]"
+            }
+          ]
+        }
+      }
+      <% end %>
+    },
+    "storageProfile": {
+      <% if vhd_uri.nil? && vm_managed_image_id.nil? %>
+      "imageReference": {
+        "publisher": "<%= image_publisher %>",
+        "offer": "<%= image_offer %>",
+        "sku": "<%= image_sku %>",
+        "version": "<%= image_version %>"
+      },
+      <% elsif vm_managed_image_id %>
+      "imageReference": {
+        "id": "<%= vm_managed_image_id %>"
+      },
+      <% else %>
+      "imageReference": {
+        "id": "[resourceId('Microsoft.Compute/images', variables('managedImageName'))]"
+      },
+      <% end %>
+      "osDisk": {
+        <% if vhd_uri || vm_managed_image_id %>
+        "osType": "<%= operating_system %>",
+        "managedDisk": {
+          "storageAccountType": "<%= storage_account_type %>"
+        },
+        <% end %>
+        "createOption": "fromImage",
+        "caching": "ReadWrite"
+      },
+      "dataDisks" : [
+        <%= data_disks.each_with_index.map { |disk, idx|
+            VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/data_disk.json", {lun: idx + 2}.merge(disk))
+          }.join(", ")
+        %>
+      ]
+    },
+    "networkProfile": {
+      "networkInterfaces": [
+        {
+          "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
+        }
+      ]
+    }
+    <% if availability_set_name %>,
+    "availabilitySet": {
+      "id": "[resourceId('Microsoft.Compute/availabilitySets', '<%= availability_set_name %>')]"
+    }
+    <% end %>
+  }
+}

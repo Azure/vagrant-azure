@@ -1,0 +1,23 @@
+{
+  "type": "Microsoft.Compute/images",
+  "name": "<%= name %>",
+  "apiVersion": "2016-04-30-preview",
+  "location": "[variables('location')]",
+  "tags": {},
+  "properties": {
+    "storageProfile": {
+      "osDisk": {
+        "osType": "<%= os_type %>",
+        "blobUri": "<%= source_uri %>",
+        "caching": "ReadWrite",
+        "storageAccountType": "<%= account_type %>"
+      },
+      "dataDisks": [
+        <%= (data_disks || []).map{ |resource| "\"#{resource}\"" }.join(", ") %>
+      ]
+    }
+  },
+  "dependsOn": [
+    <%= (depends_on || []).map{ |resource| "\"#{resource}\"" }.join(", ") %>
+  ]
+}

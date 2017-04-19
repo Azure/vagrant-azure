@@ -1,0 +1,27 @@
+{
+  "apiVersion": "2016-03-30",
+  "type": "Microsoft.Network/virtualNetworks",
+  "name": "[parameters('virtualNetworkName')]",
+  "location": "[variables('location')]",
+  "dependsOn": [
+    "[concat('Microsoft.Network/networkSecurityGroups/', variables('networkSecurityGroupName'))]"
+  ],
+  "properties": {
+    "addressSpace": {
+      "addressPrefixes": [
+        "[variables('addressPrefix')]"
+      ]
+    },
+    "subnets": [
+      {
+        "name": "[parameters('subnetName')]",
+        "properties": {
+          "addressPrefix": "[variables('subnetPrefix')]",
+          "networkSecurityGroup": {
+            "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
+          }
+        }
+      }
+    ]
+  }
+}

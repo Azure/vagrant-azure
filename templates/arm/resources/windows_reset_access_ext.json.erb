@@ -1,0 +1,21 @@
+{
+  "type": "Microsoft.Compute/virtualMachines/extensions",
+  "name": "<%= name %>",
+  "apiVersion": "2015-06-15",
+  "location": "[resourceGroup().location]",
+  "dependsOn": [
+    <%= (depends_on || []).map{ |resource| "\"#{resource}\"" }.join(", ") %>
+  ],
+  "properties": {
+    "publisher": "Microsoft.Compute",
+    "type": "VMAccessAgent",
+    "typeHandlerVersion": "2.0",
+    "autoUpgradeMinorVersion": true,
+    "settings": {
+      "UserName": "<%= username %>"
+    },
+    "protectedSettings": {
+      "Password": "<%= password %>"
+    }
+  }
+}

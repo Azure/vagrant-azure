@@ -1,0 +1,16 @@
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "azure"
+
+  # use local ssh key to connect to remote vagrant box
+  config.ssh.private_key_path = "~/.ssh/id_rsa"
+  config.vm.provider :azure do |azure, override|
+    azure.location = "westus"
+
+    azure.data_disks = [
+        { name: "foo", size_gb: 30 }
+    ]
+  end
+
+  config.vm.provision "shell", inline: "echo Hello, World"
+end

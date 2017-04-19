@@ -1,5 +1,5 @@
 {
-  "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json",
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "adminUserName": {
@@ -49,34 +49,6 @@
         "description": "Name of the VM"
       }
     },
-    "imagePublisher": {
-      "type": "string",
-      "defaultValue": "canonical",
-      "metadata": {
-        "description": "Name of the image publisher"
-      }
-    },
-    "imageOffer": {
-      "type": "string",
-      "defaultValue": "ubuntuserver",
-      "metadata": {
-        "description": "Name of the image offer"
-      }
-    },
-    "imageSku": {
-      "type": "string",
-      "defaultValue": "16.04-LTS",
-      "metadata": {
-        "description": "Name of the image sku"
-      }
-    },
-    "imageVersion": {
-      "type": "string",
-      "defaultValue": "latest",
-      "metadata": {
-        "description": "Name of the image sku"
-      }
-    },
     "subnetName": {
       "type": "string",
       "defaultValue": "vagrant-subnet",
@@ -97,21 +69,25 @@
       "metadata": {
         "description": "WinRM port"
       }
+    },
+    "storageAccountType": {
+      "type": "string",
+      "defaultValue": "Premium_LRS",
+      "metadata": {
+        "description": "Storage account type for VM Disks"
+      }
     }
   },
   "variables": {
-    "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'vagrant')]",
     "location": "[resourceGroup().location]",
-    "osDiskName": "[concat(parameters('vmName'), 'OSDisk1')]",
-    "addressPrefix": "10.0.0.0/16",
-    "subnetPrefix": "10.0.0.0/24",
-    "vmStorageAccountContainerName": "vagrant-vhds",
+    "managedImageName": "[concat(parameters('vmName'), '-vagrantanagedImage')]",
+    "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
     "nicName": "[concat(parameters('vmName'), '-vagrantNIC')]",
     "publicIPAddressName": "[concat(parameters('vmName'), '-vagrantPublicIP')]",
     "publicIPAddressType": "Dynamic",
-    "storageAccountType": "Premium_LRS",
     "networkSecurityGroupName": "[concat(parameters('nsgLabelPrefix'), '-vagrantNSG')]",
-    "sshKeyPath": "[concat('/home/',parameters('adminUsername'),'/.ssh/authorized_keys')]",
+    "addressPrefix": "10.0.0.0/16",
+    "subnetPrefix": "10.0.0.0/24",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetName'))]",
     "apiVersion": "2015-06-15",
@@ -119,227 +95,37 @@
     "doubleQuote": "\""
   },
   "resources": [
-    {
-      "type": "Microsoft.Storage/storageAccounts",
-      "name": "[variables('storageAccountName')]",
-      "apiVersion": "[variables('apiVersion')]",
-      "location": "[variables('location')]",
-      "properties": {
-        "accountType": "[variables('storageAccountType')]"
-      }
-    },
-    {
-      "apiVersion": "[variables('apiVersion')]",
-      "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "[variables('networkSecurityGroupName')]",
-      "location": "[variables('location')]",
-      "properties": {
-        "securityRules": [
-          <% if operating_system == 'Windows' %>
-          {
-            "name": "rdp_rule",
-            "properties": {
-              "description": "Enable Inbound RDP",
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "3389",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 123,
-              "direction": "Inbound"
-            }
-          },
-          {
-            "name": "winrm_rule",
-            "properties": {
-              "description": "Enable Inbound WinRM",
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "[parameters('winRmPort')]",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 124,
-              "direction": "Inbound"
-            }
-          }
-          <% else %>
-          {
-            "name": "ssh_rule",
-            "properties": {
-              "description": "Locks inbound down to ssh default port 22.",
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "22",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 123,
-              "direction": "Inbound"
-            }
-          }
-        <% end %>
-        <% endpoints.each_with_index do |ports, index| %>
-          ,
-          {
-            "name": "custom_rule_<%= index %>",
-            "properties": {
-              "description": "Custom opened ports.",
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "<%= ports %>",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": <%= 133 + index %>,
-              "direction": "Inbound"
-            }
-          }
-        <% end %>
-        ]
-      }
-    },
-    {
-      "apiVersion": "[variables('apiVersion')]",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('publicIPAddressName')]",
-      "location": "[variables('location')]",
-      "properties": {
-        "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
-        "dnsSettings": {
-          "domainNameLabel": "[parameters('dnsLabelPrefix')]"
-        }
-      }
-    },
-    {
-      "apiVersion": "[variables('apiVersion')]",
-      "type": "Microsoft.Network/virtualNetworks",
-      "name": "[parameters('virtualNetworkName')]",
-      "location": "[variables('location')]",
-      "dependsOn": [
-        "[concat('Microsoft.Network/networkSecurityGroups/', variables('networkSecurityGroupName'))]"
-      ],
-      "properties": {
-        "addressSpace": {
-          "addressPrefixes": [
-            "[variables('addressPrefix')]"
-          ]
-        },
-        "subnets": [
-          {
-            "name": "[parameters('subnetName')]",
-            "properties": {
-              "addressPrefix": "[variables('subnetPrefix')]",
-              "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "apiVersion": "[variables('apiVersion')]",
-      "type": "Microsoft.Network/networkInterfaces",
-      "name": "[variables('nicName')]",
-      "location": "[variables('location')]",
-      "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]",
-        "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
-      ],
-      "properties": {
-        "ipConfigurations": [
-          {
-            "name": "ipconfig1",
-            "properties": {
-              "privateIPAllocationMethod": "Dynamic",
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]"
-              },
-              "subnet": {
-                "id": "[variables('subnetRef')]"
-              }
-            }
-          }
-        ]
-      }
-    },
-    <% if availabilitySetName = availability_set_name.nil? || availability_set_name.empty? ? nil : availability_set_name %>
-    {
-      "apiVersion": "[variables('apiVersion')]",
-      "type": "Microsoft.Compute/availabilitySets",
-      "name": "<%= availabilitySetName %>",
-      "location": "[variables('location')]"
-    },
+    <% if vhd_uri %>
+      <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/import_vhd_image.json", {
+        name: "[variables('managedImageName')]",
+        account_type: "[parameters('storageAccountType')]",
+        os_type: "#{operating_system}",
+        source_uri: "#{vhd_uri}"
+      }) + "," %>
     <% end %>
-    {
-      "apiVersion": "[variables('apiVersion')]",
-      "type": "Microsoft.Compute/virtualMachines",
-      "name": "[parameters('vmName')]",
-      "location": "[variables('location')]",
-      "dependsOn": [
-        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
-        "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
-        <% if availabilitySetName %>,
-        "[resourceId('Microsoft.Compute/availabilitySets', '<%= availabilitySetName %>')]"
-        <% end %>
-      ],
-      <% if operating_system == 'Windows' %>
-      <%= self_signed_cert_resource %>
-      <% end %>
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "[parameters('vmSize')]"
-        },
-        "osProfile": {
-          "computerName": "[parameters('vmName')]",
-          "adminUsername": "[parameters('adminUsername')]",
-          <% if operating_system == 'Windows' %>
-          "adminPassword": "[parameters('adminPassword')]"
-          <% else %>
-          "linuxConfiguration": {
-            "disablePasswordAuthentication": "true",
-            "ssh": {
-              "publicKeys": [
-                {
-                  "path": "[variables('sshKeyPath')]",
-                  "keyData": "[parameters('sshKeyData')]"
-                }
-              ]
-            }
-          }
-          <% end %>
-        },
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "[parameters('imagePublisher')]",
-            "offer": "[parameters('imageOffer')]",
-            "sku": "[parameters('imageSku')]",
-            "version": "latest"
-          },
-          "osDisk": {
-            "name": "osdisk",
-            "vhd": {
-              "uri": "[concat('http://',variables('storageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/', variables('osDiskName'),'.vhd')]"
-            },
-            "caching": "ReadWrite",
-            "createOption": "FromImage"
-          }
-        },
-        "networkProfile": {
-          "networkInterfaces": [
-            {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
-            }
-          ]
-        }
-        <% if availabilitySetName %>,
-        "availabilitySet": {
-          "id": "[resourceId('Microsoft.Compute/availabilitySets', '<%= availabilitySetName %>')]"
-        }
-        <% end %>
-      }
-    }
+    <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/network_security_group.json", self) + "," %>
+    <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/public_ip_address.json", self) + "," %>
+    <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/virtual_network.json", self) + "," %>
+    <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/network_interface.json", self) + "," %>
+    <% if availability_set_name %>
+      <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/availability_set.json", availability_set_name: availability_set_name) + "," %>
+    <% end %>
+
+    <%
+      vm_dependencies = ["[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"]
+      if availability_set_name
+        vm_dependencies.push("[resourceId('Microsoft.Compute/availabilitySets', '#{availability_set_name}')")
+      end
+
+      if vhd_uri
+        vm_dependencies.push("[resourceId('Microsoft.Compute/images', variables('managedImageName'))]")
+      end
+    %>
+    <%= VagrantPlugins::Azure::Util::TemplateRenderer.render("arm/resources/virtual_machine.json",
+                                                              {
+                                                                depends_on: vm_dependencies,
+                                                                storage_account_type: "[parameters('storageAccountType')]"
+                                                              }.merge(self.to_h))
+    %>
   ]
 }
