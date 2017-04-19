@@ -3,7 +3,7 @@ language: ruby
 rvm:
   - 2.2.5
 before_install:
-  - rvm @global do gem uninstall bundler -a
+  - rvm @default,@global do gem uninstall bundler -a -x
   - gem install bundler -v 1.10.5
 deploy:
   provider: rubygems
