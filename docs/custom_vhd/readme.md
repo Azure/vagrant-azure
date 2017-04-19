@@ -13,24 +13,24 @@ If you wanted to build a more customized image, you could do the same with your 
 ## Vagrant up
 We will set this up with Azure CLI and then run Vagrant after we've provisioned the needed Azure resources.
 - Login to Azure CLI (if not already logged in)
-  ```sh
+  ```bash
   az login
   ```
 - Create a resource group for your VHDs (assuming westus)
-  ```sh
+  ```bash
   az group create -n vagrantimages -l westus
   ```
 - Create a storage account in the region you'd like to deploy
-  ```sh
+  ```bash
   # insert your own name for the storage account DNS name (-n)
   az storage account create -g vagrantimages -n vagrantimagesXXXX --sku Standard_LRS -l westus
   ```
 - Download and unzip the VHD from Ubuntu
-  ```sh
+  ```bash
   wget -qO- -O tmp.zip http://cloud-images.ubuntu.com/releases/xenial/release/ubuntu-16.04-server-cloudimg-amd64-disk1.vhd.zip && unzip tmp.zip && rm tmp.zip
   ```
 - Upload the VHD to your storage account in the vhds container
-  ```sh
+  ```bash
   conn_string=$(az storage account show-connection-string -g vagrantimages -n vagrantimagesXXXX -o tsv)
   az storage container create -n vhds --connection-string $conn_string
   az storage container create -n vhds vagrantimagesXXXX

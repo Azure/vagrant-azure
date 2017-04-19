@@ -1,43 +1,20 @@
 # Linux Machine with Empty Data Disks
 This scenario will build an Ubuntu 16.04 machine with data disks attached to the virtual machine.
 
-To see more information about this scenario, see [Prepare an Ubuntu virtual machine for Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/create-upload-ubuntu)
+To see more information about this scenario, see [How to Attach a Data Disk to a Linux VM](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/classic/attach-disk)
 
 Before you attempt this scenario, ensure you have followed the [getting started docs](../../readme.md#getting-started).
 
-If you wanted to build a more customized image, you could do the same with your own VHD manually by following these 
-[instructions](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/create-upload-ubuntu?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json#manual-steps).
+*Note: data disk support is preview and will likely change before becoming stable*
 
 ## Vagrant up
-We will set this up with Azure CLI and then run Vagrant after we've provisioned the needed Azure resources.
-- Login to Azure CLI (if not already logged in)
-  ```sh
-  az login
-  ```
-- Create a resource group for your VHDs (assuming westus)
-  ```sh
-  az group create -n vagrantimages -l westus
-  ```
-- Create a storage account in the region you'd like to deploy
-  ```sh
-  # insert your own name for the storage account DNS name (-n)
-  az storage account create -g vagrantimages -n vagrantimagesXXXX --sku Standard_LRS -l westus
-  ```
-- Download and unzip the VHD from Ubuntu
-  ```sh
-  wget -qO- -O tmp.zip http://cloud-images.ubuntu.com/releases/xenial/release/ubuntu-16.04-server-cloudimg-amd64-disk1.vhd.zip && unzip tmp.zip && rm tmp.zip
-  ```
-- Upload the VHD to your storage account in the vhds container
-  ```sh
-  conn_string=$(az storage account show-connection-string -g vagrantimages -n vagrantimagesXXXX -o tsv)
-  az storage container create -n vhds --connection-string $conn_string
-  az storage container create -n vhds vagrantimagesXXXX
-  az storage blob upload -c vhds -n xenial-server-cloudimg-amd64-disk1.vhd -f xenial-server-cloudimg-amd64-disk1.vhd --connection-string $conn_string
-  ```
-- Update Vagrantfile with the URI of your uploaded blob (`azure.vm_vhd_uri`).
-- Vagrant up
+- In this directory, run the following
   ```bash
   vagrant up --provider=azure
   ```
+- The Vagrant file specifies on data disk named foo. The foo disk is not formatted, nor mounted. If you
+  would like to use the disk, you will need to format and mount the drive. For instructions on how to do that,
+  see: https://docs.microsoft.com/en-us/azure/virtual-machines/linux/classic/attach-disk#initialize-a-new-data-disk-in-linux.
+  In the next rev of data disks, we'll handle mounting and formatting.
   
 To clean up, run `vagrant destroy`

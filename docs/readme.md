@@ -7,15 +7,15 @@ Before you attempt any scenario, ensure you have followed the [getting started d
 ## Scenarios
 
 ### [Basic Linux Setup](./basic_linux)
-Setup a simple Ubuntu box
+Setup a simple Ubuntu 16.04 machine
 
 ### [Basic Windows Setup](./basic_windows)
-Setup a Windows Server box
+Setup a Windows SQL Server 2016 machine
 
 ### [Ubuntu Xenial Machine from VHD](./custom_vhd)
-Setup an Ubuntu box from a custom image
+Setup an Ubuntu box from a custom VHD
 
-### [Managed Image Reference](./managed_image_reference)
+### [Managed Image Reference](./managed_image)
 Setup a VM from a managed image reference captured from a previously created Azure VM.
 
 ### [Data Disks (empty disk)](./data_disks)
