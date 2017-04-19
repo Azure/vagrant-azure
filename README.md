@@ -128,7 +128,8 @@ The vagrant-azure provide exposes Azure specific configuration options:
         (like: /subscriptions/{subscription id}/resourceGroups/{resource group}/providers/Microsoft.Storage/storageAccounts/{account name}).
 * `vm_managed_image_id`: Create a VM from a generalized VM that is stored as either a managed or unmanaged disk. See: https://docs.microsoft.com/en-us/azure/virtual-machines/windows/capture-image-resource
 
-### Optional VM Data Disk Parameters
+### Optional VM Data Disk Parameters (Preview)
+The data disk functionality is preview and may change before the 2.0 release.
 * `data_disks`: (Optional) Array of Data Disks to attach to the VM. For information on attaching the drive, See: https://docs.microsoft.com/en-us/azure/virtual-machines/linux/classic/attach-disk.
 ```ruby
 override.data_disks = [
