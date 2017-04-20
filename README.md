@@ -137,18 +137,8 @@ override.data_disks = [
     {
       name: "mydatadisk1", 
       size_gb: 30
-    }, 
-    # sample of attaching an existing VHD as a data disk
-    {
-      name: "mydatadisk2", 
-      vhd_uri: "http://mystorage.blob.core.windows.net/vhds/mydatadisk2.vhd"
-    },
-    # sample of attaching a data disk from image
-    {
-      name: "mydatadisk3", 
-      vhd_uri: "http://mystorage.blob.core.windows.net/vhds/mydatadisk3.vhd", 
-      image: "http: //storagename.blob.core.windows.net/vhds/VMImageName-datadisk.vhd"
-    }]
+    }
+]
 ```
 
 ### Optional Networking Parameters
