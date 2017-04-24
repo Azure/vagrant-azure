@@ -46,6 +46,12 @@ module VagrantPlugins
       attr_accessor :vm_name
 
       # (Optional) DNS Name prefix of the virtual machine
+      # Uses value of vm_name if not specified.
+      # Note: this must conform to the following regular expression:
+      #
+      #    ^[a-z][a-z0-9-]{1,61}[a-z0-9]
+      #
+      # Therefore this field mustbe set if vm_name has capital letters (for ex.)
       #
       # @return [String]
       attr_accessor :dns_name
