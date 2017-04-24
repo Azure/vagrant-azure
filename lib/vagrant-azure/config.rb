@@ -46,6 +46,12 @@ module VagrantPlugins
       attr_accessor :vm_name
 
       # (Optional) DNS Name prefix of the virtual machine
+      # Uses value of vm_name if not specified.
+      # Note: this must conform to the following regular expression:
+      #
+      #    ^[a-z][a-z0-9-]{1,61}[a-z0-9]
+      #
+      # Therefore this field mustbe set if vm_name has capital letters (for ex.)
       #
       # @return [String]
       attr_accessor :dns_name
@@ -64,6 +70,11 @@ module VagrantPlugins
       #
       # @return [String]
       attr_accessor :vm_size
+
+      # (Optional) Storage account type to be used -- defaults to 'Premium_LRS'. Alt value is 'Standard_LRS' See: https://docs.microsoft.com/en-us/azure/storage/storage-about-disks-and-vhds-linux
+      #
+      # @return [String]
+      attr_accessor :vm_storage_account_type
 
       # (Optional) Name of the virtual machine image URN to use -- defaults to 'canonical:ubuntuserver:16.04.0-DAILY-LTS:latest'. See: https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-cli-ps-findimage/
       #
@@ -193,6 +204,7 @@ module VagrantPlugins
         @nsg_name = UNSET_VALUE
         @tcp_endpoints = UNSET_VALUE
         @vm_size = UNSET_VALUE
+        @vm_storage_account_type = UNSET_VALUE
         @availability_set_name = UNSET_VALUE
         @instance_ready_timeout = UNSET_VALUE
         @instance_check_interval = UNSET_VALUE
@@ -228,6 +240,7 @@ module VagrantPlugins
         @dns_name = nil if @dns_name == UNSET_VALUE
         @nsg_name = nil if @nsg_name == UNSET_VALUE
         @tcp_endpoints = nil if @tcp_endpoints == UNSET_VALUE
+        @vm_storage_account_type = 'Premium_LRS' if @vm_storage_account_type == UNSET_VALUE
         @availability_set_name = nil if @availability_set_name == UNSET_VALUE
 
         @instance_ready_timeout = 120 if @instance_ready_timeout == UNSET_VALUE
