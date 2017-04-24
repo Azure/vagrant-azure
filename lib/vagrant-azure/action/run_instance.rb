@@ -40,6 +40,7 @@ module VagrantPlugins
           location                       = config.location
           ssh_user_name                  = machine.config.ssh.username
           vm_name                        = config.vm_name
+          vm_storage_account_type        = config.vm_storage_account_type
           vm_size                        = config.vm_size
           vm_image_urn                   = config.vm_image_urn
           vm_vhd_uri                     = config.vm_vhd_uri
@@ -65,6 +66,7 @@ module VagrantPlugins
           env[:ui].info(" -- SSH User Name: #{ssh_user_name}") if ssh_user_name
           env[:ui].info(" -- Admin Username: #{admin_user_name}") if admin_user_name
           env[:ui].info(" -- VM Name: #{vm_name}")
+          env[:ui].info(" -- VM Storage Account Type: #{vm_storage_account_type}")
           env[:ui].info(" -- VM Size: #{vm_size}")
 
           if !vm_vhd_uri.nil?
@@ -91,6 +93,7 @@ module VagrantPlugins
             dnsLabelPrefix:       dns_label_prefix,
             nsgLabelPrefix:       nsg_label_prefix,
             vmSize:               vm_size,
+            storageAccountType:   vm_storage_account_type,
             vmName:               vm_name,
             subnetName:           subnet_name,
             virtualNetworkName:   virtual_network_name,
