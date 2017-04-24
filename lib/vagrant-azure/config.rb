@@ -65,6 +65,11 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :vm_size
 
+      # (Optional) Storage account type to be used -- defaults to 'Premium_LRS'. Alt value is 'Standard_LRS' See: https://docs.microsoft.com/en-us/azure/storage/storage-about-disks-and-vhds-linux
+      #
+      # @return [String]
+      attr_accessor :vm_storage_account_type
+
       # (Optional) Name of the virtual machine image URN to use -- defaults to 'canonical:ubuntuserver:16.04.0-DAILY-LTS:latest'. See: https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-cli-ps-findimage/
       #
       # @return [String]
@@ -193,6 +198,7 @@ module VagrantPlugins
         @nsg_name = UNSET_VALUE
         @tcp_endpoints = UNSET_VALUE
         @vm_size = UNSET_VALUE
+        @vm_storage_account_type = UNSET_VALUE
         @availability_set_name = UNSET_VALUE
         @instance_ready_timeout = UNSET_VALUE
         @instance_check_interval = UNSET_VALUE
@@ -228,6 +234,7 @@ module VagrantPlugins
         @dns_name = nil if @dns_name == UNSET_VALUE
         @nsg_name = nil if @nsg_name == UNSET_VALUE
         @tcp_endpoints = nil if @tcp_endpoints == UNSET_VALUE
+        @vm_storage_account_type = 'Premium_LRS' if @vm_storage_account_type == UNSET_VALUE
         @availability_set_name = nil if @availability_set_name == UNSET_VALUE
 
         @instance_ready_timeout = 120 if @instance_ready_timeout == UNSET_VALUE
