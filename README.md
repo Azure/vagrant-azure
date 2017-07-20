@@ -12,7 +12,7 @@ provider to Vagrant, allowing Vagrant to control and provision machines in Micro
 ### Create an Azure Active Directory (AAD) Application
 AAD encourages the use of Applications / Service Principals for authenticating applications. An 
 application / service principal combination provides a service identity for Vagrant to manage your Azure Subscription.
-[Click here to learn about AAD applications and service principals.](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-application-objects.)
+[Click here to learn about AAD applications and service principals.](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-application-objects)
 - [Install the Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 - run `az login` to log into Azure
 - run `az ad sp create-for-rbac` to create an Azure Active Directory Application with access to Azure Resource Manager 
