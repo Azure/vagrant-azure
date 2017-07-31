@@ -4,6 +4,6 @@
 
 module VagrantPlugins
   module Azure
-    VERSION = '2.0.0.pre8'.freeze
+    VERSION = '2.0.0.pre8nsgfix'.freeze
   end
 end

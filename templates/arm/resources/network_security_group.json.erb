@@ -55,28 +55,14 @@
           "name": "custom_rule_inbound_<%= index %>",
           "properties": {
             "description": "Enable inbound custom ports.",
-            "protocol": "*",
-            "sourcePortRange": "<%= ports %>",
+            "protocol": "Tcp",
+            "sourcePortRange": "*",
             "destinationPortRange": "<%= ports %>",
             "sourceAddressPrefix": "*",
             "destinationAddressPrefix": "*",
             "access": "Allow",
             "priority": <%= 133 + index %>,
             "direction": "Inbound"
-          }
-        },
-        {
-          "name": "custom_rule_outbound_<%= index %>",
-          "properties": {
-            "description": "Enabled outbound custom ports.",
-            "protocol": "*",
-            "sourcePortRange": "<%= ports %>",
-            "destinationPortRange": "<%= ports %>",
-            "sourceAddressPrefix": "*",
-            "destinationAddressPrefix": "*",
-            "access": "Allow",
-            "priority": <%= 134 + index %>,
-            "direction": "Outbound"
           }
         }
       <% end %>
