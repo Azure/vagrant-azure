@@ -69,6 +69,10 @@ en:
         The Azure instance is not created. Run `vagrant up` to create it.
       short_stopped: |-
         stopped
+      short_starting: |-
+        starting
+      short_started: |-
+        started
       long_stopped: |-
         The Azure instance is stopped. Run `vagrant up` to start it.
       short_stopping: |-

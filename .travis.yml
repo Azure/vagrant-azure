@@ -1,7 +1,7 @@
 sudo: false
 language: ruby
 rvm:
-  - 2.2.5
+  - 2.4
 before_install:
   - rvm @default,@global do gem uninstall bundler -a -x
   - gem install bundler -v 1.10.5
