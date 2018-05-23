@@ -205,7 +205,7 @@ module VagrantPlugins
         end
 
         def get_endpoints(tcp_endpoints)
-          endpoints = [8443]
+          endpoints = []
           unless tcp_endpoints.nil?
             if tcp_endpoints.is_a?(Array)
               # https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-nsg#Nsg-rules
