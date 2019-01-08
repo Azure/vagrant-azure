@@ -61,8 +61,6 @@ end
 #### Windows Vagrantfile
 ```ruby
 Vagrant.configure('2') do |config|
-  config.vm.box = 'azure'
-
   config.vm.provider :azure do |azure, override|
 
     # each of the below values will default to use the env vars named as below if not specified explicitly
