@@ -52,10 +52,10 @@
       "osDisk": {
         <% if vhd_uri || vm_managed_image_id %>
         "osType": "<%= operating_system %>",
+        <% end %>
         "managedDisk": {
           "storageAccountType": "<%= storage_account_type %>"
         },
-        <% end %>
         "createOption": "fromImage",
         "caching": "ReadWrite"
       },
