@@ -40,12 +40,13 @@ For ***nix**, edit your `Vagrantfile` as shown below and provide all the values 
 Create a directory and add the Linux or Windows Vagrantfile content below to a file named `Vagrantfile`.
 
 #### Linux Vagrantfile
+
 ```ruby
 Vagrant.configure('2') do |config|
   config.vm.box = 'azure'
 
   # use local ssh key to connect to remote vagrant box
-  config.ssh.private_key_path = '~/.ssh/id_rsa'
+  config.ssh.private_key_path = File.join(File.dirname(__FILE__), 'private_key.id_rsa')
   config.vm.provider :azure do |azure, override|
 
     # each of the below values will default to use the env vars named as below if not specified explicitly
@@ -56,6 +57,13 @@ Vagrant.configure('2') do |config|
   end
 
 end
+```
+
+Generate SSH private key that will be used to connect to remote Vagrant VM and
+copy it next to the `Vagrantfile` or adjust the `config.ssh.private_key_path` value.
+
+```console
+ssh-keygen -t rsa -f private_key.id_rsa
 ```
 
 #### Windows Vagrantfile
