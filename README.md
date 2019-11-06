@@ -96,8 +96,9 @@ $ vagrant up --provider=azure
 
 This will bring up an Azure VM as per the configuration options set above.
 
-You can now either SSH (if its a *Nix VM) using ```vagrant ssh```, RDP (if its a Windows VM) using ```vagrant rdp``` 
-or PowerShell ```vagrant powershell```.
+You can now either SSH (if its a *Nix VM) using ```vagrant ssh```,
+RDP (if its a Windows VM) using ```vagrant rdp```  or
+PowerShell (if its a Windows VM) using ```vagrant powershell```.
 
 Normally, a lot of the options, e.g., ```vm_image_urn```, will be embedded in a box file and you just have to provide 
 minimal options in the ```Vagrantfile```. Since, we're using a dummy box, there are no pre-configured defaults.
