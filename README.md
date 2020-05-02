@@ -130,7 +130,7 @@ The vagrant-azure provide exposes Azure specific configuration options:
 
 ### Optional VM Data Disk Parameters (Preview)
 The data disk functionality is preview and may change before the 2.0 release.
-* `data_disks`: (Optional) Array of Data Disks to attach to the VM. For information on attaching the drive, See: https://docs.microsoft.com/en-us/azure/virtual-machines/linux/classic/attach-disk.
+* `data_disks`: (Optional) Array of Data Disks to attach to the VM. For information on attaching the drive, See: https://docs.microsoft.com/azure/virtual-machines/linux/attach-disk-portal.
 ```ruby
 override.data_disks = [
     # sample of creating empty data disk
