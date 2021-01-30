@@ -1,3 +1,10 @@
+**PSA:** Hi vagrant-azure plugin users, we are unable to continue supporting this project, so it is now archived. Even though this project is archived, the existing plugin will still work as it currently does. This should not affect any workflows currently using vagrat-azure.
+
+We know there are many folks who are actively using this plugin but have long suffered from a lack of support in this project. We would like to encourage the community to fork this project and work together to advance and support Vagrant on Azure.
+
+We thank everyone for their support through usage, issues and contributions.
+
+
 # Vagrant Azure Provider
 
 [![Gem Version](https://badge.fury.io/rb/vagrant-azure.png)](https://rubygems.org/gems/vagrant-azure)
